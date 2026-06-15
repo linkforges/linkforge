@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+@import '@fontsource/plus-jakarta-sans/400.css';
+@import '@fontsource/plus-jakarta-sans/500.css';
+@import '@fontsource/plus-jakarta-sans/600.css';
+@import '@fontsource/plus-jakarta-sans/700.css';
+
+/* Bio-page premium font choices (self-hosted) */
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/lora/400.css';
+@import '@fontsource/lora/600.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Class-based dark mode: the <html> element gets `.dark` (see partials/theme + the toggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    /* Primary brand ramp (default: emerald) — overridden at runtime by partials/theme */
+    --color-brand-50: #ecfdf5;
+    --color-brand-100: #d1fae5;
+    --color-brand-200: #a7f3d0;
+    --color-brand-300: #6ee7b7;
+    --color-brand-400: #34d399;
+    --color-brand-500: #10b981;
+    --color-brand-600: #059669;
+    --color-brand-700: #047857;
+    --color-brand-800: #065f46;
+    --color-brand-900: #064e3b;
+    --color-brand-950: #022c22;
+
+    /* Accent ramp "forge spark" (default: amber) */
+    --color-spark-50: #fffbeb;
+    --color-spark-100: #fef3c7;
+    --color-spark-200: #fde68a;
+    --color-spark-300: #fcd34d;
+    --color-spark-400: #fbbf24;
+    --color-spark-500: #f59e0b;
+    --color-spark-600: #d97706;
+    --color-spark-700: #b45309;
+    --color-spark-800: #92400e;
+    --color-spark-900: #78350f;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-slate-50 text-slate-700 antialiased;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+}
+
+@layer components {
+    .lf-input {
+        @apply block w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 shadow-sm transition
+            placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/25 focus:outline-none;
+        background-color: var(--lf-surface);
+    }
+
+    .lf-label {
+        @apply mb-1.5 block text-sm font-medium text-slate-700;
+    }
+
+    .lf-btn {
+        @apply inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold
+            text-white shadow-sm transition hover:bg-brand-700 focus:ring-2 focus:ring-brand-500/40 focus:outline-none
+            active:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .lf-card {
+        @apply rounded-2xl border border-slate-200 shadow-sm;
+        background-color: var(--lf-surface);
+    }
+}
+
+/*
+| Dark mode. Tailwind v4 utilities reference the theme CSS variables, so remapping
+| the neutral (slate) ramp under .dark flips text / borders / secondary backgrounds
+| across the whole app with no per-view edits. White surfaces are flipped via the
+| --lf-surface variable and a scoped .bg-white override (text-white is untouched, so
+| brand buttons keep their white labels). Brand + spark ramps are intentionally left
+| as-is in both schemes.
+*/
+:root {
+    --lf-surface: #ffffff;
+    --lf-map-empty: #e9edf2;
+    --lf-map-stroke: #ffffff;
+}
+
+.dark {
+    --lf-surface: #0f172a;
+    --lf-map-empty: #1e293b;
+    --lf-map-stroke: #0b1220;
+
+    --color-slate-50: #0b1220;
+    --color-slate-100: #152034;
+    --color-slate-200: #1e293b;
+    --color-slate-300: #334155;
+    --color-slate-400: #64748b;
+    --color-slate-500: #94a3b8;
+    --color-slate-600: #cbd5e1;
+    --color-slate-700: #e2e8f0;
+    --color-slate-800: #f1f5f9;
+    --color-slate-900: #f8fafc;
+    --color-slate-950: #ffffff;
+}
+
+@layer utilities {
+    /* Flip plain white surfaces (cards already use --lf-surface); text-white is untouched. */
+    .dark .bg-white { background-color: var(--lf-surface); }
+
+    /* The palette remap lightens slate-700..900 so heading TEXT goes light in dark mode.
+       Pin those shades back to dark when used as a BACKGROUND (dark pills, buttons, active
+       tabs, hovers) so white-on-dark stays readable. Stacked variants (file:, aria-pressed:)
+       are converted to brand colours at the source instead. */
+    .dark .bg-slate-900 { background-color: #1e293b; }
+    .dark .bg-slate-800 { background-color: #273449; }
+    .dark .hover\:bg-slate-900:hover { background-color: #273449; }
+    .dark .hover\:bg-slate-800:hover { background-color: #2f3e57; }
+    .dark .hover\:bg-slate-700:hover { background-color: #2f3e57; }
+}

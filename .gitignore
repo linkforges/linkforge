@@ -1,0 +1,45 @@
+# Dependencies (restored via composer install / npm install)
+/vendor
+/node_modules
+
+# Compiled front-end assets (rebuilt via npm run build)
+/public/build
+/public/hot
+/public/storage
+
+# Environment & secrets
+.env
+.env.backup
+.env.production
+/auth.json
+
+# Laravel runtime
+/storage/*.key
+/storage/pail
+/storage/logs/*.log
+/.phpunit.cache
+/.phpunit.result.cache
+.phpactor.json
+/bootstrap/ssr
+
+# Install state (per-environment; never committed or shipped)
+/storage/installed
+/storage/installed.testing
+
+# Runtime uploads (keep the dir + its hardening .htaccess, ignore uploaded files)
+/public/uploads/*
+!/public/uploads/.htaccess
+!/public/uploads/.gitkeep
+
+# Tooling / editors / OS
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,25 @@
+# Uploaded files are user-controlled. Never execute them as code and never let
+# the browser MIME-sniff a different type. Applies here and to all subdirectories
+# (bio/, avatars/, branding/). Apache only — see the deploy docs for the nginx rule.
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Block direct execution of any script-like file regardless of how PHP is wired up.
+<FilesMatch "(?i)\.(php[0-9]?|phtml|phps|phar|pl|py|cgi|asp|aspx|jsp|sh|shtml|fcgi)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+Options -ExecCGI -Indexes
+RemoveHandler .php .phtml .phar .cgi .pl .py
