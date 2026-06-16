@@ -438,7 +438,17 @@ class SaaSTest extends TestCase
         $this->get('/')->assertStatus(503);
         $this->get('/mtn')->assertRedirect('https://example.com');
 
-        // Admin bypasses the gate entirely.
+        // A signed-out admin must still reach the login page AND be able to submit it
+        // during maintenance, or they can never get back in to lift it.
+        User::factory()->create([
+            'role' => 'admin', 'status' => 'active', 'email_verified_at' => now(),
+            'email' => 'gate@admin.test', 'password' => \Illuminate\Support\Facades\Hash::make('secret-pass'),
+        ]);
+        $this->get('/login')->assertOk();
+        $this->post('/login', ['email' => 'gate@admin.test', 'password' => 'secret-pass'])
+            ->assertRedirect()->assertSessionHasNoErrors(); // signed in, not a 503
+
+        // And an authenticated admin bypasses the gate entirely.
         $this->actingAs(User::factory()->create(['role' => 'admin']))->get('/')->assertOk();
     }
 

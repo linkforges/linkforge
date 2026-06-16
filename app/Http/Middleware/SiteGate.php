@@ -44,10 +44,13 @@ class SiteGate
             || $request->routeIs('link.unlock')
             || $request->routeIs('report.*');
 
+        // Match the auth flow by PATH, not route name: Fortify's POST /login (the
+        // actual sign-in) is unnamed, so a name-based check would let the login
+        // PAGE through but block the SUBMIT, locking the admin out. Allow the whole
+        // sign-in + recovery flow so an admin can always get in and lift maintenance.
         return $isPublicContent
             || $request->is('admin', 'admin/*')
-            || $request->routeIs('login')
-            || $request->routeIs('logout')
+            || $request->is('login', 'logout', 'two-factor-challenge', 'forgot-password', 'reset-password', 'reset-password/*')
             || $request->is('up');
     }
 }
