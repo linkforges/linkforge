@@ -48,7 +48,7 @@ class DomainController extends Controller
 
     public function verify(Request $request, Domain $domain)
     {
-        abort_unless($domain->user_id === $request->user()->id, 403);
+        abort_unless((int) $domain->user_id === (int) $request->user()->id, 403);
 
         if ($this->dnsHasToken($domain->host, $this->verifyToken($request->user()->id))) {
             $domain->update(['status' => 'active']);
@@ -62,7 +62,7 @@ class DomainController extends Controller
 
     public function destroy(Request $request, Domain $domain)
     {
-        abort_unless($domain->user_id === $request->user()->id, 403);
+        abort_unless((int) $domain->user_id === (int) $request->user()->id, 403);
 
         $host = $domain->host;
         $domain->delete();

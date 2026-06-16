@@ -64,14 +64,14 @@ class SupportController extends Controller
 
     public function show(Request $request, Ticket $ticket)
     {
-        abort_unless($ticket->user_id === $request->user()->id, 403);
+        abort_unless((int) $ticket->user_id === (int) $request->user()->id, 403);
 
         return view('support.show', ['ticket' => $ticket->load('messages.user')]);
     }
 
     public function reply(Request $request, Ticket $ticket)
     {
-        abort_unless($ticket->user_id === $request->user()->id, 403);
+        abort_unless((int) $ticket->user_id === (int) $request->user()->id, 403);
         $data = $request->validate(['message' => ['required', 'string', 'max:8000']]);
 
         $ticket->addMessage($data['message'], 'user', $request->user()->id);
@@ -81,7 +81,7 @@ class SupportController extends Controller
 
     public function close(Request $request, Ticket $ticket)
     {
-        abort_unless($ticket->user_id === $request->user()->id, 403);
+        abort_unless((int) $ticket->user_id === (int) $request->user()->id, 403);
         $ticket->update(['status' => 'closed']);
 
         return back()->with('status', 'Ticket closed.');

@@ -112,7 +112,7 @@ class LinkController extends Controller
 
     private function authorizeLink(Request $request, Link $link): void
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
     }
 
     /** @return array<string, mixed> */

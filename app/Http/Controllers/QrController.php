@@ -53,7 +53,7 @@ class QrController extends Controller
 
     public function edit(Request $request, QrCode $qr)
     {
-        abort_unless($qr->user_id === $request->user()->id, 403);
+        abort_unless((int) $qr->user_id === (int) $request->user()->id, 403);
 
         return view('qr.builder', [
             'qr' => $qr,
@@ -65,7 +65,7 @@ class QrController extends Controller
 
     public function update(Request $request, QrCode $qr)
     {
-        abort_unless($qr->user_id === $request->user()->id, 403);
+        abort_unless((int) $qr->user_id === (int) $request->user()->id, 403);
 
         $this->fill($qr, $this->validateQr($request), $request->user());
         $qr->save();
@@ -75,7 +75,7 @@ class QrController extends Controller
 
     public function destroy(Request $request, QrCode $qr)
     {
-        abort_unless($qr->user_id === $request->user()->id, 403);
+        abort_unless((int) $qr->user_id === (int) $request->user()->id, 403);
         $qr->delete();
 
         return redirect()->route('qr.index')->with('status', 'QR code deleted.');
@@ -85,7 +85,7 @@ class QrController extends Controller
 
     public function show(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         $link->load('domain');
 
         // Open the full builder bound to this link (its existing design, if any).
@@ -119,7 +119,7 @@ class QrController extends Controller
 
     public function destroyTemplate(Request $request, QrTemplate $template)
     {
-        abort_unless($template->user_id === $request->user()->id, 403);
+        abort_unless((int) $template->user_id === (int) $request->user()->id, 403);
         $template->delete();
 
         return response()->json(['ok' => true]);
@@ -186,7 +186,7 @@ class QrController extends Controller
 
     public function render(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         $link->load('domain');
 
         $url = $request->getScheme().'://'.$link->shortUrl();

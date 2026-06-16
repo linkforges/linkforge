@@ -192,6 +192,27 @@ class AnalyticsTest extends TestCase
         $this->actingAs($intruder)->get(route('links.stats.export', $link))->assertForbidden();
     }
 
+    public function test_ownership_check_tolerates_id_type_differences(): void
+    {
+        // On some shared hosts PDO returns ids as numeric strings, so a model's
+        // user_id and the authenticated user's id can be DIFFERENT php types with
+        // the SAME value. A strict (===) owner check then wrongly returns 403 on
+        // every per-item page. The check must compare by value, not type.
+        $owner = User::factory()->create();
+        $link = $this->link($owner);
+
+        // Simulate the host: the link's user_id arrives as the string "1".
+        $link->user_id = (string) $link->user_id;
+        $this->assertNotSame($owner->id, $link->user_id, 'precondition: the ids are different php types');
+
+        $request = \Illuminate\Http\Request::create('/');
+        $request->setUserResolver(fn () => $owner); // $owner->id is an int
+
+        // With a strict === check this aborts 403; the int-cast comparison passes.
+        $response = app(\App\Http\Controllers\AnalyticsController::class)->exportLink($request, $link);
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\StreamedResponse::class, $response);
+    }
+
     public function test_qr_code_has_its_own_analytics_scoped_to_its_link(): void
     {
         $owner = User::factory()->create();

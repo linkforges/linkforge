@@ -75,7 +75,7 @@ class AnalyticsController extends Controller
 
     public function show(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         $link->load('domain');
 
         [$from, $to, $range] = $this->range($request);
@@ -90,7 +90,7 @@ class AnalyticsController extends Controller
     /** Per-item analytics for a single QR code (scoped to its tracked link). */
     public function qrShow(Request $request, QrCode $qr)
     {
-        abort_unless($qr->user_id === $request->user()->id, 403);
+        abort_unless((int) $qr->user_id === (int) $request->user()->id, 403);
         [$from, $to, $range] = $this->range($request);
 
         $scope = $qr->link_id ? fn ($q) => $q->where('link_id', $qr->link_id) : fn ($q) => $q->whereRaw('1 = 0');
@@ -116,7 +116,7 @@ class AnalyticsController extends Controller
     /** Per-item analytics for a single bio page (scoped to its events). */
     public function bioShow(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
         [$from, $to, $range] = $this->range($request);
 
         $bio = app(BioAnalytics::class);
@@ -149,7 +149,7 @@ class AnalyticsController extends Controller
 
     public function exportQr(Request $request, QrCode $qr): StreamedResponse
     {
-        abort_unless($qr->user_id === $request->user()->id, 403);
+        abort_unless((int) $qr->user_id === (int) $request->user()->id, 403);
         [$from, $to] = $this->range($request);
         $scope = $qr->link_id ? fn ($q) => $q->where('link_id', $qr->link_id) : fn ($q) => $q->whereRaw('1 = 0');
 
@@ -158,7 +158,7 @@ class AnalyticsController extends Controller
 
     public function exportBio(Request $request, BioPage $bioPage): StreamedResponse
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
         [$from, $to] = $this->range($request);
         $series = app(BioAnalytics::class)->series(fn ($q) => $q->where('bio_page_id', $bioPage->id), $from, $to);
 
@@ -187,7 +187,7 @@ class AnalyticsController extends Controller
 
     public function exportLink(Request $request, Link $link): StreamedResponse
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         [$from, $to] = $this->range($request);
         $scope = fn ($q) => $q->where('link_id', $link->id);
 

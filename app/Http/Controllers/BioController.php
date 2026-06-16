@@ -41,14 +41,14 @@ class BioController extends Controller
 
     public function edit(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
 
         return view('bio.edit', ['page' => $bioPage->load('blocks')]);
     }
 
     public function update(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
 
         $data = $this->validateBio($request, $bioPage->id);
         $bioPage->update($this->attributes($request, $data, $bioPage));
@@ -59,7 +59,7 @@ class BioController extends Controller
 
     public function destroy(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
         $bioPage->delete();
 
         return redirect()->route('bio.index')->with('status', 'Bio page deleted.');
@@ -274,7 +274,7 @@ class BioController extends Controller
 
     public function leads(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
 
         return view('bio.leads', [
             'page' => $bioPage,
@@ -286,7 +286,7 @@ class BioController extends Controller
     /** Export captured leads as a CSV download. */
     public function exportLeads(Request $request, BioPage $bioPage)
     {
-        abort_unless($bioPage->user_id === $request->user()->id, 403);
+        abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
 
         $type = $request->query('type') === 'messages' ? 'messages' : 'subscribers';
         $filename = "{$bioPage->slug}-{$type}.csv";

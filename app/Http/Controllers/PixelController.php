@@ -31,7 +31,7 @@ class PixelController extends Controller
 
     public function destroy(Request $request, Pixel $pixel)
     {
-        abort_unless($pixel->user_id === $request->user()->id, 403);
+        abort_unless((int) $pixel->user_id === (int) $request->user()->id, 403);
         $pixel->delete();
 
         return back()->with('status', 'Pixel removed.');

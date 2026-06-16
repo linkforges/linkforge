@@ -64,7 +64,7 @@ class UserController extends Controller
         ]);
 
         // Never let an admin lock themselves out by demoting / suspending their own account.
-        $isSelf = $user->id === $request->user()->id;
+        $isSelf = (int) $user->id === (int) $request->user()->id;
 
         $user->fill([
             'name' => $data['name'],
@@ -93,7 +93,7 @@ class UserController extends Controller
     /** Sign in as the user, remembering the admin to return to. */
     public function impersonate(Request $request, User $user)
     {
-        abort_if($user->isAdmin() || $user->id === $request->user()->id, 403);
+        abort_if($user->isAdmin() || (int) $user->id === (int) $request->user()->id, 403);
 
         AuditLog::record('user.impersonate', "Impersonated {$user->email}", $user); // record while still admin
         $request->session()->put('impersonator_id', $request->user()->id);
@@ -115,7 +115,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user)
     {
-        abort_if($user->id === $request->user()->id, 403);
+        abort_if((int) $user->id === (int) $request->user()->id, 403);
 
         AuditLog::record('user.delete', "Deleted {$user->email} and all their content", $user);
 

@@ -110,7 +110,7 @@ class LinkController extends Controller
 
     public function edit(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         $link->load('domain');
 
         return view('links.edit', [
@@ -124,7 +124,7 @@ class LinkController extends Controller
 
     public function update(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
 
         $domain = $link->domain ?: $this->domains->default();
         $data = $this->validateLink($request);
@@ -167,7 +167,7 @@ class LinkController extends Controller
 
     public function destroy(Request $request, Link $link)
     {
-        abort_unless($link->user_id === $request->user()->id, 403);
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
 
         $domainId = $link->domain_id;
         $alias = $link->alias;

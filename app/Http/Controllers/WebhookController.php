@@ -38,7 +38,7 @@ class WebhookController extends Controller
 
     public function destroy(Request $request, Webhook $webhook)
     {
-        abort_unless($webhook->user_id === $request->user()->id, 403);
+        abort_unless((int) $webhook->user_id === (int) $request->user()->id, 403);
         $webhook->delete();
 
         return back()->with('status', 'Webhook removed.');
