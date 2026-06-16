@@ -198,6 +198,27 @@ class UpdaterTest extends TestCase
         $this->assertFileDoesNotExist(storage_path('app/updates/pending.zip'));
     }
 
+    public function test_ajax_upload_returns_json_for_the_progress_bar(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $headers = ['Accept' => 'application/json', 'X-Requested-With' => 'XMLHttpRequest'];
+
+        // Valid package over XHR -> JSON with a redirect target.
+        $zip = $this->makeZip([
+            'version' => '1.1.0', 'requires' => '1.0.0', 'name' => 'Ajax pack', 'notes' => '',
+        ], ['app/Foo.php' => '<?php']);
+        $this->actingAs($admin)
+            ->post(route('admin.updates.upload'), ['package' => new UploadedFile($zip, 'update.zip', 'application/zip', null, true)], $headers)
+            ->assertOk()->assertJsonStructure(['redirect']);
+
+        // Invalid archive over XHR -> 422 JSON with a message the bar can show.
+        $junk = $this->tmpDir('junk').DIRECTORY_SEPARATOR.'bad.zip';
+        file_put_contents($junk, 'nope');
+        $this->actingAs($admin)
+            ->post(route('admin.updates.upload'), ['package' => new UploadedFile($junk, 'bad.zip', 'application/zip', null, true)], $headers)
+            ->assertStatus(422)->assertJsonStructure(['message']);
+    }
+
     public function test_uploading_a_non_update_archive_is_rejected(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

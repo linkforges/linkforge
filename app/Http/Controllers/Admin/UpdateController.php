@@ -33,8 +33,34 @@ class UpdateController extends Controller
             'current' => $updater->currentVersion(),
             'pending' => $pending,
             'issues' => $issues,
+            'maxUpload' => $this->maxUploadBytes(),
             'history' => UpdateLog::with('user')->latest('id')->take(20)->get(),
         ]);
+    }
+
+    /** The effective max upload size PHP allows here (min of upload_max_filesize / post_max_size). */
+    private function maxUploadBytes(): int
+    {
+        $toBytes = function (string $v): int {
+            $v = trim($v);
+            if ($v === '') {
+                return 0;
+            }
+            $n = (int) $v;
+            return match (strtolower(substr($v, -1))) {
+                'g' => $n * 1024 ** 3,
+                'm' => $n * 1024 ** 2,
+                'k' => $n * 1024,
+                default => $n,
+            };
+        };
+
+        $limits = array_filter([
+            $toBytes((string) ini_get('upload_max_filesize')),
+            $toBytes((string) ini_get('post_max_size')), // 0 = unlimited, filtered out
+        ]);
+
+        return $limits ? (int) min($limits) : 0;
     }
 
     public function upload(Request $request, Updater $updater)
@@ -52,7 +78,15 @@ class UpdateController extends Controller
         } catch (\Throwable $e) {
             @unlink($this->pendingPath());
 
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+
             return back()->with('error', $e->getMessage());
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['redirect' => route('admin.updates')]);
         }
 
         return redirect()->route('admin.updates')->with('status', 'Update package uploaded. Review it below, then apply.');
