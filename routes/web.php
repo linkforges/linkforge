@@ -52,8 +52,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/links/{link}/edit', [LinkController::class, 'edit'])->name('links.edit');
     Route::put('/links/{link}', [LinkController::class, 'update'])->name('links.update');
     Route::delete('/links/{link}', [LinkController::class, 'destroy'])->name('links.destroy');
-    Route::get('/links/{link}/stats', [AnalyticsController::class, 'show'])->name('links.stats');
-    Route::get('/links/{link}/stats/export', [AnalyticsController::class, 'exportLink'])->name('links.stats.export');
+    // NB: avoid the URL segment "stats" — cPanel/ModSecurity reserve & 403 it. Route names kept for back-compat.
+    Route::get('/links/{link}/analytics', [AnalyticsController::class, 'show'])->name('links.stats');
+    Route::get('/links/{link}/analytics/export', [AnalyticsController::class, 'exportLink'])->name('links.stats.export');
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
@@ -69,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/qr/templates/{template}', [QrController::class, 'destroyTemplate'])->name('qr.templates.destroy');
     Route::get('/qr/bulk', [QrController::class, 'bulkForm'])->name('qr.bulk');
     Route::post('/qr/bulk', [QrController::class, 'bulkStore'])->name('qr.bulk.store');
-    Route::get('/qr/{qr}/stats', [AnalyticsController::class, 'qrShow'])->name('qr.stats');
-    Route::get('/qr/{qr}/stats/export', [AnalyticsController::class, 'exportQr'])->name('qr.stats.export');
+    Route::get('/qr/{qr}/analytics', [AnalyticsController::class, 'qrShow'])->name('qr.stats');
+    Route::get('/qr/{qr}/analytics/export', [AnalyticsController::class, 'exportQr'])->name('qr.stats.export');
     Route::get('/qr/{qr}/edit', [QrController::class, 'edit'])->name('qr.edit');
     Route::put('/qr/{qr}', [QrController::class, 'update'])->name('qr.update');
     Route::delete('/qr/{qr}', [QrController::class, 'destroy'])->name('qr.destroy');
@@ -86,8 +87,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/bio/upload', [BioController::class, 'upload'])->middleware('throttle:60,1')->name('bio.upload');
     Route::post('/bio/upload-file', [BioController::class, 'uploadFile'])->middleware('throttle:60,1')->name('bio.upload-file');
     Route::get('/bio/{bioPage}/edit', [BioController::class, 'edit'])->name('bio.edit');
-    Route::get('/bio/{bioPage}/stats', [AnalyticsController::class, 'bioShow'])->name('bio.stats');
-    Route::get('/bio/{bioPage}/stats/export', [AnalyticsController::class, 'exportBio'])->name('bio.stats.export');
+    Route::get('/bio/{bioPage}/analytics', [AnalyticsController::class, 'bioShow'])->name('bio.stats');
+    Route::get('/bio/{bioPage}/analytics/export', [AnalyticsController::class, 'exportBio'])->name('bio.stats.export');
     Route::get('/bio/{bioPage}/leads', [BioController::class, 'leads'])->name('bio.leads');
     Route::get('/bio/{bioPage}/leads/export', [BioController::class, 'exportLeads'])->name('bio.leads.export');
     Route::put('/bio/{bioPage}', [BioController::class, 'update'])->name('bio.update');
