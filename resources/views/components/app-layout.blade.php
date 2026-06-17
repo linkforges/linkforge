@@ -79,13 +79,9 @@
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
                         {{ __('Billing') }}
                     </a>
-                    <a href="{{ route('tokens.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('tokens.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is('tokens.*')])>
+                    <a href="{{ route('developer.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('developer.*')||$is('tokens.*')||$is('webhooks.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!($is('developer.*')||$is('tokens.*')||$is('webhooks.*'))])>
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
-                        {{ __('API tokens') }}
-                    </a>
-                    <a href="{{ route('webhooks.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('webhooks.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is('webhooks.*')])>
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
-                        {{ __('Webhooks') }}
+                        {{ __('Developer') }}
                     </a>
                     @php $answeredTickets = auth()->user()?->tickets()->where('status', 'answered')->count() ?? 0; @endphp
                     <a href="{{ route('support.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('support.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is('support.*')])>

@@ -7,14 +7,6 @@ use Illuminate\Http\Request;
 
 class ApiTokenController extends Controller
 {
-    public function index(Request $request)
-    {
-        return view('tokens.index', [
-            'tokens' => $request->user()->tokens()->latest()->get(),
-            'allowed' => app(PlanGate::class)->allows($request->user(), 'api'),
-        ]);
-    }
-
     public function store(Request $request)
     {
         if (! app(PlanGate::class)->allows($request->user(), 'api')) {

@@ -18,6 +18,7 @@ use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BioController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\Install\InstallController;
 use App\Http\Controllers\LinkController;
@@ -103,11 +104,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/billing/{plan}/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
     Route::get('/billing/return/{gateway}', [BillingController::class, 'return'])->name('billing.return');
 
-    Route::get('/api-tokens', [ApiTokenController::class, 'index'])->name('tokens.index');
+    // Developer hub: API tokens + webhooks under one tabbed page.
+    Route::get('/developer', [DeveloperController::class, 'index'])->name('developer.index');
+
+    // API tokens (create/revoke); the standalone index now redirects into the hub.
+    Route::get('/api-tokens', fn () => redirect()->route('developer.index', ['tab' => 'tokens']))->name('tokens.index');
     Route::post('/api-tokens', [ApiTokenController::class, 'store'])->name('tokens.store');
     Route::delete('/api-tokens/{token}', [ApiTokenController::class, 'destroy'])->name('tokens.destroy');
 
-    Route::get('/webhooks', [WebhookController::class, 'index'])->name('webhooks.index');
+    // Webhooks (create/remove); the standalone index now redirects into the hub.
+    Route::get('/webhooks', fn () => redirect()->route('developer.index', ['tab' => 'webhooks']))->name('webhooks.index');
     Route::post('/webhooks', [WebhookController::class, 'store'])->name('webhooks.store');
     Route::delete('/webhooks/{webhook}', [WebhookController::class, 'destroy'])->name('webhooks.destroy');
 

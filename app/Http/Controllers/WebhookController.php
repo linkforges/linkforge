@@ -9,11 +9,6 @@ use Illuminate\Support\Str;
 
 class WebhookController extends Controller
 {
-    public function index(Request $request)
-    {
-        return view('webhooks.index', ['webhooks' => $request->user()->webhooks()->latest()->get()]);
-    }
-
     public function store(Request $request)
     {
         $data = $request->validate([
