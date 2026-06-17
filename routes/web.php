@@ -184,6 +184,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/settings', [SettingController::class, 'index'])->name('settings');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
     Route::post('/settings/geo/update', [SettingController::class, 'updateGeoDatabase'])->name('settings.geo.update');
+    Route::post('/settings/geo/download/start', [SettingController::class, 'geoDownloadStart'])->name('settings.geo.download.start');
+    Route::post('/settings/geo/download/chunk', [SettingController::class, 'geoDownloadChunk'])->name('settings.geo.download.chunk');
+    Route::post('/settings/geo/download/finish', [SettingController::class, 'geoDownloadFinish'])->name('settings.geo.download.finish');
 });
 
 // Public: switch the UI language (guest + authenticated).

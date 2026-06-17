@@ -341,7 +341,11 @@ class SettingController extends Controller
         return $this->done('geo', 'Geo settings saved. Use "Download / update database" to fetch it now.');
     }
 
-    /** Download / refresh the GeoIP database on demand (the "Update now" button). */
+    /**
+     * Download / refresh the GeoIP database on demand — no-JS fallback (the form
+     * posts here when JavaScript is unavailable). The browser-driven path uses the
+     * chunked endpoints below so the large City database survives host timeouts.
+     */
     public function updateGeoDatabase(GeoipUpdater $updater)
     {
         @set_time_limit(0); // the City database can take a minute to download + decompress
@@ -353,6 +357,64 @@ class SettingController extends Controller
             return redirect()->route('admin.settings', ['tab' => 'geo'])->with('status', $message);
         } catch (\Throwable $e) {
             return redirect()->route('admin.settings', ['tab' => 'geo'])->with('error', 'GeoIP update failed: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Begin a chunked GeoIP download (AJAX). Falls back to a one-shot install when
+     * the source has no HTTP Range support (or for MaxMind), reporting that as
+     * {finished:true} so the client just reloads.
+     */
+    public function geoDownloadStart(GeoipUpdater $updater)
+    {
+        @set_time_limit(0);
+
+        try {
+            $provider = (string) Setting::get('geoip_provider', 'dbip');
+            $edition = (string) Setting::get('geoip_edition', 'country');
+
+            $begin = $updater->beginChunkedDownload($provider, $edition);
+            if (empty($begin['chunked'])) {
+                $message = $updater->update($provider, $edition);
+                AuditLog::record('geoip.update', $message);
+
+                return response()->json(['finished' => true, 'message' => $message]);
+            }
+
+            return response()->json([
+                'chunked' => true,
+                'total' => $begin['total'],
+                'received' => $begin['received'] ?? 0,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
+    /** Download the next chunk (AJAX). */
+    public function geoDownloadChunk(GeoipUpdater $updater)
+    {
+        @set_time_limit(0);
+
+        try {
+            return response()->json($updater->pullChunk());
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+
+    /** Decompress + install the completed download (AJAX). */
+    public function geoDownloadFinish(GeoipUpdater $updater)
+    {
+        @set_time_limit(0);
+
+        try {
+            $message = $updater->finishChunkedDownload();
+            AuditLog::record('geoip.update', $message);
+
+            return response()->json(['finished' => true, 'message' => $message]);
+        } catch (\Throwable $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
         }
     }
 

@@ -32,16 +32,89 @@
         </div>
     </dl>
 
-    <form method="POST" action="{{ route('admin.settings.geo.update') }}" class="mt-5"
-          data-confirm="Download the {{ $edition === 'city' ? 'City (large, ~120 MB)' : 'Country' }} database now? This fetches it onto your server." data-confirm-ok="Download">
+    <form id="geo-dl-form" method="POST" action="{{ route('admin.settings.geo.update') }}" class="mt-5"
+          data-start="{{ route('admin.settings.geo.download.start') }}"
+          data-chunk="{{ route('admin.settings.geo.download.chunk') }}"
+          data-finish="{{ route('admin.settings.geo.download.finish') }}">
         @csrf
-        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700">
+        <button type="submit" data-geo-dl-btn class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-60">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
             Download / update database now
         </button>
     </form>
-    <p class="mt-2 text-xs text-slate-400">Save your choices below first, then click download. It runs on this server and refreshes monthly via the scheduler.</p>
+
+    <div data-geo-dl-progress class="mt-4 hidden">
+        <div class="flex items-center justify-between text-xs text-slate-500">
+            <span data-geo-dl-label>Starting...</span>
+            <span data-geo-dl-pct>0%</span>
+        </div>
+        <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+            <div data-geo-dl-bar class="h-full w-0 rounded-full bg-brand-600 transition-all duration-300"></div>
+        </div>
+    </div>
+    <p data-geo-dl-error class="mt-2 hidden text-xs font-medium text-red-600"></p>
+
+    <p class="mt-2 text-xs text-slate-400">Save your choices below first, then click download. The large City database streams in chunks (so it works even on strict shared hosts) and refreshes monthly via the scheduler.</p>
 </div>
+
+<script>
+(function () {
+    var form = document.getElementById('geo-dl-form');
+    if (!form || !window.fetch) return; // no-JS: the form posts normally to the one-shot route
+    var btn = form.querySelector('[data-geo-dl-btn]');
+    var token = form.querySelector('input[name=_token]').value;
+    var box = form.parentNode.querySelector('[data-geo-dl-progress]');
+    var bar = form.parentNode.querySelector('[data-geo-dl-bar]');
+    var pct = form.parentNode.querySelector('[data-geo-dl-pct]');
+    var label = form.parentNode.querySelector('[data-geo-dl-label]');
+    var err = form.parentNode.querySelector('[data-geo-dl-error]');
+
+    function post(url) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+        }).then(function (r) {
+            return r.json().then(function (j) {
+                if (!r.ok || j.error) throw new Error(j.error || ('Request failed (HTTP ' + r.status + ')'));
+                return j;
+            });
+        });
+    }
+    function mb(b) { return (b / 1048576).toFixed(1) + ' MB'; }
+    function setPct(p) { box.classList.remove('hidden'); bar.style.width = p + '%'; pct.textContent = p + '%'; }
+    function fail(m) { err.textContent = m; err.classList.remove('hidden'); label.textContent = 'Failed'; btn.disabled = false; }
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        err.classList.add('hidden');
+        btn.disabled = true;
+        setPct(0);
+        label.textContent = 'Starting...';
+
+        post(form.dataset.start).then(function (j) {
+            if (j.finished) { setPct(100); label.textContent = 'Done'; location.reload(); return; }
+            var total = j.total || 0;
+
+            (function step() {
+                post(form.dataset.chunk).then(function (c) {
+                    total = c.total || total;
+                    var p = total ? Math.min(99, Math.round((c.received / total) * 100)) : 0;
+                    label.textContent = 'Downloading ' + mb(c.received) + ' / ' + mb(total);
+                    setPct(p);
+                    if (c.done) {
+                        label.textContent = 'Installing...';
+                        post(form.dataset.finish)
+                            .then(function () { setPct(100); label.textContent = 'Done'; location.reload(); })
+                            .catch(function (e) { fail(e.message); });
+                    } else {
+                        step();
+                    }
+                }).catch(function (e) { fail(e.message); });
+            })();
+        }).catch(function (e) { fail(e.message); });
+    });
+})();
+</script>
 
 {{-- Settings --}}
 <form method="POST" action="{{ route('admin.settings.update') }}" class="mt-6 space-y-6">

@@ -36,6 +36,9 @@ class GeoipTest extends TestCase
         foreach (glob(storage_path('app/geoip/.download-*')) ?: [] as $f) {
             @unlink($f);
         }
+        foreach (['.chunk-data.part', '.chunk-data.mmdb', '.chunk-state.json'] as $f) {
+            @unlink(storage_path('app/geoip/'.$f));
+        }
     }
 
     public function test_bundled_country_database_resolves_a_country(): void
@@ -64,6 +67,48 @@ class GeoipTest extends TestCase
         $this->assertFileExists(storage_path('app/geoip/geoip.mmdb'));
         $this->assertSame('US', app(GeoResolver::class)->country('8.8.8.8'));
         $this->assertSame('dbip', Setting::get('geoip_provider'));
+    }
+
+    public function test_city_database_downloads_in_resumable_chunks(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Setting::putMany(['geoip_provider' => 'dbip', 'geoip_edition' => 'city']);
+
+        // A real gzip the finish step can decompress; served with HTTP Range support.
+        $gz = gzencode((string) file_get_contents(base_path('database/geoip/dbip-country-lite.mmdb')));
+        Http::fake(function ($request) use ($gz) {
+            if ($request->method() === 'HEAD') {
+                return Http::response('', 200, ['Content-Length' => strlen($gz), 'Accept-Ranges' => 'bytes']);
+            }
+            $range = $request->header('Range')[0] ?? '';
+            if (preg_match('/bytes=(\d+)-(\d+)/', $range, $m)) {
+                return Http::response(substr($gz, (int) $m[1], (int) $m[2] - (int) $m[1] + 1), 206);
+            }
+            return Http::response($gz, 200);
+        });
+
+        $this->actingAs($admin);
+
+        $start = $this->postJson(route('admin.settings.geo.download.start'))->assertOk()->json();
+        $this->assertTrue($start['chunked']);
+        $this->assertSame(strlen($gz), $start['total']);
+
+        $guard = 0;
+        do {
+            $chunk = $this->postJson(route('admin.settings.geo.download.chunk'))->assertOk()->json();
+        } while (empty($chunk['done']) && ++$guard < 100);
+        $this->assertTrue($chunk['done']);
+
+        $this->postJson(route('admin.settings.geo.download.finish'))->assertOk()->assertJson(['finished' => true]);
+
+        $this->assertFileExists(storage_path('app/geoip/geoip.mmdb'));
+        $this->assertSame('US', app(GeoResolver::class)->country('8.8.8.8'));
+    }
+
+    public function test_chunk_endpoints_require_admin(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'user']))
+            ->postJson(route('admin.settings.geo.download.start'))->assertForbidden();
     }
 
     public function test_geo_tab_renders_and_saves_settings(): void
