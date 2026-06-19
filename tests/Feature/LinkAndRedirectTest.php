@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Domain;
 use App\Models\Link;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -64,6 +65,80 @@ class LinkAndRedirectTest extends TestCase
         $link = $user->links()->firstOrFail();
         $this->assertNotEmpty($link->alias);
         $this->assertMatchesRegularExpression('/^[A-Za-z0-9]+$/', $link->alias);
+    }
+
+    private function proUser(): User
+    {
+        return User::factory()->create(['plan_id' => Plan::where('slug', 'pro')->value('id')]);
+    }
+
+    public function test_create_form_offers_verified_custom_domains(): void
+    {
+        $user = $this->proUser();
+        $user->domains()->create(['host' => 'go.brand.test', 'status' => 'active', 'is_default' => false]);
+
+        $this->actingAs($user)->get(route('links.create'))
+            ->assertOk()
+            ->assertSee('name="domain_id"', false)
+            ->assertSee('go.brand.test/');
+    }
+
+    public function test_link_can_be_created_on_a_verified_custom_domain(): void
+    {
+        $user = $this->proUser();
+        $domain = $user->domains()->create(['host' => 'go.brand.test', 'status' => 'active', 'is_default' => false]);
+
+        $this->actingAs($user)->post('/links', [
+            'long_url' => 'https://example.com/page',
+            'alias' => 'promo',
+            'domain_id' => $domain->id,
+        ])->assertRedirect(route('links.index'));
+
+        $link = $user->links()->firstOrFail();
+        $this->assertSame($domain->id, $link->domain_id);
+        $this->assertStringContainsString('go.brand.test/promo', $link->load('domain')->shortUrl());
+    }
+
+    public function test_unverified_or_unowned_domain_falls_back_to_default(): void
+    {
+        $user = $this->proUser();
+        $pending = $user->domains()->create(['host' => 'pending.brand.test', 'status' => 'pending', 'is_default' => false]);
+        $stranger = $this->proUser()->domains()->create(['host' => 'someone.else.test', 'status' => 'active', 'is_default' => false]);
+
+        // A pending (unverified) domain the user owns is not selectable.
+        $this->actingAs($user)->post('/links', ['long_url' => 'https://example.com/a', 'alias' => 'aaa', 'domain_id' => $pending->id]);
+        $this->assertSame($this->defaultDomain()->id, $user->links()->where('alias', 'aaa')->value('domain_id'));
+
+        // Another user's domain is not selectable either.
+        $this->actingAs($user)->post('/links', ['long_url' => 'https://example.com/b', 'alias' => 'bbb', 'domain_id' => $stranger->id]);
+        $this->assertSame($this->defaultDomain()->id, $user->links()->where('alias', 'bbb')->value('domain_id'));
+    }
+
+    public function test_custom_domain_ignored_without_the_plan_feature(): void
+    {
+        // Free user with an (improbably) active domain still cannot publish on it.
+        $user = User::factory()->create();
+        $domain = $user->domains()->create(['host' => 'free.brand.test', 'status' => 'active', 'is_default' => false]);
+
+        $this->actingAs($user)->post('/links', ['long_url' => 'https://example.com', 'alias' => 'ccc', 'domain_id' => $domain->id]);
+
+        $this->assertSame($this->defaultDomain()->id, $user->links()->where('alias', 'ccc')->value('domain_id'));
+        $this->actingAs($user)->get(route('links.create'))->assertDontSee('name="domain_id"', false);
+    }
+
+    public function test_link_domain_can_be_changed_on_edit(): void
+    {
+        $user = $this->proUser();
+        $domain = $user->domains()->create(['host' => 'go.brand.test', 'status' => 'active', 'is_default' => false]);
+        $link = $this->makeLink(['user_id' => $user->id, 'alias' => 'movable']);
+
+        $this->actingAs($user)->put('/links/'.$link->id, [
+            'long_url' => 'https://example.com/dest',
+            'alias' => 'movable',
+            'domain_id' => $domain->id,
+        ])->assertRedirect(route('links.index'));
+
+        $this->assertSame($domain->id, $link->fresh()->domain_id);
     }
 
     public function test_reserved_alias_is_rejected(): void

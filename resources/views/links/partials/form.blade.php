@@ -13,17 +13,31 @@
         @error('long_url') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
     </div>
 
+    @php
+        $domains = $domains ?? collect();
+        $currentDomainId = (int) old('domain_id', $link?->domain_id ?? ($domain->id ?? 0));
+    @endphp
     <div>
         <label for="alias" class="lf-label">Short link</label>
         <div class="flex">
-            <span class="inline-flex items-center rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">{{ $domain->host ?? request()->getHost() }}/</span>
+            @if ($domains->count() > 1)
+                <select name="domain_id" aria-label="Domain"
+                        class="max-w-[12rem] shrink-0 truncate rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 py-2.5 pl-3 pr-8 text-sm text-slate-600 transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/25 focus:outline-none">
+                    @foreach ($domains as $d)
+                        <option value="{{ $d->id }}" @selected($currentDomainId === (int) $d->id)>{{ $d->host }}/</option>
+                    @endforeach
+                </select>
+            @else
+                <span class="inline-flex items-center rounded-l-lg border border-r-0 border-slate-300 bg-slate-50 px-3 text-sm text-slate-500">{{ $domain->host ?? request()->getHost() }}/</span>
+            @endif
             <input id="alias" name="alias" type="text"
                    value="{{ old('alias', $link?->alias ?? '') }}"
                    placeholder="{{ $suggestion ?? 'auto-generated' }}"
                    class="block w-full rounded-r-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/25 focus:outline-none">
         </div>
         @error('alias') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
-        <p class="mt-1.5 text-xs text-slate-400">Leave blank to auto-generate a short code.</p>
+        @error('domain_id') <p class="mt-1.5 text-sm text-red-600">{{ $message }}</p> @enderror
+        <p class="mt-1.5 text-xs text-slate-400">@if ($domains->count() > 1)Pick a domain, then leave the code blank to auto-generate.@else Leave blank to auto-generate a short code.@endif</p>
 
         @if ($aiEnabled ?? false)
             <div class="mt-3" data-ai-alias data-ai-url="{{ route('ai.alias') }}">

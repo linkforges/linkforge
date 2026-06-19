@@ -48,12 +48,15 @@ class LinkController extends Controller
 
     public function create(Request $request)
     {
-        $domain = $this->domains->default();
+        $user = $request->user();
+        $domains = $this->selectableDomains($user);
+        $domain = $domains->first();
 
         return view('links.create', [
             'domain' => $domain,
+            'domains' => $domains,
             'suggestion' => $domain ? $this->aliases->generate($domain->id) : '',
-            'pixels' => $request->user()->pixels()->get(),
+            'pixels' => $user->pixels()->get(),
             'attachedPixelIds' => [],
             'aiEnabled' => app(ClaudeClient::class)->enabled(),
         ]);
@@ -61,10 +64,11 @@ class LinkController extends Controller
 
     public function store(Request $request)
     {
-        $domain = $this->domains->default();
+        $user = $request->user();
+        $domain = $this->selectableDomains($user)->firstWhere('id', (int) $request->input('domain_id'))
+            ?: $this->domains->default();
         abort_unless($domain, 500, 'No default domain configured.');
 
-        $user = $request->user();
         if (! app(PlanGate::class)->canCreate($user, 'max_links')) {
             return back()->withInput()->with('error', "You've reached your plan's link limit. Upgrade to create more.");
         }
@@ -113,9 +117,16 @@ class LinkController extends Controller
         abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
         $link->load('domain');
 
+        // Always offer the link's current domain, even if it is no longer active.
+        $domains = $this->selectableDomains($request->user());
+        if ($link->domain && ! $domains->contains('id', $link->domain->id)) {
+            $domains = $domains->prepend($link->domain);
+        }
+
         return view('links.edit', [
             'link' => $link,
             'domain' => $link->domain,
+            'domains' => $domains,
             'pixels' => $request->user()->pixels()->get(),
             'attachedPixelIds' => $link->pixels()->pluck('pixels.id')->all(),
             'aiEnabled' => app(ClaudeClient::class)->enabled(),
@@ -126,20 +137,26 @@ class LinkController extends Controller
     {
         abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
 
-        $domain = $link->domain ?: $this->domains->default();
+        $oldDomainId = $link->domain_id;
+        $domain = $request->has('domain_id')
+            ? ($this->selectableDomains($request->user())->firstWhere('id', (int) $request->input('domain_id'))
+                ?: ($link->domain ?: $this->domains->default()))
+            : ($link->domain ?: $this->domains->default());
+        abort_unless($domain, 500, 'No default domain configured.');
+
         $data = $this->validateLink($request);
 
         $oldAlias = $link->alias;
-        $alias = trim((string) ($data['alias'] ?? ''));
-        if ($alias !== '' && $alias !== $oldAlias) {
+        $alias = trim((string) ($data['alias'] ?? '')) ?: $oldAlias;
+        // Re-check uniqueness when the alias OR the domain changes.
+        if ($alias !== $oldAlias || $domain->id !== $oldDomainId) {
             if ($error = $this->aliases->validateCustom($alias, $domain->id, $link->id)) {
                 return back()->withInput()->withErrors(['alias' => $error]);
             }
-        } else {
-            $alias = $oldAlias;
         }
 
         $link->fill([
+            'domain_id' => $domain->id,
             'alias' => $alias,
             'long_url' => $data['long_url'],
             'params' => $this->buildParams($data),
@@ -155,14 +172,37 @@ class LinkController extends Controller
         }
 
         $link->save();
+        $link->setRelation('domain', $domain);
         $this->syncRules($request, $link);
         $this->syncPixels($request, $link);
         ScanLink::dispatchSync($link->id);
 
-        Link::forgetCache($domain->id, $oldAlias);
+        Link::forgetCache($oldDomainId, $oldAlias);
         Link::forgetCache($domain->id, $alias);
 
         return redirect()->route('links.index')->with('status', 'Link updated.');
+    }
+
+    /**
+     * Domains a user may publish links on: the system default plus their own
+     * verified (active) custom domains, but only while their plan allows custom
+     * domains. The default is always first.
+     *
+     * @return \Illuminate\Support\Collection<int, \App\Models\Domain>
+     */
+    private function selectableDomains(User $user): \Illuminate\Support\Collection
+    {
+        $domains = collect();
+        if ($default = $this->domains->default()) {
+            $domains->push($default);
+        }
+        if (app(PlanGate::class)->allows($user, 'custom_domains')) {
+            $domains = $domains->concat(
+                $user->domains()->where('is_default', false)->where('status', 'active')->orderBy('host')->get()
+            );
+        }
+
+        return $domains->unique('id')->values();
     }
 
     public function destroy(Request $request, Link $link)
