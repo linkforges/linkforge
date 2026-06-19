@@ -47,7 +47,7 @@
         </div>
         <div>
             <p class="font-semibold text-slate-800">cPanel / shared hosting</p>
-            <p class="mt-1 text-xs text-slate-500">There is no true catch-all without root. Either (a) offer customers branded <span class="font-medium">subdomains of your own domain</span> via a wildcard subdomain (one-time), or (b) add each customer's domain yourself as an Addon domain pointing to the document root below, then run AutoSSL. When LinkForge runs on a subdomain, use an Addon domain with a custom document root, not a plain Alias.</p>
+            <p class="mt-1 text-xs text-slate-500">There is no true catch-all without root. Either (a) offer customers branded <span class="font-medium">subdomains of your own domain</span> via a wildcard subdomain (one-time), or (b) add each customer's domain yourself, then run AutoSSL. If LinkForge runs on your <span class="font-medium">main/primary domain</span>, add it as an <span class="font-medium">Alias</span> (it shares the primary document root automatically). If LinkForge runs on a <span class="font-medium">subdomain</span>, add it as an <span class="font-medium">Addon domain</span> whose document root is the path below.</p>
         </div>
     </div>
 
