@@ -57,15 +57,38 @@ class SaaSTest extends TestCase
         $this->assertDatabaseHas('domains', ['host' => 'go.example.com', 'user_id' => $pro->id, 'status' => 'pending']);
     }
 
-    public function test_custom_domains_page_explains_the_hosting_step(): void
+    public function test_customer_domains_page_shows_clean_dns_only(): void
     {
         $pro = User::factory()->create(['plan_id' => Plan::where('slug', 'pro')->value('id')]);
 
         $this->actingAs($pro)->get(route('domains.index'))
             ->assertOk()
-            ->assertSee('Serve it from this app')      // the hosting step
-            ->assertSee('Document root')               // the docroot to point the alias/addon at
-            ->assertSee(public_path());
+            ->assertSee('CNAME')
+            ->assertSee('linkforge-verify=', false)     // the TXT token
+            // Operator/server internals must NOT leak to the customer dashboard.
+            ->assertDontSee(public_path())
+            ->assertDontSee('Document root')
+            ->assertDontSee('cPanel');
+    }
+
+    public function test_operator_sets_the_custom_domain_target_customers_see(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $pro = User::factory()->create(['plan_id' => Plan::where('slug', 'pro')->value('id')]);
+
+        // Admin Domains tab renders with the operator-only infra guidance.
+        $this->actingAs($admin)->get(route('admin.settings', ['tab' => 'domains']))
+            ->assertOk()->assertSee('CNAME target')->assertSee('CUSTOM-DOMAINS.md');
+
+        // Operator sets the CNAME target; customers are then told to use it.
+        $this->actingAs($admin)->put(route('admin.settings.update'), [
+            'section' => 'domains', 'custom_domain_target' => 'cname.brand.test', 'custom_domain_ip' => '203.0.113.10',
+        ])->assertRedirect(route('admin.settings', ['tab' => 'domains']));
+
+        $this->assertSame('cname.brand.test', \App\Models\Setting::get('custom_domain_target'));
+
+        $this->actingAs($pro)->get(route('domains.index'))
+            ->assertOk()->assertSee('cname.brand.test')->assertSee('203.0.113.10');
     }
 
     public function test_admin_area_requires_admin_role(): void

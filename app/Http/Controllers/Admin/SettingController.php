@@ -24,6 +24,7 @@ class SettingController extends Controller
         'ai' => 'AI',
         'email' => 'Email',
         'geo' => 'Geo',
+        'domains' => 'Domains',
         'seo' => 'SEO',
     ];
 
@@ -69,6 +70,8 @@ class SettingController extends Controller
             'geoProviders' => GeoipUpdater::PROVIDERS,
             'geoEditions' => GeoipUpdater::EDITIONS,
             'geoDetected' => $this->geoDatabasePresent(),
+            'appHost' => parse_url((string) config('app.url'), PHP_URL_HOST) ?: $request->getHost(),
+            'autoServerIp' => $request->server('SERVER_ADDR'),
         ]);
     }
 
@@ -90,6 +93,7 @@ class SettingController extends Controller
             'email' => $this->saveEmail($request),
             'email_template' => $this->saveEmailTemplate($request),
             'geo' => $this->saveGeo($request),
+            'domains' => $this->saveDomains($request),
             'seo' => $this->saveSeo($request),
             default => back()->with('error', 'Unknown settings section.'),
         };
@@ -322,6 +326,21 @@ class SettingController extends Controller
         ]);
 
         return $this->done('seo', 'SEO settings saved.');
+    }
+
+    private function saveDomains(Request $request)
+    {
+        $data = $request->validate([
+            'custom_domain_target' => ['nullable', 'string', 'max:190', 'regex:/^[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/'],
+            'custom_domain_ip' => ['nullable', 'string', 'max:45', 'ip'],
+        ]);
+
+        Setting::putMany([
+            'custom_domain_target' => strtolower((string) ($data['custom_domain_target'] ?? '')),
+            'custom_domain_ip' => (string) ($data['custom_domain_ip'] ?? ''),
+        ]);
+
+        return $this->done('domains', 'Domain settings saved.');
     }
 
     private function saveGeo(Request $request)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Domain;
+use App\Models\Setting;
 use App\Services\Billing\PlanGate;
 use App\Services\Linking\DomainResolver;
 use Illuminate\Http\Request;
@@ -16,14 +17,17 @@ class DomainController extends Controller
     {
         $user = $request->user();
 
+        $appHost = parse_url((string) config('app.url'), PHP_URL_HOST) ?: $request->getHost();
+
         return view('domains.index', [
             'domains' => $user->domains()->latest()->get(),
             'allowed' => $this->gate->allows($user, 'custom_domains'),
             'canAdd' => $this->gate->allows($user, 'custom_domains') && $this->gate->canCreate($user, 'max_domains'),
             'token' => $this->verifyToken($user->id),
-            'appHost' => parse_url((string) config('app.url'), PHP_URL_HOST) ?: $request->getHost(),
-            'serverIp' => $this->serverIp($request),
-            'docRoot' => public_path(),
+            // What customers point their DNS at. Operator-configurable (Admin >
+            // Settings > Domains), falling back to this install's host / IP.
+            'cnameTarget' => Setting::get('custom_domain_target') ?: $appHost,
+            'serverIp' => Setting::get('custom_domain_ip') ?: $this->serverIp($request),
         ]);
     }
 
