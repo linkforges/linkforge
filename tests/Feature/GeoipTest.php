@@ -48,6 +48,76 @@ class GeoipTest extends TestCase
         $this->assertSame('US', app(GeoResolver::class)->country('8.8.8.8'));
     }
 
+    public function test_country_resolves_from_a_city_database(): void
+    {
+        // A City-type .mmdb (DB-IP / GeoLite2 City) answers ->city() but throws
+        // BadMethodCallException on ->country(); the country must be read off the
+        // city record instead, or "Top countries" + the world map stay empty while
+        // cities populate. Regression for exactly that production bug.
+        $cityReader = new class extends \GeoIp2\Database\Reader
+        {
+            public function __construct() {}
+
+            public function city(string $ipAddress): \GeoIp2\Model\City
+            {
+                return new \GeoIp2\Model\City([
+                    'country' => ['iso_code' => 'GB', 'names' => ['en' => 'United Kingdom']],
+                    'city' => ['names' => ['en' => 'London']],
+                    'traits' => ['ip_address' => $ipAddress],
+                ], ['en']);
+            }
+
+            public function country(string $ipAddress): \GeoIp2\Model\Country
+            {
+                throw new \BadMethodCallException('The country method cannot be used to open a GeoIP2-City database');
+            }
+        };
+
+        $geo = $this->withReader($cityReader);
+
+        $this->assertSame('GB', $geo->country('81.2.69.142'));
+        $this->assertSame('London', $geo->city('81.2.69.142'));
+    }
+
+    public function test_country_only_database_still_resolves_country(): void
+    {
+        // A Country-type .mmdb answers ->country() but throws on ->city(); country
+        // must still resolve (via the fallback) and city is simply null.
+        $countryReader = new class extends \GeoIp2\Database\Reader
+        {
+            public function __construct() {}
+
+            public function city(string $ipAddress): \GeoIp2\Model\City
+            {
+                throw new \BadMethodCallException('The city method cannot be used to open a GeoIP2-Country database');
+            }
+
+            public function country(string $ipAddress): \GeoIp2\Model\Country
+            {
+                return new \GeoIp2\Model\Country([
+                    'country' => ['iso_code' => 'US', 'names' => ['en' => 'United States']],
+                    'traits' => ['ip_address' => $ipAddress],
+                ], ['en']);
+            }
+        };
+
+        $geo = $this->withReader($countryReader);
+
+        $this->assertSame('US', $geo->country('8.8.8.8'));
+        $this->assertNull($geo->city('8.8.8.8'));
+    }
+
+    /** Build a GeoResolver wired to a fake mmdb reader (no file on disk). */
+    private function withReader(\GeoIp2\Database\Reader $reader): GeoResolver
+    {
+        $geo = new GeoResolver();
+        $rc = new \ReflectionClass($geo);
+        $rc->getProperty('reader')->setValue($geo, $reader);
+        $rc->getProperty('readerResolved')->setValue($geo, true);
+
+        return $geo;
+    }
+
     public function test_updater_rejects_maxmind_without_a_license_key(): void
     {
         Setting::put('geoip_maxmind_key', '');

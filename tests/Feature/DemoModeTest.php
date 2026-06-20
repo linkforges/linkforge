@@ -39,6 +39,13 @@ class DemoModeTest extends TestCase
         $this->assertGreaterThan(0, $user->links()->count());
         $this->assertGreaterThan(0, $user->campaigns()->count());
         $this->assertGreaterThan(0, $user->pixels()->count());
+
+        // Analytics history is seeded + rolled up (clicks → daily + country/city dimensions).
+        $linkIds = $user->links()->pluck('id');
+        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('clicks')->whereIn('link_id', $linkIds)->count());
+        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_daily')->whereIn('link_id', $linkIds)->sum('clicks'));
+        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'country')->count());
+        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'city')->count());
     }
 
     public function test_one_click_admin_login(): void

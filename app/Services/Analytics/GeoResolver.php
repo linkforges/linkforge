@@ -68,6 +68,16 @@ class GeoResolver
             return null;
         }
 
+        // A City database only answers ->city() — calling ->country() on it throws
+        // BadMethodCallException — while a Country database only answers ->country().
+        // The City record carries the country too, so resolve from it first (this is
+        // what makes "Top countries" + the map work on a City DB), then fall back to
+        // ->country() for country-only databases.
+        $isoCode = $this->cityRecord($ip)?->country->isoCode;
+        if ($isoCode) {
+            return $isoCode;
+        }
+
         try {
             return $reader->country($ip)->country->isoCode;
         } catch (\Throwable $e) {
