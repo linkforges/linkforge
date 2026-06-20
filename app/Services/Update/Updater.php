@@ -153,7 +153,7 @@ class Updater
             'user_id' => $userId,
             'created_at' => now(),
         ]);
-        AuditLog::record('app.update', "Updated to v{$manifest['version']} ({$manifest['name']})");
+        AuditLog::record('app.update', "Updated to v{$manifest['version']}");
         $log[] = "Now on version {$manifest['version']}.";
 
         return $log;

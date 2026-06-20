@@ -33,7 +33,7 @@ class AuditLog extends Model
             'action' => $action,
             'target_type' => $target ? class_basename($target) : null,
             'target_id' => $target?->getKey(),
-            'description' => $description,
+            'description' => $description === null ? null : \Illuminate\Support\Str::limit($description, 2000, ''),
             'created_at' => now(),
         ]);
     }
