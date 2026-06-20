@@ -99,6 +99,46 @@ class InstallerTest extends TestCase
         $this->assertTrue($result['unverified'] ?? false);
     }
 
+    public function test_license_service_verifies_against_the_relay(): void
+    {
+        config(['linkforge.license.relay_url' => 'https://relay.test']);
+        \Illuminate\Support\Facades\Http::fake([
+            'relay.test/verify' => \Illuminate\Support\Facades\Http::response(['valid' => true, 'license' => ['buyer' => 'bob', 'item_id' => '123']], 200),
+        ]);
+
+        $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
+
+        $this->assertTrue($result['valid']);
+        $this->assertFalse($result['unverified'] ?? false);
+        $this->assertSame('bob', $result['license']['buyer'] ?? null);
+    }
+
+    public function test_license_service_hard_fails_on_a_relay_rejection(): void
+    {
+        config(['linkforge.license.relay_url' => 'https://relay.test']);
+        \Illuminate\Support\Facades\Http::fake([
+            'relay.test/verify' => \Illuminate\Support\Facades\Http::response(['valid' => false, 'message' => 'Purchase code not found.'], 422),
+        ]);
+
+        $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
+
+        $this->assertFalse($result['valid']);
+        $this->assertStringContainsString('not found', $result['message']);
+    }
+
+    public function test_license_service_fails_open_on_relay_error(): void
+    {
+        config(['linkforge.license.relay_url' => 'https://relay.test']);
+        \Illuminate\Support\Facades\Http::fake([
+            'relay.test/verify' => \Illuminate\Support\Facades\Http::response('upstream down', 502),
+        ]);
+
+        $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
+
+        $this->assertTrue($result['valid']);
+        $this->assertTrue($result['unverified'] ?? false);
+    }
+
     public function test_license_service_stores_status(): void
     {
         $svc = app(LicenseService::class);

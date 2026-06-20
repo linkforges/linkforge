@@ -22,7 +22,7 @@ return [
 
     // Shipped version. The applied version is tracked in the `app_version` setting
     // and bumped by the in-app updater; this is the floor for a fresh install.
-    'version' => '1.0.16',
+    'version' => '1.0.17',
     'tagline' => env('LF_TAGLINE', 'Forge links that work harder.'),
     'description' => env('LF_DESCRIPTION', 'A premium, AI-native link platform with branded domains, deep analytics, a QR studio and safety scanning, on hosting you own.'),
 
@@ -210,7 +210,10 @@ return [
     |
     */
     'license' => [
-        'relay_url' => env('LF_LICENSE_RELAY', ''),
+        // The author-hosted verification relay (holds the Envato token). Ships pointing at
+        // the author's relay so every copy verifies out of the box; override per-install
+        // with LF_LICENSE_RELAY, or set to '' to disable online verification.
+        'relay_url' => env('LF_LICENSE_RELAY', 'https://license.sangeeth.biz'),
         'item_id' => env('LF_ENVATO_ITEM_ID', ''), // your CodeCanyon item id (optional cross-check)
     ],
 
