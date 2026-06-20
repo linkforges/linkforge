@@ -49,6 +49,7 @@
     <meta property="og:title" content="{{ $page->setting('seo.title') ?: $heading }}">
     @if ($ogImg = $page->setting('seo.image'))<meta property="og:image" content="{{ $ogImg }}">@endif
     @vite(['resources/css/app.css'])
+    @include('partials.favicon')
     <style>
         body { font-family: {!! $font !!}; {!! $bgCss !!} color: {{ $d['textColor'] }}; }
         .bio-btn { {!! $btnCss !!} }

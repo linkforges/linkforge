@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Services\LicenseService;
 use App\Support\Installer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class InstallerTest extends TestCase
@@ -74,8 +75,14 @@ class InstallerTest extends TestCase
 
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'role' => 'admin', 'status' => 'active']);
 
-        // Skip the purchase code (allowed; verification fails open).
+        // A license is now required: an empty code is rejected and install is not sealed.
         $this->post(route('install.license.save'), ['purchase_code' => ''])
+            ->assertSessionHasErrors('purchase_code');
+        $this->assertFalse(Installer::isInstalled());
+
+        // A valid purchase code (verified via the relay) completes the install.
+        Http::fake(['*/verify' => Http::response(['valid' => true, 'license' => ['domain' => 'example.com']])]);
+        $this->post(route('install.license.save'), ['purchase_code' => '8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f'])
             ->assertRedirect(route('install.complete'));
 
         $this->get(route('install.complete'))->assertOk()->assertSee('installed');

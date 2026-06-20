@@ -11,6 +11,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} · {{ config('linkforge.name') }}</title>
     @vite(['resources/css/app.css'])
+    @include('partials.favicon')
 </head>
 <body class="min-h-screen bg-slate-50 text-slate-900">
     <div class="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-10 sm:py-14">

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __('Redirecting') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.favicon')
     @include('partials.theme')
     @foreach ($pixels as $pixel)
         @include('redirect.partials.pixel', ['pixel' => $pixel])

@@ -1,3 +1,4 @@
+@include('partials.favicon')
 {{-- Site SEO + social (Open Graph / Twitter) meta, from the admin SEO settings.
      Site-level defaults; public bio pages render their own per-page OG separately. --}}
 @php

@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ ($title ?? null) ? $title.' · Admin' : 'Admin' }} · {{ config('linkforge.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.favicon')
     @include('partials.theme')
 </head>
 <body class="min-h-screen bg-slate-50">

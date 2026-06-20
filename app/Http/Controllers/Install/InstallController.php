@@ -160,16 +160,20 @@ class InstallController extends Controller
             return redirect()->route('install.account');
         }
 
-        $data = $request->validate(['purchase_code' => ['nullable', 'string', 'max:100']]);
-        $code = trim((string) ($data['purchase_code'] ?? ''));
+        $data = $request->validate(
+            ['purchase_code' => ['required', 'string', 'max:100']],
+            ['purchase_code.required' => 'A valid Envato purchase code is required to install LinkForge.'],
+        );
+        $code = trim($data['purchase_code']);
 
-        if ($code !== '') {
-            $result = $license->verify($code, $request->getHost());
-            if (! $result['valid']) {
-                return back()->withInput()->with('error', $result['message']);
-            }
-            $license->store($code, $result);
+        // A license is mandatory. verify() still fails open on relay/network errors
+        // (so a verification-server outage can't brick installs), but an empty or
+        // malformed code, or a definitive "invalid" from the relay, is rejected.
+        $result = $license->verify($code, $request->getHost());
+        if (! $result['valid']) {
+            return back()->withInput()->with('error', $result['message']);
         }
+        $license->store($code, $result);
 
         return redirect()->route('install.complete');
     }
