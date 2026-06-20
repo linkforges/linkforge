@@ -217,7 +217,10 @@ return [
         'item_id' => env('LF_ENVATO_ITEM_ID', ''), // your CodeCanyon item id (optional cross-check)
     ],
 
-    // Demo mode: read-only public showcase. Destructive + config-changing actions
-    // are blocked, secrets are hidden, and a "this is a demo" banner is shown.
+    // Demo mode: public showcase. Destructive + config-changing actions are blocked,
+    // emails are suppressed, one-click logins are shown and a "this is a demo" banner +
+    // buy CTA appear. Enable on the demo server only (LF_DEMO=true) — never on a real
+    // install. Toggleable from Admin > Settings > General before it locks settings.
     'demo' => env('LF_DEMO', false),
+    'demo_buy_url' => env('LF_DEMO_BUY_URL', 'https://codecanyon.net'),
 ];

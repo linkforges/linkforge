@@ -24,6 +24,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Site-wide gate: registration toggle + maintenance mode (admin-controlled).
         $middleware->appendToGroup('web', \App\Http\Middleware\SiteGate::class);
 
+        // Demo mode: block destructive/config-changing writes (no-op on real installs).
+        $middleware->appendToGroup('web', \App\Http\Middleware\DemoGuard::class);
+
         // Resolve the active UI language per request (user / cookie / default).
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
         // The language preference is non-sensitive and read before the session boots.

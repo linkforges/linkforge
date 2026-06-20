@@ -253,6 +253,10 @@ Route::post('/shorten', [GuestShortenController::class, 'store'])->middleware('t
 // Public: affiliate referral link — records the click, sets the cookie, sends to register.
 Route::get('/ref/{code}', [ReferralController::class, 'track'])->middleware('throttle:30,1')->name('referral.track')->where('code', '[A-Za-z0-9]+');
 
+// Public: one-click demo sign-in (only active when demo mode is on; 404s otherwise).
+Route::get('/demo/login/{role}', [\App\Http\Controllers\DemoController::class, 'login'])
+    ->middleware('throttle:30,1')->name('demo.login')->where('role', 'admin|user');
+
 // Public: blog + help center (content marketing + self-serve support).
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show')->where('slug', '[A-Za-z0-9\-]+');

@@ -23,6 +23,7 @@
     ])
 </head>
 <body class="flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased">
+    @include('partials.demo-chrome')
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:bg-[#0f172a]/80">
         <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-5 sm:px-6">
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5">

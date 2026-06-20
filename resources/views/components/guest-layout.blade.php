@@ -10,6 +10,7 @@
     @include('partials.head-extra')
 </head>
 <body class="relative min-h-screen">
+    @include('partials.demo-chrome')
     <div class="absolute right-4 top-4 z-10">@include('partials.locale-switcher')</div>
     <div class="grid min-h-screen lg:grid-cols-2">
         {{-- Brand showcase --}}

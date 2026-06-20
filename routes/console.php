@@ -20,3 +20,5 @@ Schedule::command('safety:rescan')->hourly()->withoutOverlapping();
 Schedule::command('ai:weekly-insights')->weeklyOn(1, '07:00')->withoutOverlapping();
 // Refresh the GeoIP database monthly (providers publish new data at the start of each month).
 Schedule::command('geoip:update')->monthlyOn(3, '04:00')->withoutOverlapping();
+// Keep the public demo fresh (no-op unless demo mode is on).
+Schedule::command('demo:reset')->hourly()->withoutOverlapping();

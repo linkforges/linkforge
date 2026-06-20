@@ -9,6 +9,7 @@
     @include('partials.theme')
 </head>
 <body class="min-h-screen bg-slate-50">
+    @include('partials.demo-chrome')
     <input type="checkbox" id="lf-drawer" class="peer sr-only">
     <label for="lf-drawer" aria-hidden="true" class="fixed inset-0 z-30 hidden bg-slate-900/40 backdrop-blur-sm peer-checked:block lg:!hidden"></label>
 

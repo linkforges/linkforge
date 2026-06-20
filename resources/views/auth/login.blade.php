@@ -11,6 +11,17 @@
         <div class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>
     @endif
 
+    @if (\App\Support\Demo::enabled())
+        <div class="mb-6 rounded-xl border border-brand-200 bg-brand-50 p-4">
+            <p class="text-sm font-semibold text-brand-800">Live demo — one-click sign in</p>
+            <p class="mt-0.5 text-xs text-brand-700/80">Explore the full app instantly. No password needed.</p>
+            <div class="mt-3 grid grid-cols-2 gap-2">
+                <a href="{{ route('demo.login', 'admin') }}" class="rounded-lg bg-brand-600 px-3 py-2 text-center text-sm font-semibold text-white transition hover:bg-brand-700">Enter as Admin</a>
+                <a href="{{ route('demo.login', 'user') }}" class="rounded-lg border border-brand-300 bg-white px-3 py-2 text-center text-sm font-semibold text-brand-700 transition hover:bg-brand-50">Enter as Customer</a>
+            </div>
+        </div>
+    @endif
+
     @php $socialOn = ! empty(\App\Services\Auth\SocialProviders::enabled()); @endphp
 
     <form method="POST" action="{{ route('login') }}" class="space-y-5">

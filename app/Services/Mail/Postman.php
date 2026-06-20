@@ -21,6 +21,11 @@ class Postman
      */
     public function send(string $event, string|array $to, array $data = []): void
     {
+        // Never send real email from the public demo.
+        if (\App\Support\Demo::enabled()) {
+            return;
+        }
+
         $tpl = EmailTemplate::resolve($event);
         if (! $tpl || ! $tpl['enabled'] || empty($to)) {
             return;

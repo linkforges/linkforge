@@ -48,6 +48,7 @@
     </style>
 </head>
 <body class="bg-slate-50 text-slate-600">
+    @include('partials.demo-chrome')
 
     {{-- ============================ NAV ============================ --}}
     <header class="lf-nav sticky top-0 z-40 border-b border-slate-200/70 backdrop-blur-md">
