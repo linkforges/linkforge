@@ -17,9 +17,11 @@ use App\Http\Controllers\AiController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\BillingController;
+use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\BioController;
 use App\Http\Controllers\BulkLinkController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DomainController;
@@ -71,6 +73,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
     Route::get('/campaigns/{campaign}/analytics', [AnalyticsController::class, 'campaignShow'])->name('campaigns.stats');
     Route::get('/campaigns/{campaign}/analytics/export', [AnalyticsController::class, 'exportCampaign'])->name('campaigns.stats.export');
+
+    Route::get('/affiliate', [AffiliateController::class, 'index'])->name('affiliate.index');
+    Route::post('/affiliate/payout', [AffiliateController::class, 'payout'])->middleware('throttle:6,1')->name('affiliate.payout');
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');
@@ -163,6 +168,9 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/affiliate', [\App\Http\Controllers\Admin\AffiliateController::class, 'index'])->name('affiliate');
+    Route::put('/affiliate/commissions/{commission}', [\App\Http\Controllers\Admin\AffiliateController::class, 'updateCommission'])->name('affiliate.commission');
+    Route::put('/affiliate/payouts/{payout}', [\App\Http\Controllers\Admin\AffiliateController::class, 'updatePayout'])->name('affiliate.payout');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users');
     Route::get('/users/export', [AdminUserController::class, 'export'])->name('users.export');
     Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
@@ -223,6 +231,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 // Public: anonymous link shortening from the landing page (rate-limited).
 Route::post('/shorten', [GuestShortenController::class, 'store'])->middleware('throttle:10,1')->name('guest.shorten');
+
+// Public: affiliate referral link — records the click, sets the cookie, sends to register.
+Route::get('/ref/{code}', [ReferralController::class, 'track'])->middleware('throttle:30,1')->name('referral.track')->where('code', '[A-Za-z0-9]+');
 
 // Public: switch the UI language (guest + authenticated).
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', '[A-Za-z_-]+');

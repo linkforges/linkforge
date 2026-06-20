@@ -26,6 +26,7 @@ class SettingController extends Controller
         'geo' => 'Geo',
         'domains' => 'Domains',
         'seo' => 'SEO',
+        'affiliate' => 'Affiliate',
     ];
 
     public const GATEWAYS = [
@@ -96,6 +97,7 @@ class SettingController extends Controller
             'geo' => $this->saveGeo($request),
             'domains' => $this->saveDomains($request),
             'seo' => $this->saveSeo($request),
+            'affiliate' => $this->saveAffiliate($request),
             default => back()->with('error', 'Unknown settings section.'),
         };
     }
@@ -120,6 +122,27 @@ class SettingController extends Controller
         AuditLog::record('email.template', 'Updated email template: '.EmailEvents::EVENTS[$event]['label']);
 
         return redirect()->route('admin.settings', ['tab' => 'email'])->with('status', EmailEvents::EVENTS[$event]['label'].' email saved.');
+    }
+
+    private function saveAffiliate(Request $request)
+    {
+        $data = $request->validate([
+            'affiliate_commission_type' => ['required', 'in:percent,fixed'],
+            'affiliate_commission_value' => ['required', 'numeric', 'min:0', 'max:100000'],
+            'affiliate_cookie_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'affiliate_min_payout' => ['required', 'numeric', 'min:0', 'max:1000000'],
+        ]);
+
+        Setting::putMany([
+            'affiliate_enabled' => $request->boolean('affiliate_enabled') ? '1' : '0',
+            'affiliate_commission_type' => $data['affiliate_commission_type'],
+            'affiliate_commission_value' => (string) $data['affiliate_commission_value'],
+            'affiliate_cookie_days' => (string) $data['affiliate_cookie_days'],
+            'affiliate_min_payout' => (string) $data['affiliate_min_payout'],
+        ]);
+        AuditLog::record('settings.affiliate', 'Updated affiliate program settings');
+
+        return redirect()->route('admin.settings', ['tab' => 'affiliate'])->with('status', 'Affiliate settings saved.');
     }
 
     private function saveGeneral(Request $request)

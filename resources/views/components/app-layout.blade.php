@@ -87,6 +87,12 @@
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                         {{ __('Monetization') }}
                     </a>
+                    @if (\App\Models\Setting::get('affiliate_enabled', '0') === '1')
+                        <a href="{{ route('affiliate.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('affiliate.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is('affiliate.*')])>
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6"/></svg>
+                            {{ __('Affiliate') }}
+                        </a>
+                    @endif
                     <a href="{{ route('developer.index') }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is('developer.*')||$is('tokens.*')||$is('webhooks.*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!($is('developer.*')||$is('tokens.*')||$is('webhooks.*'))])>
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
                         {{ __('Developer') }}

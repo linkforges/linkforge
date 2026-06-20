@@ -59,6 +59,10 @@ class CreateNewUser implements CreatesNewUsers
             'ai_credits' => (int) ($free?->limit('ai_credits') ?? 0),
         ]);
 
+        // Attribute the signup to a referrer if they arrived via a referral link.
+        app(\App\Services\Affiliate\ReferralService::class)
+            ->attributeSignup($user, request()->cookie('affiliate_ref'));
+
         $postman = app(\App\Services\Mail\Postman::class);
         $postman->send('welcome', $user->email, [
             'name' => $user->name, 'email' => $user->email, 'action_url' => route('dashboard'),

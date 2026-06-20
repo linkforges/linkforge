@@ -48,7 +48,7 @@ class BillingService
         $this->applyPlan($user, $plan, $gateway, $reference);
 
         if ((float) $plan->price > 0) {
-            $user->payments()->create([
+            $payment = $user->payments()->create([
                 'plan_id' => $plan->id,
                 'gateway' => $gateway,
                 'gateway_ref' => $reference,
@@ -56,6 +56,7 @@ class BillingService
                 'currency' => $plan->currency,
                 'status' => 'completed',
             ]);
+            app(\App\Services\Affiliate\ReferralService::class)->commissionForPayment($payment);
         }
     }
 
@@ -87,6 +88,7 @@ class BillingService
         if ($payment->user && $payment->plan) {
             $this->applyPlan($payment->user, $payment->plan, $gateway, $reference);
         }
+        app(\App\Services\Affiliate\ReferralService::class)->commissionForPayment($payment);
 
         return $payment;
     }

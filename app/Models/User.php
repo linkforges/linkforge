@@ -34,6 +34,9 @@ class User extends Authenticatable implements PasskeyUser
         'plan_id',
         'ai_credits',
         'settings',
+        'referral_code',
+        'referred_by',
+        'referral_clicks',
     ];
 
     /**
@@ -113,6 +116,29 @@ class User extends Authenticatable implements PasskeyUser
     public function campaigns(): HasMany
     {
         return $this->hasMany(Campaign::class);
+    }
+
+    /** Users this user has referred. */
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    /** The user who referred this user (if any). */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /** Affiliate commissions this user has earned. */
+    public function commissions(): HasMany
+    {
+        return $this->hasMany(ReferralCommission::class, 'referrer_id');
+    }
+
+    public function payoutRequests(): HasMany
+    {
+        return $this->hasMany(PayoutRequest::class);
     }
 
     public function qrTemplates(): HasMany
