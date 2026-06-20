@@ -83,15 +83,16 @@
         {{-- Upload --}}
         <div class="lf-card p-6">
             <h3 class="mb-1 text-sm font-semibold text-slate-900">{{ $pending ? 'Replace the pending package' : 'Upload an update package' }}</h3>
+            <x-demo-lock>Uploading and applying updates is disabled in the live demo.</x-demo-lock>
             <p class="mb-2 text-xs text-slate-400">Select the update <code class="text-xs">.zip</code> provided with your release. It is inspected on upload, then you review and apply it here.</p>
             @if (! empty($maxUpload))
                 <p class="mb-4 text-xs text-slate-400">Max upload size on this server: <span class="font-medium text-slate-600">{{ number_format($maxUpload / 1048576, 0) }} MB</span>. Update packages are small and fit comfortably.</p>
             @endif
             <form method="POST" action="{{ route('admin.updates.upload') }}" enctype="multipart/form-data" data-update-form class="flex flex-wrap items-center gap-3">
                 @csrf
-                <input type="file" name="package" accept=".zip,application/zip" required
-                       class="block w-full max-w-sm cursor-pointer rounded-lg border border-slate-300 text-sm text-slate-600 file:mr-3 file:cursor-pointer file:border-0 file:bg-slate-100 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200">
-                <button type="submit" data-upload-btn class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">Upload</button>
+                <input type="file" name="package" accept=".zip,application/zip" required @disabled(\App\Support\Demo::enabled())
+                       class="block w-full max-w-sm cursor-pointer rounded-lg border border-slate-300 text-sm text-slate-600 file:mr-3 file:cursor-pointer file:border-0 file:bg-slate-100 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" data-upload-btn @disabled(\App\Support\Demo::enabled()) class="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50">Upload</button>
             </form>
 
             {{-- Upload progress (shown while the package transfers) --}}

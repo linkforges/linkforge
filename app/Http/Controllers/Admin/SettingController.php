@@ -52,12 +52,19 @@ class SettingController extends Controller
 
     public function index(Request $request)
     {
-        $tab = array_key_exists($request->query('tab'), self::TABS) ? $request->query('tab') : 'general';
+        // In demo mode, hide tabs that expose secrets / server internals (keys, SMTP,
+        // server IP, document root). Forcing $tab to an allowed key also prevents the
+        // view from including a hidden section's partial via ?tab=.
+        $tabs = self::TABS;
+        if (\App\Support\Demo::enabled()) {
+            $tabs = array_intersect_key($tabs, array_flip(\App\Support\Demo::SETTINGS_TABS));
+        }
+        $tab = array_key_exists($request->query('tab'), $tabs) ? $request->query('tab') : array_key_first($tabs);
         $s = Setting::allCached();
 
         return view('admin.settings.index', [
             'tab' => $tab,
-            'tabs' => self::TABS,
+            'tabs' => $tabs,
             's' => $s,
             'secretsSet' => collect(self::SECRETS)->mapWithKeys(fn ($k) => [$k => ! empty($s[$k])])->all(),
             'presets' => ThemePalette::PRESETS,

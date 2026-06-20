@@ -16,15 +16,21 @@ class DemoGuard
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Demo::enabled()
-            && ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true)
-            && Demo::blocks($request->route()?->getName())) {
+        if (Demo::enabled() && ! in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true)) {
+            $name = $request->route()?->getName();
 
-            $message = 'This action is disabled in the live demo.';
+            // Cosmetic settings (theme/appearance, SEO) stay editable even though
+            // admin.settings is otherwise blocked.
+            $allowedSettings = $name === 'admin.settings.update'
+                && in_array((string) $request->input('section'), Demo::SAFE_SETTINGS, true);
 
-            return $request->expectsJson()
-                ? response()->json(['message' => $message], 403)
-                : back()->with('error', $message);
+            if (! $allowedSettings && Demo::blocks($name)) {
+                $message = 'This action is disabled in the live demo.';
+
+                return $request->expectsJson()
+                    ? response()->json(['message' => $message], 403)
+                    : back()->with('error', $message);
+            }
         }
 
         return $next($request);

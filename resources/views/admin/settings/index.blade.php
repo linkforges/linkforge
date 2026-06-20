@@ -1,7 +1,7 @@
 <x-admin-layout title="Settings">
     <x-slot:header>Settings</x-slot:header>
 
-    <x-demo-lock>Settings are read-only in the live demo.</x-demo-lock>
+    <x-demo-lock>Live demo: you can try the theme picker (Appearance) and SEO. Settings that hold secrets or server details are hidden, and others are read-only.</x-demo-lock>
 
     @if (session('status'))<div class="mb-5 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-700">{{ session('status') }}</div>@endif
     @if (session('error'))<div class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>@endif

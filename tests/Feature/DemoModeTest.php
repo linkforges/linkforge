@@ -71,6 +71,51 @@ class DemoModeTest extends TestCase
         $this->assertNotSame('HACKED', Setting::get('site_name'));
     }
 
+    public function test_demo_allows_appearance_theme_change(): void
+    {
+        $this->artisan('demo:reset', ['--force' => true]);
+        $this->enableDemo();
+        $admin = User::where('email', Demo::ADMIN_EMAIL)->firstOrFail();
+
+        $preset = array_key_first(\App\Support\ThemePalette::PRESETS);
+        $font = array_values(\App\Support\ThemePalette::FONTS)[0];
+
+        $this->actingAs($admin)->put(route('admin.settings.update'), [
+            'section' => 'appearance', 'theme_preset' => $preset, 'theme_font' => $font, 'theme_scheme' => 'dark',
+        ])->assertRedirect();
+
+        // Saved (not blocked): theme_scheme changed from the default.
+        $this->assertSame('dark', Setting::get('theme_scheme'));
+    }
+
+    public function test_demo_hides_secret_and_infra_settings_tabs(): void
+    {
+        $this->artisan('demo:reset', ['--force' => true]);
+        $this->enableDemo();
+        $admin = User::where('email', Demo::ADMIN_EMAIL)->firstOrFail();
+
+        // Appearance stays available.
+        $this->actingAs($admin)->get(route('admin.settings', ['tab' => 'appearance']))
+            ->assertOk()->assertSee('theme_preset', false);
+
+        // Forcing a hidden tab via ?tab= must not render its secret/infra partial.
+        $this->actingAs($admin)->get(route('admin.settings', ['tab' => 'billing']))
+            ->assertOk()->assertDontSee('Stripe', false);
+        $this->actingAs($admin)->get(route('admin.settings', ['tab' => 'domains']))
+            ->assertOk()->assertDontSee('document root', false);
+        $this->actingAs($admin)->get(route('admin.settings', ['tab' => 'email']))
+            ->assertOk()->assertDontSee('SMTP', false);
+    }
+
+    public function test_demo_blocks_updater_upload(): void
+    {
+        $this->artisan('demo:reset', ['--force' => true]);
+        $this->enableDemo();
+        $admin = User::where('email', Demo::ADMIN_EMAIL)->firstOrFail();
+
+        $this->actingAs($admin)->post(route('admin.updates.upload'))->assertSessionHas('error');
+    }
+
     public function test_demo_allows_real_features_like_creating_links(): void
     {
         $this->artisan('demo:reset', ['--force' => true]);
