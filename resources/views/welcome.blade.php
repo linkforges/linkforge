@@ -61,6 +61,8 @@
                 <a href="#analytics" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900">Analytics</a>
                 <a href="#features" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900">Features</a>
                 <a href="#own" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900">Self-hosted</a>
+                <a href="{{ route('blog.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900">Blog</a>
+                <a href="{{ route('help.index') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-slate-900">Help</a>
             </nav>
 
             <div class="flex items-center gap-1.5">
@@ -446,6 +448,10 @@
                 <x-application-logo size="h-7 w-7" />
                 <span class="text-sm font-semibold text-slate-900">{{ config('linkforge.name') }}</span>
             </div>
+            <nav class="flex items-center gap-5 text-sm text-slate-500">
+                <a href="{{ route('blog.index') }}" class="hover:text-slate-800">Blog</a>
+                <a href="{{ route('help.index') }}" class="hover:text-slate-800">Help</a>
+            </nav>
             <p class="text-xs text-slate-400">&copy; {{ date('Y') }} {{ config('linkforge.name') }}. Built to be owned.</p>
         </div>
     </footer>

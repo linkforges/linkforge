@@ -1,17 +1,21 @@
 {{-- Site SEO + social (Open Graph / Twitter) meta, from the admin SEO settings.
      Site-level defaults; public bio pages render their own per-page OG separately. --}}
 @php
+    // Per-page overrides ($ogTitle / $ogDescription / $ogImage / $metaDescription /
+    // $ogType) may be passed in (e.g. blog posts, help articles); otherwise fall
+    // back to the admin SEO settings, then to config defaults.
     $lfSiteName = config('linkforge.name');
-    $lfMetaDesc = \App\Models\Setting::get('seo_meta_description') ?: config('linkforge.description');
-    $lfOgTitle = \App\Models\Setting::get('seo_og_title') ?: trim($lfSiteName.' · '.config('linkforge.tagline'), ' ·');
-    $lfOgDesc = \App\Models\Setting::get('seo_og_description') ?: $lfMetaDesc;
-    $lfOgImage = (string) \App\Models\Setting::get('seo_og_image');
+    $lfMetaDesc = ($metaDescription ?? null) ?: (\App\Models\Setting::get('seo_meta_description') ?: config('linkforge.description'));
+    $lfOgTitle = ($ogTitle ?? null) ?: (\App\Models\Setting::get('seo_og_title') ?: trim($lfSiteName.' · '.config('linkforge.tagline'), ' ·'));
+    $lfOgDesc = ($ogDescription ?? null) ?: (\App\Models\Setting::get('seo_og_description') ?: $lfMetaDesc);
+    $lfOgImage = (string) (($ogImage ?? null) ?: \App\Models\Setting::get('seo_og_image'));
     $lfOgImage = $lfOgImage !== '' ? (\Illuminate\Support\Str::startsWith($lfOgImage, 'http') ? $lfOgImage : asset($lfOgImage)) : null;
+    $lfOgType = ($ogType ?? null) ?: 'website';
     $lfTwitter = (string) \App\Models\Setting::get('seo_twitter_handle');
 @endphp
 <meta name="description" content="{{ $lfMetaDesc }}">
 
-<meta property="og:type" content="website">
+<meta property="og:type" content="{{ $lfOgType }}">
 <meta property="og:site_name" content="{{ $lfSiteName }}">
 <meta property="og:title" content="{{ $lfOgTitle }}">
 <meta property="og:description" content="{{ $lfOgDesc }}">

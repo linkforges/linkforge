@@ -32,6 +32,8 @@
                     ['admin.affiliate', 'Affiliate', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M19 8v6M22 11h-6'],
                     ['admin.ads', 'Advertisement', 'm3 11 18-5v12L3 14v-3zM11.6 16.8a3 3 0 1 1-5.8-1.6'],
                     ['admin.moderation', 'Content', 'M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM8 7h8M8 11h8M8 15h5'],
+                    ['admin.blog.index', 'Blog', 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5z', null, 'admin.blog.'],
+                    ['admin.help.index', 'Help center', 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01', null, 'admin.help.'],
                     ['admin.tickets', 'Support', 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z', $openTickets],
                     ['admin.reports', 'Abuse reports', 'M4 22V4a2 2 0 0 1 2-2h12l-2 5 2 5H6'],
                     ['admin.audit', 'Audit log', 'M9 11l3 3 8-8M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11'],
@@ -41,8 +43,8 @@
                 ];
             @endphp
             @foreach ($items as $item)
-                @php [$route, $label, $path, $badge] = array_pad($item, 4, null); @endphp
-                <a href="{{ route($route) }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is($route.'*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is($route.'*')])>
+                @php [$route, $label, $path, $badge, $activePrefix] = array_pad($item, 5, null); $activePrefix = $activePrefix ?? $route; @endphp
+                <a href="{{ route($route) }}" @class(['group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition','bg-brand-50 text-brand-700'=>$is($activePrefix.'*'),'text-slate-600 hover:bg-slate-100 hover:text-slate-900'=>!$is($activePrefix.'*')])>
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{ $path }}"/></svg>
                     {{ $label }}
                     @if ($badge)<span class="ml-auto rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white">{{ $badge }}</span>@endif

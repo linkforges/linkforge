@@ -19,8 +19,10 @@ use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\BioController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BulkLinkController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\HelpController;
 use App\Http\Controllers\ReferralController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeveloperController;
@@ -171,6 +173,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/affiliate', [\App\Http\Controllers\Admin\AffiliateController::class, 'index'])->name('affiliate');
     Route::put('/affiliate/commissions/{commission}', [\App\Http\Controllers\Admin\AffiliateController::class, 'updateCommission'])->name('affiliate.commission');
     Route::put('/affiliate/payouts/{payout}', [\App\Http\Controllers\Admin\AffiliateController::class, 'updatePayout'])->name('affiliate.payout');
+
+    Route::get('/blog', [\App\Http\Controllers\Admin\PostController::class, 'index'])->name('blog.index');
+    Route::get('/blog/create', [\App\Http\Controllers\Admin\PostController::class, 'create'])->name('blog.create');
+    Route::post('/blog', [\App\Http\Controllers\Admin\PostController::class, 'store'])->name('blog.store');
+    Route::get('/blog/{post}/edit', [\App\Http\Controllers\Admin\PostController::class, 'edit'])->name('blog.edit');
+    Route::put('/blog/{post}', [\App\Http\Controllers\Admin\PostController::class, 'update'])->name('blog.update');
+    Route::delete('/blog/{post}', [\App\Http\Controllers\Admin\PostController::class, 'destroy'])->name('blog.destroy');
+
+    Route::get('/help', [\App\Http\Controllers\Admin\HelpArticleController::class, 'index'])->name('help.index');
+    Route::get('/help/create', [\App\Http\Controllers\Admin\HelpArticleController::class, 'create'])->name('help.create');
+    Route::post('/help', [\App\Http\Controllers\Admin\HelpArticleController::class, 'store'])->name('help.store');
+    Route::get('/help/{article}/edit', [\App\Http\Controllers\Admin\HelpArticleController::class, 'edit'])->name('help.edit');
+    Route::put('/help/{article}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'update'])->name('help.update');
+    Route::delete('/help/{article}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'destroy'])->name('help.destroy');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users');
     Route::get('/users/export', [AdminUserController::class, 'export'])->name('users.export');
     Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
@@ -234,6 +250,12 @@ Route::post('/shorten', [GuestShortenController::class, 'store'])->middleware('t
 
 // Public: affiliate referral link — records the click, sets the cookie, sends to register.
 Route::get('/ref/{code}', [ReferralController::class, 'track'])->middleware('throttle:30,1')->name('referral.track')->where('code', '[A-Za-z0-9]+');
+
+// Public: blog + help center (content marketing + self-serve support).
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show')->where('slug', '[A-Za-z0-9\-]+');
+Route::get('/help', [HelpController::class, 'index'])->name('help.index');
+Route::get('/help/{slug}', [HelpController::class, 'show'])->name('help.show')->where('slug', '[A-Za-z0-9\-]+');
 
 // Public: switch the UI language (guest + authenticated).
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', '[A-Za-z_-]+');
