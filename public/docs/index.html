@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkForge - Documentation</title>
+<meta name="description" content="Installation, configuration and usage guide for LinkForge - the premium, AI-native, self-hosted URL shortener.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="layout">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </span>
+      <span>
+        <span class="sidebar__title">LinkForge</span><br>
+        <span class="sidebar__sub">Documentation</span>
+      </span>
+    </div>
+
+    <div class="sidebar__search">
+      <input type="search" id="navSearch" placeholder="Search the docs…" aria-label="Search documentation" autocomplete="off">
+    </div>
+
+    <nav class="nav" id="nav">
+      <p class="nav__empty" id="navEmpty">No matching topics.</p>
+
+      <div class="nav__group">
+        <button class="nav__grouptitle">Getting started <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#toc">Table of contents</a>
+          <a href="#intro">Introduction</a>
+          <a href="#included">What's included</a>
+          <a href="#requirements">Server requirements</a>
+          <a href="#quickstart">Quick start (10 min)</a>
+        </div>
+      </div>
+
+      <div class="nav__group">
+        <button class="nav__grouptitle">Installation <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#install-cpanel">cPanel / shared hosting</a>
+          <a href="#install-wizard">The setup wizard</a>
+          <a href="#install-vps">VPS / generic server</a>
+          <a href="#install-cron">Cron / scheduler</a>
+          <a href="#install-checklist">Post-install checklist</a>
+          <a href="#install-license">License &amp; purchase code</a>
+        </div>
+      </div>
+
+      <div class="nav__group">
+        <button class="nav__grouptitle">Configuration <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#cfg-overview">Settings overview</a>
+          <a href="#cfg-general">General &amp; access</a>
+          <a href="#cfg-appearance">Appearance / branding</a>
+          <a href="#cfg-email">Email (SMTP)</a>
+          <a href="#cfg-payments">Payment gateways</a>
+          <a href="#cfg-plans">Plans &amp; pricing</a>
+          <a href="#cfg-social">Social login</a>
+          <a href="#cfg-ai">AI assistant</a>
+          <a href="#cfg-safety">Safety &amp; abuse</a>
+          <a href="#cfg-geo">Geo / GeoIP</a>
+          <a href="#cfg-seo">SEO &amp; sharing</a>
+          <a href="#cfg-affiliate">Affiliate program</a>
+          <a href="#cfg-domains">Custom domains (operator)</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Using LinkForge <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#use-dashboard">Dashboard tour</a>
+          <a href="#use-links">Creating short links</a>
+          <a href="#use-bulk">Bulk create &amp; import</a>
+          <a href="#use-campaigns">Campaigns</a>
+          <a href="#use-qr">QR Code studio</a>
+          <a href="#use-bio">Link-in-bio pages</a>
+          <a href="#use-pixels">Retargeting pixels</a>
+          <a href="#use-domains">Connect a domain</a>
+          <a href="#use-analytics">Analytics</a>
+          <a href="#use-monetization">Monetization</a>
+          <a href="#use-ai">AI assist</a>
+          <a href="#use-billing">Billing &amp; plans</a>
+          <a href="#use-affiliate">Affiliate / referrals</a>
+          <a href="#use-account">Account &amp; security</a>
+          <a href="#use-support">Support tickets</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Admin guide <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#admin-dashboard">Admin dashboard</a>
+          <a href="#admin-users">Managing users</a>
+          <a href="#admin-billing">Billing &amp; subscriptions</a>
+          <a href="#admin-moderation">Content moderation</a>
+          <a href="#admin-reports">Abuse reports</a>
+          <a href="#admin-tickets">Support tickets</a>
+          <a href="#admin-ads">Advertisements</a>
+          <a href="#admin-affiliate">Affiliate management</a>
+          <a href="#admin-cms">Blog &amp; Help Center</a>
+          <a href="#admin-audit">Audit log</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Localization <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#lang">Languages &amp; translations</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Developer / API <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#api">REST API reference</a>
+          <a href="#webhooks">Webhooks</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Maintenance <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#update">Updating LinkForge</a>
+          <a href="#backups">Backups</a>
+          <a href="#troubleshooting">Troubleshooting</a>
+          <a href="#faq">FAQ</a>
+        </div>
+      </div>
+
+      <div class="nav__group collapsed">
+        <button class="nav__grouptitle">Reference <svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav__links">
+          <a href="#credits">Sources &amp; credits</a>
+          <a href="#changelog">Changelog</a>
+          <a href="#support">Support &amp; contact</a>
+        </div>
+      </div>
+    </nav>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <!-- ============================= MAIN ============================= -->
+  <div class="main">
+    <div class="topbar">
+      <button class="iconbtn" id="navToggle" aria-label="Toggle menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+      <strong>LinkForge Docs</strong>
+      <button class="iconbtn" id="themeToggleMobile" style="margin-left:auto" aria-label="Toggle theme" onclick="document.getElementById('themeToggle').click()">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+    </div>
+
+    <button class="iconbtn theme-toggle" id="themeToggle" aria-label="Toggle light/dark theme">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+
+    <main class="content">
+
+      <!-- ============ HERO ============ -->
+      <div class="hero">
+        <span class="pill">Version 1.0 · Self-hosted</span>
+        <h1>LinkForge Documentation</h1>
+        <p>Everything you need to install, configure and run your own premium, AI-native link platform - branded short links, QR codes, link-in-bio pages, deep analytics and safety scanning, on hosting you own.</p>
+      </div>
+
+      <p class="lead">New here? Start with <a href="#requirements">Server requirements</a>, then follow the <a href="#install-cpanel">cPanel install guide</a> - most sites are live in about 10 minutes. Already installed? Jump to <a href="#cfg-overview">Configuration</a> to set up email, payments and integrations.</p>
+
+      <div class="callout callout--tip">
+        <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1h6c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
+        <div><strong>How to use this guide.</strong> Use the <strong>table of contents</strong> below or the sidebar to jump between topics, or the search box at the top of the sidebar to find anything fast. Code boxes have a <strong>Copy</strong> button, and you can switch between light and dark with the toggle in the top-right corner. This guide is available both as offline files in your download and live inside your install at <code>/docs</code> (linked from the admin header).</div>
+      </div>
+
+      <!-- ============ TABLE OF CONTENTS ============ -->
+      <section class="block" id="toc">
+        <p class="sec-kicker">Overview</p>
+        <h2 class="sec"><a class="anchor-h" href="#toc">Table of contents</a></h2>
+        <p>The guide is organised into nine chapters, from a first install through to the developer API. Pick a chapter to dive in, or use a quick link below for the most common tasks.</p>
+
+        <div class="toc-grid">
+          <a class="toc-card" href="#intro"><span class="toc-card__num">01</span><span class="toc-card__body"><strong>Getting started</strong><span>Introduction, what's included, server requirements and a 10-minute quick start.</span></span></a>
+          <a class="toc-card" href="#install-cpanel"><span class="toc-card__num">02</span><span class="toc-card__body"><strong>Installation</strong><span>cPanel and VPS installs, the setup wizard, the cron job and the post-install checklist.</span></span></a>
+          <a class="toc-card" href="#cfg-overview"><span class="toc-card__num">03</span><span class="toc-card__body"><strong>Configuration</strong><span>Every Settings tab - email, payments, social login, AI, safety, geo, SEO, affiliate and domains.</span></span></a>
+          <a class="toc-card" href="#use-dashboard"><span class="toc-card__num">04</span><span class="toc-card__body"><strong>Using LinkForge</strong><span>The customer guide: links, bulk import, campaigns, QR codes, bio pages, analytics and billing.</span></span></a>
+          <a class="toc-card" href="#admin-dashboard"><span class="toc-card__num">05</span><span class="toc-card__body"><strong>Admin guide</strong><span>Run the platform: users, billing, moderation, abuse reports, ads, affiliates and the audit log.</span></span></a>
+          <a class="toc-card" href="#lang"><span class="toc-card__num">06</span><span class="toc-card__body"><strong>Localization</strong><span>Translate the interface and manage the languages your install offers.</span></span></a>
+          <a class="toc-card" href="#api"><span class="toc-card__num">07</span><span class="toc-card__body"><strong>Developer / API</strong><span>The REST API reference (<code>/api/v1</code>) and outbound webhooks for your own integrations.</span></span></a>
+          <a class="toc-card" href="#update"><span class="toc-card__num">08</span><span class="toc-card__body"><strong>Maintenance</strong><span>Updating LinkForge, backups, troubleshooting and a frequently-asked-questions list.</span></span></a>
+          <a class="toc-card" href="#credits"><span class="toc-card__num">09</span><span class="toc-card__body"><strong>Reference</strong><span>Open-source credits, the changelog and how to reach support.</span></span></a>
+        </div>
+
+        <h3>Quick navigation</h3>
+        <div class="quicklinks">
+          <a href="#install-cpanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Install on cPanel</a>
+          <a href="#cfg-payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Set up payments</a>
+          <a href="#use-links"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Create a short link</a>
+          <a href="#use-domains"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>Connect a domain</a>
+          <a href="#api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 16-4-4 4-4M16 8l4 4-4 4M14 4l-4 16"/></svg>REST API</a>
+          <a href="#update"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>Update LinkForge</a>
+          <a href="#troubleshooting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>Troubleshooting</a>
+          <a href="#faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>FAQ</a>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 1 · GETTING STARTED
+           =================================================================== -->
+
+      <section class="block" id="intro">
+        <p class="sec-kicker">Getting started</p>
+        <h2 class="sec"><a class="anchor-h" href="#intro">Introduction</a></h2>
+        <p><strong>LinkForge</strong> is a complete, self-hosted link-management platform you install on your own hosting. It does everything a modern link business needs - and it's yours: no per-click fees, no monthly platform charges, full source access, and your data stays on your server.</p>
+
+        <p>You can run LinkForge two ways, often at the same time:</p>
+        <ul>
+          <li><strong>For yourself / your team</strong> - shorten and brand links, generate QR codes, build link-in-bio pages, and track every click.</li>
+          <li><strong>As a paid service (SaaS)</strong> - let customers sign up, choose a plan, connect their own domains, and pay you through Stripe, PayPal or crypto. LinkForge handles registration, plans, billing, limits and invoicing.</li>
+        </ul>
+
+        <h3>What you can do with it</h3>
+        <div class="cards">
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><h4>Branded short links</h4><p>Custom domains, custom aliases, passwords, expiry, click limits, UTM builder and A/B rotation.</p></div>
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v.01M17 21h.01M21 17h.01"/></svg></div><h4>QR Code studio</h4><p>Styled, scannable QR codes for links, Wi-Fi, vCards and more - with logos, colors and saved templates.</p></div>
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div><h4>Link-in-bio pages</h4><p>Mobile-first profile pages with link blocks, themes, lead capture, vCard download and gates.</p></div>
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-5"/></svg></div><h4>Deep analytics</h4><p>Clicks over time, country &amp; city map, devices, browsers, referrers - with CSV export.</p></div>
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.8L18.7 9l-4.8 1.9L12 15.7 10.1 10.9 5.3 9l4.8-1.2z"/></svg></div><h4>AI assistant <span class="badge badge--optional">optional</span></h4><p>Suggests link aliases and answers plain-English questions about your traffic. Powered by Claude or any OpenRouter model.</p></div>
+          <div class="card"><div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h4>Safety scanning</h4><p>Blocklists, disposable-email blocking, Cloudflare Turnstile, URLhaus, VirusTotal and Google Web Risk.</p></div>
+        </div>
+
+        <h3>How LinkForge is built</h3>
+        <p>LinkForge is a standard <strong>Laravel 12 / PHP</strong> application backed by <strong>MySQL or MariaDB</strong>. It is designed to run comfortably on ordinary <strong>cPanel shared hosting</strong> - no command line, no Docker and no background daemons are required. The full source code is included and unencoded, so a developer can read and extend it freely.</p>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Two roles are referenced throughout this guide. The <strong>operator</strong> (you) buys, installs and runs the platform and is the <em>admin</em>. Your <strong>customers</strong> sign up and use the dashboard. The <a href="#cfg-overview">Configuration</a> and <a href="#admin-dashboard">Admin</a> chapters are for you; the <a href="#use-dashboard">Using LinkForge</a> chapter describes what your customers see.</div>
+        </div>
+      </section>
+
+      <section class="block" id="included">
+        <h2 class="sec"><a class="anchor-h" href="#included">What's included in your download</a></h2>
+        <p>Your CodeCanyon download contains everything needed to go live:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Item</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><span class="path">linkforge-v1.0.x.zip</span></td><td>The complete application, ready to upload to your host. Includes the <span class="path">vendor/</span> folder and pre-compiled assets, so <strong>no Composer or build step is needed</strong>.</td></tr>
+            <tr><td><span class="path">public/docs/</span></td><td>This complete documentation. Open <span class="path">public/docs/index.html</span> in any browser offline, or visit <code>/docs</code> on your live site (also linked from the admin header). It covers installation, every setting, the customer and admin guides, the API and more, so it is the single place to look.</td></tr>
+            <tr><td><span class="path">.env.example</span></td><td>A starter environment file. The installer creates your real <span class="path">.env</span> for you, so you normally never edit this by hand.</td></tr>
+            <tr><td><span class="path">THIRD_PARTY_LICENSES.md</span></td><td>Required attribution and license notices for the bundled open-source components and data (see <a href="#credits">Sources &amp; credits</a>). Keep this file in your install.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>The single zip is all you upload. The browser-based installer takes care of the database, your <span class="path">.env</span> file, the admin account and everything else - see <a href="#install-wizard">The setup wizard</a>.</div>
+        </div>
+      </section>
+
+      <section class="block" id="requirements">
+        <h2 class="sec"><a class="anchor-h" href="#requirements">Server requirements</a></h2>
+        <p>LinkForge runs on virtually any modern PHP host, including budget cPanel shared hosting. You need:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Requirement</th><th>Minimum</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>PHP</strong></td><td>8.2, 8.3 or 8.4</td><td>Set this in cPanel → <em>Select PHP Version</em>.</td></tr>
+            <tr><td><strong>Database</strong></td><td>MySQL 5.7+ or MariaDB 10.3+</td><td>One empty database with a user that has all privileges.</td></tr>
+            <tr><td><strong>Web server</strong></td><td>Apache or LiteSpeed (cPanel), or Nginx (VPS)</td><td><code>mod_rewrite</code> must be on - it is by default on cPanel.</td></tr>
+            <tr><td><strong>PHP extensions</strong></td><td colspan="2"><code>pdo_mysql</code>, <code>mbstring</code>, <code>openssl</code>, <code>tokenizer</code>, <code>ctype</code>, <code>json</code>, <code>fileinfo</code>, <code>curl</code>, <code>gd</code>, <code>zip</code>, <code>xml</code>, <code>bcmath</code> - all standard on cPanel.</td></tr>
+            <tr><td><strong>HTTPS</strong></td><td>Recommended</td><td>Free with cPanel AutoSSL or Let's Encrypt. Needed for secure cookies, passkeys and gateway webhooks.</td></tr>
+            <tr><td><strong>Cron</strong></td><td>One entry, every minute</td><td>Powers analytics rollups, scheduled jobs and cleanup - see <a href="#install-cron">Cron / scheduler</a>.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Not sure whether your host qualifies? Don't worry - the installer's <strong>first screen checks every requirement for you</strong> and shows a green / red list, so you'll know immediately.</div>
+        </div>
+      </section>
+
+      <section class="block" id="quickstart">
+        <h2 class="sec"><a class="anchor-h" href="#quickstart">Quick start (about 10 minutes)</a></h2>
+        <p>The short version for those who just want to get going. Each step links to full detail below.</p>
+        <ol class="steps">
+          <li><strong>Create a database</strong> in cPanel → <em>MySQL Databases</em>, plus a user with all privileges. <a href="#install-cpanel">Details →</a></li>
+          <li><strong>Set PHP to 8.2+</strong> in cPanel → <em>Select PHP Version</em>.</li>
+          <li><strong>Upload &amp; extract</strong> the LinkForge zip into your domain or subdomain folder. <a href="#install-cpanel">Details →</a></li>
+          <li><strong>Open your domain</strong> in a browser - the installer starts automatically. Follow the five steps. <a href="#install-wizard">Details →</a></li>
+          <li><strong>Add the cron job</strong> so analytics and scheduled tasks run. <a href="#install-cron">Details →</a></li>
+          <li><strong>Sign in</strong> and configure email, branding and (for a SaaS) payments under <em>Admin → Settings</em>. <a href="#cfg-overview">Details →</a></li>
+        </ol>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg></span>
+          <div>That's the whole happy path. If anything looks off during install, the <a href="#troubleshooting">Troubleshooting</a> section covers the common causes (blank page, database errors, missing styles) and their fixes.</div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 2 · INSTALLATION
+           =================================================================== -->
+
+      <section class="block" id="install-cpanel">
+        <p class="sec-kicker">Installation</p>
+        <h2 class="sec"><a class="anchor-h" href="#install-cpanel">Installing on cPanel / shared hosting</a></h2>
+        <p>This is the most common setup and needs <strong>no SSH or Composer access</strong> - everything happens in cPanel and your browser. Estimated time: <strong>10 minutes</strong>.</p>
+
+        <h3>Step 1 - Create the database</h3>
+        <ol class="steps">
+          <li><strong>Open MySQL® Databases</strong> in cPanel.</li>
+          <li><strong>Create a database</strong> - under <em>Create New Database</em> enter a name like <code>linkforge</code> and click <em>Create Database</em>. cPanel prefixes it, so the full name becomes something like <code>youruser_linkforge</code>.</li>
+          <li><strong>Create a user</strong> - under <em>MySQL Users → Add New User</em>, add a user with a strong password.</li>
+          <li><strong>Grant access</strong> - under <em>Add User To Database</em>, select the user and database, click <em>Add</em>, then tick <strong>ALL PRIVILEGES</strong> and save.</li>
+          <li><strong>Write these down</strong> - you'll enter them in the installer:
+            <div class="tablewrap" style="margin-top:8px"><table><tbody>
+              <tr><td>Database name</td><td><code>youruser_linkforge</code></td></tr>
+              <tr><td>Database user</td><td><code>youruser_linkforge</code></td></tr>
+              <tr><td>Database password</td><td><em>the password you set</em></td></tr>
+              <tr><td>Database host</td><td><code>localhost</code> (or <code>127.0.0.1</code>)</td></tr>
+            </tbody></table></div>
+          </li>
+        </ol>
+
+        <h3>Step 2 - Set the PHP version</h3>
+        <p>Open <em>Select PHP Version</em> (sometimes called <em>MultiPHP Manager</em>) and set the domain or account to <strong>PHP 8.2 or newer</strong>. In the <em>Extensions</em> tab, confirm the extensions in <a href="#requirements">Server requirements</a> are ticked - most are on by default.</p>
+
+        <h3>Step 3 - Choose where it lives</h3>
+        <p>LinkForge can run on your main domain (e.g. <code>yourbrand.com</code>, folder <span class="path">public_html</span>) or a subdomain (e.g. <code>links.yourbrand.com</code>). Both work - pick whichever you prefer.</p>
+
+        <h3>Step 4 - Upload &amp; extract</h3>
+        <ol class="steps">
+          <li><strong>Open File Manager</strong> and go to your site's folder (<span class="path">public_html</span> for the main domain, or the subdomain's folder).</li>
+          <li><strong>Upload</strong> the LinkForge zip.</li>
+          <li><strong>Extract it.</strong> Right-click the zip → <em>Extract</em>. You should now see <span class="path">app/</span>, <span class="path">public/</span>, <span class="path">vendor/</span>, <span class="path">artisan</span> and <span class="path">.htaccess</span> directly in that folder. If extraction created an extra wrapper folder, move the files up one level.</li>
+        </ol>
+
+        <h4>Then pick one - both are fully supported</h4>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>
+            <p style="margin-top:0"><strong>Option A - Point the document root at <code>public/</code> (most secure, recommended).</strong> In cPanel → <em>Domains</em>, set the domain's <em>Document Root</em> to the <span class="path">public</span> folder (e.g. <span class="path">…/public_html/public</span>). Done.</p>
+            <p style="margin-bottom:0"><strong>Option B - Leave the document root as-is (no change needed).</strong> The bundled root <span class="path">.htaccess</span> automatically serves the app from <span class="path">public/</span> and blocks direct access to <span class="path">.env</span>, <span class="path">app/</span>, <span class="path">vendor/</span> and friends. This is the "extract and go" path. Both options keep your source and <span class="path">.env</span> unreachable from the web.</p>
+          </div>
+        </div>
+
+        <h3>Step 5 - Set folder permissions</h3>
+        <p>In File Manager, make sure these are writable (right-click → <em>Change Permissions</em> → <code>755</code>). On most cPanel hosts they already are, and the installer's first screen flags anything that isn't.</p>
+        <ul>
+          <li><span class="path">storage/</span> (and everything inside it)</li>
+          <li><span class="path">bootstrap/cache/</span></li>
+          <li><span class="path">public/uploads/</span> (for avatars and bio uploads)</li>
+        </ul>
+        <p>Now open your domain in a browser and continue with <a href="#install-wizard">The setup wizard →</a></p>
+      </section>
+
+      <section class="block" id="install-wizard">
+        <h2 class="sec"><a class="anchor-h" href="#install-wizard">The setup wizard, step by step</a></h2>
+        <p>The first time you visit your domain after uploading, LinkForge launches a friendly five-step installer in your browser. You never touch a config file by hand.</p>
+
+        <h3>1 · Requirements</h3>
+        <p>A green / red checklist of PHP version, extensions and folder permissions. When everything is green, click <strong>Continue</strong>. If something is red, fix it (usually the PHP version or a folder permission) and refresh.</p>
+        <figure id="shot-install-requirements"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">01</span></span><div class="shot__cap">Installer - the Requirements check, showing PHP, extensions and writable folders.</div></div></figure>
+
+        <h3>2 · Database &amp; site</h3>
+        <p>Enter your <strong>site name</strong>, your <strong>site URL</strong> (e.g. <code>https://links.yourbrand.com</code>), and the four database details you wrote down in Step 1. Click <strong>Test &amp; continue</strong> - LinkForge verifies the connection before moving on, then runs the database setup automatically.</p>
+        <figure id="shot-install-database"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">02</span></span><div class="shot__cap">Installer - Database &amp; site details, with the live connection test.</div></div></figure>
+
+        <h3>3 · Admin account</h3>
+        <p>Create your owner login - name, email and password. This is your admin account; you'll use it to sign in and manage everything.</p>
+        <figure id="shot-install-admin"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">03</span></span><div class="shot__cap">Installer - creating the administrator account.</div></div></figure>
+
+        <h3>4 · License</h3>
+        <p>Enter your <strong>CodeCanyon purchase code</strong> to complete the install. A valid code is <strong>required</strong> - there is no skip - so have it ready before you start. See <a href="#install-license">License &amp; purchase code</a> for where to find the code and how verification works.</p>
+        <figure id="shot-install-license"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">04</span></span><div class="shot__cap">Installer - entering the Envato purchase code.</div></div></figure>
+
+        <h3>5 · Done</h3>
+        <p>The installer seals itself (so it can't be run again) and hands you a <strong>Sign in</strong> button. Log in with the admin account you just created - you'll land on your new dashboard.</p>
+        <figure id="shot-install-complete"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">05</span></span><div class="shot__cap">Installer - the completion screen with the exact cron command for your server.</div></div></figure>
+        <div class="callout callout--warn">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>The final screen shows the <strong>exact cron command for your server</strong> (with the correct PHP and project paths). Copy it now - you'll need it in the next section. The <span class="path">/install</span> wizard is locked automatically once setup completes and cannot be re-run unless you delete <span class="path">storage/installed</span>.</div>
+        </div>
+      </section>
+
+      <section class="block" id="install-vps">
+        <h2 class="sec"><a class="anchor-h" href="#install-vps">Installing on a VPS / generic server</a></h2>
+        <p>If you have root access (DigitalOcean, Linode, AWS, etc.), point your web server's document root at LinkForge's <span class="path">public/</span> folder and run the same browser installer. Two sample virtual hosts:</p>
+
+        <span class="code-label">Nginx - /etc/nginx/sites-available/linkforge</span>
+        <div class="codeblock"><pre><code>server {
+    listen 80;
+    server_name links.yourbrand.com;
+    root /var/www/linkforge/public;   # LinkForge public/ folder
+
+    index index.php;
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+    }
+}</code></pre></div>
+
+        <span class="code-label">Apache - a vhost / .conf file</span>
+        <div class="codeblock"><pre><code>&lt;VirtualHost *:80&gt;
+    ServerName links.yourbrand.com
+    DocumentRoot /var/www/linkforge/public
+    &lt;Directory /var/www/linkforge/public&gt;
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</code></pre></div>
+
+        <h3>Permissions</h3>
+        <p>Make <span class="path">storage/</span> and <span class="path">bootstrap/cache/</span> writable by the web-server user:</p>
+        <div class="codeblock"><pre><code>cd /var/www/linkforge
+sudo chown -R www-data:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
+        <p>Then issue a TLS certificate (e.g. <code>certbot --nginx</code>), open your domain, and complete <a href="#install-wizard">the setup wizard</a> as normal.</p>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>On a VPS you can also offer customers their own branded domains automatically with a catch-all virtual host - see <a href="#cfg-domains">Custom domains (operator)</a>.</div>
+        </div>
+      </section>
+
+      <section class="block" id="install-cron">
+        <h2 class="sec"><a class="anchor-h" href="#install-cron">Cron / scheduler setup</a></h2>
+        <p>LinkForge uses a once-a-minute scheduler to roll up analytics, deliver webhooks, send queued emails and clean up expired data. <strong>Add this one cron entry and you're set</strong> - it's the only background task LinkForge needs.</p>
+        <p>In cPanel → <em>Cron Jobs</em>, add a job that runs <strong>every minute</strong>:</p>
+        <div class="codeblock"><pre><code>* * * * * /usr/local/bin/php /home/youruser/linkforge/artisan schedule:run >/dev/null 2>&1</code></pre></div>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Adjust the <strong>PHP binary path</strong> and the <strong>project path</strong> to match your host. The installer's final screen shows the exact <span class="path">artisan</span> path for your server - copy it from there. On a VPS the binary is usually just <code>php</code>.</div>
+        </div>
+        <div class="callout callout--warn">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>Without the cron job the app still works, but <strong>analytics charts won't populate</strong> and queued emails won't send. If your dashboards stay empty, this is almost always the cause.</div>
+        </div>
+      </section>
+
+      <section class="block" id="install-checklist">
+        <h2 class="sec"><a class="anchor-h" href="#install-checklist">Post-install checklist</a></h2>
+        <p>Once you can sign in, run through these to get production-ready:</p>
+        <ul>
+          <li>✅ <strong>Cron job added</strong> (previous section) - confirm analytics populate after a few clicks.</li>
+          <li>✅ <strong>HTTPS active</strong> - run AutoSSL / certbot so your site is served over <code>https://</code>.</li>
+          <li>✅ <strong>Email configured</strong> - set SMTP under <a href="#cfg-email">Admin → Settings → Email</a> and send a test, so password resets and notifications work.</li>
+          <li>✅ <strong>Branding</strong> - upload your logo and pick a theme under <a href="#cfg-appearance">Appearance</a>.</li>
+          <li>✅ <strong>Payments</strong> (SaaS only) - connect a gateway under <a href="#cfg-payments">Billing</a> and review your <a href="#cfg-plans">plans</a>.</li>
+          <li>✅ <strong>Purchase code</strong> - entered during install (it is required), so your copy is registered for updates and support.</li>
+          <li>✅ <strong>Backups</strong> - set up a routine database + files backup (see <a href="#backups">Backups</a>).</li>
+        </ul>
+      </section>
+
+      <section class="block" id="install-license">
+        <h2 class="sec"><a class="anchor-h" href="#install-license">License &amp; purchase code</a></h2>
+        <p>LinkForge is sold under the standard Envato / CodeCanyon license. During install you <strong>must</strong> enter your <strong>purchase code</strong> to register your copy and finish setup. It is required, and there is no skip, so have it ready before you begin.</p>
+        <h3>Where to find your purchase code</h3>
+        <ol class="steps">
+          <li>Sign in to <a href="https://codecanyon.net" target="_blank" rel="noopener">CodeCanyon</a> and open <strong>Downloads</strong> from your account menu.</li>
+          <li>Find LinkForge and click <strong>Download → License certificate &amp; purchase code</strong> (PDF or text).</li>
+          <li>Copy the <strong>Item Purchase Code</strong> (a long code like <code>1a2b3c4d-…</code>) and paste it into the installer's License step.</li>
+        </ol>
+        <h3>How verification works</h3>
+        <p>When you submit the code, the installer verifies it against Envato through a small verification service and then completes setup. A valid code is required to finish: an empty, malformed, or genuinely invalid code is rejected with an error so you can correct it.</p>
+        <p>Verification <strong>fails open for outages only</strong>. If the verification service itself is temporarily unreachable, a network error will not block your install, and once installed your site keeps running normally with no ongoing license checks that could ever lock you out.</p>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>A purchase code is required to install; there is no skip. One regular license covers one running site, so for a second site buy an additional license. Moving a site to a new domain is fine: enter the same code when you reinstall. Questions? Reach us through your CodeCanyon item's support tab.</div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 3 · CONFIGURATION & INTEGRATIONS
+           =================================================================== -->
+
+      <section class="block" id="cfg-overview">
+        <p class="sec-kicker">Configuration</p>
+        <h2 class="sec"><a class="anchor-h" href="#cfg-overview">Settings overview</a></h2>
+        <p>Almost everything is configured from one place - <strong>Admin → Settings</strong> - using ordinary forms. There is no need to edit files; changes are saved to the database and applied instantly. Settings are grouped into tabs across the top:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Tab</th><th>What you set</th></tr></thead>
+          <tbody>
+            <tr><td><a href="#cfg-general">General</a></td><td>Site name, registrations, guest shortening, maintenance mode.</td></tr>
+            <tr><td><a href="#cfg-appearance">Appearance</a></td><td>Logo, color theme, font, default light/dark scheme.</td></tr>
+            <tr><td><a href="#cfg-social">Social login</a></td><td>Google / GitHub / Facebook sign-in.</td></tr>
+            <tr><td><a href="#cfg-safety">Safety</a></td><td>Blocklists, threat feeds, Turnstile CAPTCHA.</td></tr>
+            <tr><td><a href="#cfg-payments">Billing</a></td><td>Payment gateway and currency.</td></tr>
+            <tr><td><a href="#cfg-ai">AI</a></td><td>AI provider, model and credit costs.</td></tr>
+            <tr><td><a href="#cfg-email">Email</a></td><td>SMTP server and notification templates.</td></tr>
+            <tr><td><a href="#cfg-geo">Geo</a></td><td>GeoIP database for country / city analytics.</td></tr>
+            <tr><td><a href="#cfg-domains">Domains</a></td><td>What customers point their domains at.</td></tr>
+            <tr><td><a href="#cfg-seo">SEO</a></td><td>Meta description, share image, analytics IDs.</td></tr>
+            <tr><td><a href="#cfg-affiliate">Affiliate</a></td><td>Referral program and commissions.</td></tr>
+          </tbody>
+        </table></div>
+        <figure id="shot-settings"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">06</span></span><div class="shot__cap">Admin → Settings, showing the tabbed configuration screens.</div></div></figure>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Secret values (API keys, passwords) are stored <strong>encrypted</strong> and are never shown back to you in full once saved - you'll see a masked placeholder. Leave a secret field blank to keep the existing value.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-general">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-general">General &amp; access</a></h2>
+        <ul>
+          <li><strong>Site name, tagline &amp; description</strong> - used across the marketing page, emails and as your default SEO text.</li>
+          <li><strong>Allow new registrations</strong> - turn customer sign-ups on or off. Turn this off if LinkForge is just for you or your team.</li>
+          <li><strong>Allow guests to shorten</strong> - lets anonymous visitors shorten a link straight from your homepage (a great lead magnet for a SaaS).</li>
+          <li><strong>Maintenance mode</strong> - show a friendly notice and pause public access while you make changes. Admins can still sign in.</li>
+        </ul>
+      </section>
+
+      <section class="block" id="cfg-appearance">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-appearance">Appearance &amp; white-label branding</a></h2>
+        <p>Make LinkForge yours. Nothing here requires touching code or rebuilding assets.</p>
+        <ul>
+          <li><strong>Logo</strong> - upload a PNG, SVG, JPG or WebP (max 2&nbsp;MB). It appears in the header, login and emails. Tick <em>Remove</em> to clear it and fall back to the text logo.</li>
+          <li><strong>Color theme</strong> - choose a built-in preset: <em>Forge</em> (emerald + amber), <em>Sapphire</em> (blue + sky), <em>Sunset</em> (amber + rose) or <em>Graphite</em> (slate + teal). The whole UI re-colors instantly.</li>
+          <li><strong>Default color scheme</strong> - <em>Light</em>, <em>Dark</em> or <em>System</em> (follows the visitor's device). Each visitor can still override it with the header toggle.</li>
+          <li><strong>Font</strong> - pick from the bundled, self-hosted font families.</li>
+        </ul>
+        <figure id="shot-appearance"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">07</span></span><div class="shot__cap">Appearance settings - logo upload, theme presets and color scheme.</div></div></figure>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Full white-labelling (removing all "LinkForge" branding for your customers) is available on plans with the <em>White label</em> feature enabled - see <a href="#cfg-plans">Plans &amp; pricing</a>.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-email">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-email">Email (SMTP)</a></h2>
+        <p>Email powers password resets, verification, billing receipts and notifications. Configure an SMTP server so messages actually deliver. Any provider works - Mailgun, SendGrid, Amazon SES, Postmark, Brevo, or your host's own SMTP.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Field</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>SMTP host</td><td><code>smtp.mailgun.org</code></td></tr>
+            <tr><td>Port</td><td><code>587</code> (STARTTLS) or <code>465</code> (SSL)</td></tr>
+            <tr><td>Encryption</td><td><code>tls</code> for 587, <code>ssl</code> for 465</td></tr>
+            <tr><td>Username / Password</td><td>From your email provider</td></tr>
+            <tr><td>From address / name</td><td><code>hello@yourbrand.com</code> · <code>YourBrand</code></td></tr>
+          </tbody>
+        </table></div>
+        <h3>Notification templates</h3>
+        <p>Lower on the same tab you can enable/disable each transactional email (welcome, password reset, payment receipt, and more) and edit its <strong>subject and body</strong>. Templates support placeholders like <code>{{ name }}</code> that are filled in automatically.</p>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Always send yourself a test after configuring SMTP. If mail doesn't arrive, double-check the port/encryption pairing (587↔tls, 465↔ssl) and that your <em>From address</em> is on a domain your provider is allowed to send for (SPF/DKIM).</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-payments">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-payments">Payment gateways</a></h2>
+        <p>Only needed if you charge customers. On the <strong>Billing</strong> tab, choose your <strong>gateway</strong> and <strong>currency</strong>. LinkForge supports five options out of the box; pick one.</p>
+        <figure id="shot-billing-settings"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">08</span></span><div class="shot__cap">Billing settings - selecting a gateway reveals only that gateway's fields.</div></div></figure>
+
+        <h3>Offline / manual</h3>
+        <p>The default. Plan changes apply immediately with no online payment - perfect for bank transfer, invoicing, a private install, or testing. No keys needed.</p>
+
+        <h3>Stripe (cards)</h3>
+        <ol class="steps">
+          <li>In your <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener">Stripe Dashboard → Developers → API keys</a>, copy the <strong>Publishable key</strong> and <strong>Secret key</strong>.</li>
+          <li>Paste them into the Stripe fields and save.</li>
+          <li>Copy the <strong>Webhook URL</strong> LinkForge displays, then in <a href="https://dashboard.stripe.com/webhooks" target="_blank" rel="noopener">Stripe → Webhooks</a> add an endpoint with that URL. Copy the resulting <strong>Signing secret</strong> back into LinkForge.</li>
+        </ol>
+
+        <h3>PayPal</h3>
+        <ol class="steps">
+          <li>In the <a href="https://developer.paypal.com/dashboard/applications" target="_blank" rel="noopener">PayPal Developer Dashboard</a>, create an app and copy its <strong>Client ID</strong> and <strong>Secret</strong>.</li>
+          <li>Paste them in, set <strong>Mode</strong> to <em>live</em> (or <em>sandbox</em> for testing), and save.</li>
+        </ol>
+
+        <h3>CoinPayments (multi-crypto)</h3>
+        <p>Accept BTC, ETH and many other coins. From your CoinPayments account enter the <strong>Merchant ID</strong>, <strong>Public/Private keys</strong>, an <strong>IPN secret</strong>, and your preferred <strong>receive currency</strong>. Paste the displayed <strong>IPN URL</strong> into CoinPayments' IPN settings.</p>
+
+        <h3>Crypto.com Pay</h3>
+        <p>Enter your <strong>Secret key</strong> and a <strong>Webhook secret</strong> from your Crypto.com Pay merchant dashboard, then register the displayed <strong>Webhook URL</strong> there.</p>
+
+        <div class="callout callout--warn">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>The <strong>webhook / IPN URL is essential</strong> for online gateways - it's how the payment provider tells LinkForge a payment succeeded so the customer's plan activates. If subscriptions stay <em>pending</em> after payment, the webhook isn't reaching your site (check the URL and that your site is on HTTPS).</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-plans">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-plans">Plans &amp; pricing</a></h2>
+        <p>Plans define what customers get and what they pay. Manage them under <strong>Admin → Plans</strong>. Four plans are seeded by default; edit, delete or add your own.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Plan</th><th>Price</th><th>Links</th><th>Domains</th><th>QR</th><th>Bio</th><th>AI credits</th><th>Key features</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge badge--free">Free</span></td><td>$0</td><td>25</td><td>0</td><td>5</td><td>1</td><td>10</td><td>-</td></tr>
+            <tr><td><span class="badge badge--starter">Starter</span></td><td>$9/mo</td><td>1,000</td><td>1</td><td>50</td><td>3</td><td>150</td><td>Custom domains, API, ad-free</td></tr>
+            <tr><td><span class="badge badge--pro">Pro</span></td><td>$29/mo</td><td>10,000</td><td>5</td><td>1,000</td><td>25</td><td>1,500</td><td>+ Retargeting, deep links</td></tr>
+            <tr><td><span class="badge badge--biz">Business</span></td><td>$99/mo</td><td>Unlimited</td><td>25</td><td>Unlimited</td><td>Unlimited</td><td>15,000</td><td>+ White-label</td></tr>
+          </tbody>
+        </table></div>
+        <h3>What you can configure per plan</h3>
+        <ul>
+          <li><strong>Price &amp; interval</strong> - free, monthly, yearly or one-time lifetime.</li>
+          <li><strong>Limits</strong> - max links, monthly clicks, custom domains, QR codes, bio pages and AI credits. Leave a limit blank for <em>unlimited</em>.</li>
+          <li><strong>Feature flags</strong> - toggle <em>Custom domains</em>, <em>Retargeting pixels</em>, <em>API access</em>, <em>Deep links</em>, <em>White-label</em> and <em>Ad-free</em>.</li>
+        </ul>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Feature flags directly control what your customers see. For example, the <a href="#api">REST API</a> only works on plans with <em>API access</em> enabled, and <a href="#use-pixels">retargeting pixels</a> require the <em>Retargeting</em> flag.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-social">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-social">Social login</a></h2>
+        <p>Let users sign in with <strong>Google</strong>, <strong>GitHub</strong> or <strong>Facebook</strong>. Each provider is optional and off by default - when off, its button is hidden and its routes return 404. Configure them on the <strong>Social login</strong> tab.</p>
+        <p>For every provider the flow is the same:</p>
+        <ol class="steps">
+          <li><strong>Create an OAuth app</strong> at the provider (links below) and copy its <em>Client ID</em> and <em>Client secret</em>.</li>
+          <li><strong>Set the redirect / callback URL</strong> at the provider to the value LinkForge shows you on the tab (it looks like <code>https://yoursite.com/auth/google/callback</code>).</li>
+          <li><strong>Paste the ID and secret</strong> into LinkForge, tick <em>Enable</em>, and save.</li>
+        </ol>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Provider</th><th>Where to create the app</th></tr></thead>
+          <tbody>
+            <tr><td>Google</td><td><a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console → Credentials</a> → OAuth client ID (Web application)</td></tr>
+            <tr><td>GitHub</td><td><a href="https://github.com/settings/developers" target="_blank" rel="noopener">GitHub → Developer settings → OAuth Apps</a></td></tr>
+            <tr><td>Facebook</td><td><a href="https://developers.facebook.com/apps" target="_blank" rel="noopener">Meta for Developers → My Apps</a> → Facebook Login</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>The redirect URL must match <strong>exactly</strong> (including <code>https://</code> and no trailing slash), or the provider will reject the sign-in. Facebook additionally requires your app to pass their review before it works for the public.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-ai">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-ai">AI assistant <span class="badge badge--optional">optional</span></a></h2>
+        <p>LinkForge's AI features - <a href="#use-ai">alias suggestions and "ask your links"</a> - are completely optional. With <strong>no API key set, every AI surface is hidden</strong> and the app behaves exactly as before. You (the operator) own the AI spend, so you choose the provider and model.</p>
+        <h3>Choose a provider</h3>
+        <ul>
+          <li><strong>Anthropic (Claude)</strong> - paste an API key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> and pick a model (defaults to the most capable; switch to a smaller model to cut cost).</li>
+          <li><strong>OpenRouter</strong> - one key for many models. Paste a key from <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai</a> and enter a model slug (e.g. <code>anthropic/claude-opus-4</code> or <code>openai/gpt-4o</code>).</li>
+        </ul>
+        <h3>Credit costs</h3>
+        <p>Each AI action spends <strong>AI credits</strong> from the customer's monthly plan allowance (set per plan in <a href="#cfg-plans">Plans</a>). On this tab you set how many credits each action costs - alias suggestion, ask-your-links query and weekly insight. This lets you keep AI spend predictable.</p>
+      </section>
+
+      <section class="block" id="cfg-safety">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-safety">Safety &amp; abuse prevention</a></h2>
+        <p>A shortener is only as healthy as the links it hosts. LinkForge layers several defences, all configurable on the <strong>Safety</strong> tab. Local checks run instantly at create time; external threat feeds are each opt-in and fail safe (a disabled or unreachable feed is simply ignored).</p>
+        <ul>
+          <li><strong>Blocked domains &amp; keywords</strong> - your own blocklist; any destination matching these is refused.</li>
+          <li><strong>Disposable-email blocking</strong> - built in, stops throwaway-inbox sign-ups.</li>
+          <li><strong>URLhaus</strong> - free, no key. Checks destinations against a live malware-URL feed.</li>
+          <li><strong>VirusTotal</strong> - paste an API key to scan destinations against 90+ engines.</li>
+          <li><strong>Google Web Risk</strong> - paste an API key to check against Google's threat database.</li>
+          <li><strong>Cloudflare Turnstile</strong> - a privacy-friendly CAPTCHA on public forms. Add your <em>site key</em> and <em>secret</em> from the <a href="https://dash.cloudflare.com/?to=/:account/turnstile" target="_blank" rel="noopener">Cloudflare dashboard</a>. When unset, the CAPTCHA is simply skipped.</li>
+        </ul>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+          <div>For a public SaaS, enabling <strong>URLhaus + Turnstile</strong> (both free) is the single biggest win against abuse and keeps your domain's reputation clean.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-geo">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-geo">Geo / GeoIP database</a></h2>
+        <p>Analytics can show where clicks come from. LinkForge resolves location two ways, configured on the <strong>Geo</strong> tab:</p>
+        <ul>
+          <li><strong>Cloudflare headers</strong> - if your site sits behind Cloudflare (free), country is read straight from Cloudflare's visitor headers with zero setup.</li>
+          <li><strong>Local GeoIP database</strong> - a MaxMind-format <span class="path">.mmdb</span> file. A <strong>country-level database is bundled</strong>, so country analytics work out of the box. For <strong>city-level</strong> detail, download a city database from the tab with one click (DB-IP, no account required) or supply a MaxMind license key.</li>
+        </ul>
+        <figure id="shot-geo"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">09</span></span><div class="shot__cap">Geo settings - database status and one-click download of a city-level database.</div></div></figure>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>City and region detail only appears once a city-level database is configured; the bundled country database gives country-level stats only. The free DB-IP data requires the attribution "IP Geolocation by DB-IP", which LinkForge displays automatically.</div>
+        </div>
+      </section>
+
+      <section class="block" id="cfg-seo">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-seo">SEO &amp; social sharing</a></h2>
+        <p>Control how your marketing pages appear in search and when shared. On the <strong>SEO</strong> tab:</p>
+        <ul>
+          <li><strong>Meta description</strong> - the default description for search engines.</li>
+          <li><strong>Open Graph title, description &amp; image</strong> - the card shown when your site is shared on social media. The share image should be 1200×630&nbsp;px.</li>
+          <li><strong>X / Twitter handle</strong> - attributes shared cards to your account.</li>
+          <li><strong>Google Analytics &amp; Tag Manager IDs</strong> - paste a <code>G-XXXXXXXXXX</code> or <code>GTM-XXXXXXX</code> ID to add your own tracking to the public pages.</li>
+        </ul>
+      </section>
+
+      <section class="block" id="cfg-affiliate">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-affiliate">Affiliate program</a></h2>
+        <p>Reward customers for referring others. Enable and tune the program on the <strong>Affiliate</strong> tab:</p>
+        <ul>
+          <li><strong>Enable affiliate program</strong> - switches on referral links and the customer affiliate dashboard.</li>
+          <li><strong>Commission type &amp; value</strong> - a <em>percentage</em> of the referred payment, or a <em>fixed</em> amount.</li>
+          <li><strong>Cookie window</strong> - how many days a referral is attributed after the first click (1–365).</li>
+          <li><strong>Minimum payout</strong> - the balance a customer must reach before they can request a payout.</li>
+        </ul>
+        <p>You review and approve commissions and payouts under <a href="#admin-affiliate">Admin → Affiliate</a>; customers see their stats under <a href="#use-affiliate">their Affiliate page</a>.</p>
+      </section>
+
+      <section class="block" id="cfg-domains">
+        <h2 class="sec"><a class="anchor-h" href="#cfg-domains">Custom domains (operator setup)</a></h2>
+        <p>One of LinkForge's headline features: customers can serve short links from <strong>their own branded domain</strong> (e.g. <code>go.theirbrand.com</code>). Two independent things must be true for that to work:</p>
+        <ol class="steps">
+          <li><strong>DNS</strong> - the customer points their domain at <em>your</em> server (they do this; LinkForge shows them the exact records).</li>
+          <li><strong>Your web server answers for that hostname</strong> - this is your one-time setup, below. Without it, the customer's domain shows your host's 404 even when DNS is correct.</li>
+        </ol>
+
+        <h3>On a VPS / server with root - recommended for SaaS</h3>
+        <p>Add a <strong>catch-all virtual host</strong> that serves LinkForge for any hostname. Then every customer domain works the moment its DNS points at you - zero work per domain.</p>
+        <span class="code-label">Nginx - catch-all server block</span>
+        <div class="codeblock"><pre><code>server {
+    listen 80 default_server;
+    server_name _;                     # matches ANY hostname
+    root /var/www/linkforge/public;
+    index index.php;
+    location / { try_files $uri $uri/ /index.php?$query_string; }
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+    }
+}</code></pre></div>
+        <p>For automatic HTTPS on every customer domain, <strong>Caddy with on-demand TLS</strong> is the simplest option - it fetches a certificate the first time each domain is hit:</p>
+        <span class="code-label">Caddyfile</span>
+        <div class="codeblock"><pre><code>https:// {
+    tls you@yourbrand.com { on_demand }
+    root * /var/www/linkforge/public
+    php_fastcgi unix//run/php/php8.3-fpm.sock
+    file_server
+}</code></pre></div>
+
+        <h3>On cPanel / shared hosting (no root)</h3>
+        <p>A true catch-all isn't possible without root, so use one of these:</p>
+        <ul>
+          <li><strong>Branded subdomains (best fit, fully self-service).</strong> Create a <strong>wildcard subdomain</strong> <code>*.links.yourbrand.com</code> with its document root set to LinkForge's <span class="path">public/</span>, add a DNS A-record <code>*.links.yourbrand.com → your IP</code>, and run AutoSSL. Now any <code>customername.links.yourbrand.com</code> works automatically.</li>
+          <li><strong>A customer's own domain (manual, per domain).</strong> If LinkForge is on your <em>main</em> domain, add the customer's domain as an <strong>Alias</strong> (it shares the main document root - nothing else to do). If LinkForge is on a <em>subdomain</em>, add it as an <strong>Addon domain</strong> with its document root set to LinkForge's <span class="path">public/</span>. Then run AutoSSL for that domain.</li>
+          <li><strong>SSL-for-SaaS proxy.</strong> At scale on shared hosting, a service like Cloudflare for SaaS terminates TLS for many customer domains and forwards to your install.</li>
+        </ul>
+
+        <h3>Tell customers what to point at</h3>
+        <p>On the <strong>Settings → Domains</strong> tab, set the <strong>CNAME target</strong> (the host customers point a subdomain at) and your <strong>Server IP</strong> (for customers connecting a root domain via an A-record). These exact values are shown to every customer on their <a href="#use-domains">Custom domains</a> page - they never see your server internals.</p>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 4 · USING LINKFORGE (CUSTOMER GUIDE)
+           =================================================================== -->
+
+      <section class="block" id="use-dashboard">
+        <p class="sec-kicker">Using LinkForge</p>
+        <h2 class="sec"><a class="anchor-h" href="#use-dashboard">The customer dashboard</a></h2>
+        <p>This chapter describes the day-to-day experience for a signed-in user. It's useful for you to know, and you're welcome to reuse any of it in your own customer-facing help content.</p>
+        <p>After signing in, users land on the <strong>Dashboard</strong> - an at-a-glance overview with total clicks, top links, recent activity, a clicks-over-time chart and their current plan usage. The left sidebar is the main menu: Links, Campaigns, QR Codes, Bio Pages, Analytics, and so on.</p>
+        <figure id="shot-dashboard"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">10</span></span><div class="shot__cap">The customer dashboard - KPIs, click trend and plan usage.</div></div></figure>
+      </section>
+
+      <section class="block" id="use-links">
+        <h2 class="sec"><a class="anchor-h" href="#use-links">Creating short links</a></h2>
+        <p>From <strong>Links → Create</strong>, a user pastes a destination URL and gets a short link. That's the minimum - but a link can do far more. The create form is organized into simple sections:</p>
+        <ul>
+          <li><strong>Destination URL</strong> - where the link sends visitors.</li>
+          <li><strong>Short link</strong> - choose a domain (if more than one is available) and an optional <strong>custom alias</strong>; leave the alias blank to auto-generate a short code. If AI is enabled, a <em>Suggest with AI</em> button proposes memorable aliases.</li>
+          <li><strong>Title &amp; tags</strong> - optional labels to keep links organized; assign a <a href="#use-campaigns">campaign</a> too.</li>
+        </ul>
+
+        <h3>Advanced options</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Option</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Link type</strong></td><td>Direct redirect, splash page, CTA overlay, frame or call-to-action.</td></tr>
+            <tr><td><strong>Password</strong></td><td>Visitors must enter a password before being redirected.</td></tr>
+            <tr><td><strong>Expiry date</strong></td><td>The link stops working after a set date/time.</td></tr>
+            <tr><td><strong>Click limit</strong></td><td>The link stops working after N clicks.</td></tr>
+            <tr><td><strong>Active toggle</strong></td><td>Pause or resume a link without deleting it.</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Targeting &amp; rotation</h3>
+        <p>Route different visitors to different destinations from a single short link. Rules can match by <strong>country, device, operating system, language or time of day</strong> - the first matching rule wins. Or split traffic with <strong>weighted rotation</strong> for A/B tests. Match examples: <code>US,CA</code> · <code>mobile</code> · <code>09:00-17:00</code>.</p>
+
+        <h3>UTM &amp; tracking parameters</h3>
+        <p>Build campaign tracking right into the link. Fill in <code>utm_source</code>, <code>utm_medium</code>, <code>utm_campaign</code>, <code>utm_term</code> and <code>utm_content</code>, or add custom <code>key=value</code> parameters. These are appended to the destination on redirect; any parameters already on the target are kept.</p>
+
+        <h3>Mobile deep links <span class="badge badge--pro">Pro</span></h3>
+        <p>Open a native mobile app instead of the browser. Enter the app's URI scheme (e.g. <code>myapp://path</code>) for iOS and Android; visitors without the app fall through to the normal destination.</p>
+        <figure id="shot-link-create"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">11</span></span><div class="shot__cap">The link editor with advanced options, targeting rules and the UTM builder expanded.</div></div></figure>
+      </section>
+
+      <section class="block" id="use-bulk">
+        <h2 class="sec"><a class="anchor-h" href="#use-bulk">Bulk create &amp; import</a></h2>
+        <p>Need many links at once? <strong>Links → Bulk</strong> creates them in a single pass, two ways:</p>
+        <ul>
+          <li><strong>Paste a list</strong> - one destination URL per line. Each line becomes a short link, optionally sharing a <a href="#use-campaigns">campaign</a> and tags that you set once for the whole batch.</li>
+          <li><strong>Import a CSV</strong> - upload a spreadsheet or an export from another platform. Columns are auto-detected: a Bitly export (with its <em>Bitlink</em>, <em>Long URL</em>, <em>Title</em> and <em>Tags</em> headers) maps automatically, and a simple headerless file also works (the first column is treated as the URL). This is the easy way to migrate, keeping each link's custom alias where it is still available.</li>
+        </ul>
+        <p>Every row is processed safely. Each URL is <a href="#cfg-safety">safety-screened</a>, duplicates inside the batch are skipped, an alias that clashes with an existing link is auto-renamed, and the whole batch respects the plan's <strong>link limit</strong> (it stops cleanly at the cap rather than erroring). When it finishes, a summary shows how many links were created and how many were skipped, with the reason for each skip.</p>
+      </section>
+
+      <section class="block" id="use-campaigns">
+        <h2 class="sec"><a class="anchor-h" href="#use-campaigns">Campaigns &amp; tags</a></h2>
+        <p>Campaigns and tags keep a growing link library organised and let users measure a whole marketing push at once, instead of link by link.</p>
+        <ul>
+          <li><strong>Campaigns</strong> - create a campaign with a name and colour, then assign links to it from the link form or during a <a href="#use-bulk">bulk import</a>. The Campaigns page lists each campaign with its link count and total clicks.</li>
+          <li><strong>Tags</strong> - add comma-separated tags to any link for lighter, cross-campaign grouping (for example <code>q2</code>, <code>sale</code>, <code>email</code>).</li>
+          <li><strong>Filtering</strong> - the Links list can be filtered by campaign or by tag, so finding every link in a push takes one click.</li>
+          <li><strong>Combined analytics</strong> - open a campaign to see aggregated performance across all of its links (clicks over time, top countries, devices and referrers) and export it as CSV.</li>
+        </ul>
+        <p>Deleting a campaign never deletes links; it simply unassigns them, so nothing is lost.</p>
+      </section>
+
+      <section class="block" id="use-qr">
+        <h2 class="sec"><a class="anchor-h" href="#use-qr">QR Code studio</a></h2>
+        <p>The <strong>QR</strong> section is a full studio for designing scannable codes - not just for links, but for many content types (URL, plain text, Wi-Fi credentials, vCard contact, email, phone, SMS and more). Users can:</p>
+        <ul>
+          <li>Style the code - foreground/background colors, dot and corner styles, and a center <strong>logo</strong>.</li>
+          <li>Download as PNG or vector for print.</li>
+          <li>Save reusable <strong>templates</strong> so brand styling is one click next time.</li>
+          <li><strong>Bulk-generate</strong> many codes at once.</li>
+        </ul>
+        <p>Every short link also has its own QR code on its detail page. QR codes are tracked, so scans show up in <a href="#use-analytics">analytics</a>.</p>
+        <figure id="shot-qr"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">12</span></span><div class="shot__cap">The QR Code studio - live preview with color, shape and logo styling.</div></div></figure>
+      </section>
+
+      <section class="block" id="use-bio">
+        <h2 class="sec"><a class="anchor-h" href="#use-bio">Link-in-bio pages</a></h2>
+        <p>A <strong>bio page</strong> is a mobile-first profile page (like Linktree) hosted on your platform at <code>yoursite.com/b/their-handle</code>. From <strong>Bio Pages</strong>, users build a page by adding:</p>
+        <ul>
+          <li><strong>Link blocks</strong> - buttons that point to any URL, reorderable by drag.</li>
+          <li><strong>Profile</strong> - avatar, name, bio text and social icons.</li>
+          <li><strong>Themes</strong> - colors, background and fonts, all sanitized for safety.</li>
+          <li><strong>Lead capture</strong> - an email subscribe form and a contact form; collected leads are exportable.</li>
+          <li><strong>vCard</strong> - a "save contact" button that downloads a contact card.</li>
+          <li><strong>Gates</strong> - optionally password-protect the page or show a sensitive-content acknowledgement first.</li>
+        </ul>
+        <p>Bio pages have their own analytics (views and per-block clicks).</p>
+        <figure id="shot-bio"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">13</span></span><div class="shot__cap">The bio-page builder alongside its live mobile preview.</div></div></figure>
+      </section>
+
+      <section class="block" id="use-pixels">
+        <h2 class="sec"><a class="anchor-h" href="#use-pixels">Retargeting pixels <span class="badge badge--pro">Pro</span></a></h2>
+        <p>Users on a plan with retargeting can register marketing pixels under <strong>Pixels</strong> - Meta/Facebook, Google Ads, Google Tag Manager, Bing, Snapchat, Reddit and more. Once added, a pixel can be attached to any link; when a visitor passes through, the pixel fires (via a brief branded splash so the pixel can load) so the user can build retargeting audiences from their link traffic.</p>
+      </section>
+
+      <section class="block" id="use-domains">
+        <h2 class="sec"><a class="anchor-h" href="#use-domains">Connecting a custom domain (customer side)</a></h2>
+        <p>Customers on a plan that allows custom domains can brand their short links with their own domain. From their <strong>Custom domains</strong> page:</p>
+        <ol class="steps">
+          <li><strong>Enter the domain</strong> - e.g. <code>go.theirbrand.com</code>.</li>
+          <li><strong>Add the DNS records shown</strong> - a <strong>CNAME</strong> (subdomain) or <strong>A record</strong> (root domain) pointing at your platform, plus a <strong>TXT</strong> record to prove ownership. LinkForge displays the exact values (from your <a href="#cfg-domains">Domains settings</a>).</li>
+          <li><strong>Click Verify</strong> - once DNS propagates, the domain is verified and appears in the domain picker when creating links.</li>
+        </ol>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>For the customer's domain to actually serve links, your server must answer for that hostname - the one-time operator setup in <a href="#cfg-domains">Custom domains (operator setup)</a>. DNS alone is not enough.</div>
+        </div>
+      </section>
+
+      <section class="block" id="use-analytics">
+        <h2 class="sec"><a class="anchor-h" href="#use-analytics">Analytics</a></h2>
+        <p>Every link, campaign, QR code and bio page has analytics, and there's a global <strong>Analytics</strong> view across everything. Users can see:</p>
+        <ul>
+          <li><strong>Clicks over time</strong> - a trend chart with selectable date ranges.</li>
+          <li><strong>Geography</strong> - an interactive country map plus top countries and cities (city-level requires a <a href="#cfg-geo">city GeoIP database</a>).</li>
+          <li><strong>Devices, browsers &amp; operating systems.</strong></li>
+          <li><strong>Top referrers</strong> - where the traffic came from.</li>
+          <li><strong>CSV export</strong> - download the underlying data for any view.</li>
+        </ul>
+        <figure id="shot-analytics"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">14</span></span><div class="shot__cap">Analytics - click trend, interactive geo map and top dimensions.</div></div></figure>
+        <div class="callout callout--warn">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>Analytics are aggregated by the scheduler, so the <a href="#install-cron">cron job</a> must be running. New clicks appear within a minute or two - not instantly - which keeps redirects fast even under load.</div>
+        </div>
+      </section>
+
+      <section class="block" id="use-monetization">
+        <h2 class="sec"><a class="anchor-h" href="#use-monetization">Monetization</a></h2>
+        <p>The <strong>Monetization</strong> page lets a customer earn from their own traffic by showing a brief <strong>interstitial</strong> - a short waiting page with a skip timer - before their links redirect.</p>
+        <ul>
+          <li><strong>Bring your own ads</strong> - add up to three <strong>ad slots</strong>, each holding the code from your ad network (a script tag or a banner snippet), shown on the interstitial in front of your links.</li>
+          <li><strong>Safe by design</strong> - every slot renders inside a sandboxed frame, so a third-party ad can never reach your dashboard or your visitors' sessions. Most self-serve script and banner networks work this way; a few that require same-origin access to the host page (such as Google AdSense) are intentionally blocked by the sandbox.</li>
+          <li><strong>Opt-in</strong> - advertising appears only when the operator has <a href="#admin-ads">enabled the ad system</a> and the customer has turned it on here.</li>
+        </ul>
+        <p>It is a simple way to run a free, ad-supported tier while paid plans (with the <em>ad-free</em> feature) stay clean.</p>
+      </section>
+
+      <section class="block" id="use-ai">
+        <h2 class="sec"><a class="anchor-h" href="#use-ai">AI assist <span class="badge badge--optional">if enabled</span></a></h2>
+        <p>When you've configured an <a href="#cfg-ai">AI provider</a>, two helpers appear for users:</p>
+        <ul>
+          <li><strong>Suggest with AI</strong> - on the link form, proposes short, memorable aliases based on the destination URL and title.</li>
+          <li><strong>Ask your links</strong> - a plain-English analytics assistant: "Which links got the most clicks from mobile last week?" The model only maps questions onto safe, pre-approved metrics - it never writes or runs database queries directly.</li>
+        </ul>
+        <p>Each use spends <a href="#cfg-ai">AI credits</a> from the user's plan allowance.</p>
+      </section>
+
+      <section class="block" id="use-billing">
+        <h2 class="sec"><a class="anchor-h" href="#use-billing">Billing &amp; plans (customer view)</a></h2>
+        <p>From <strong>Billing</strong>, a customer sees the plans you offer side by side, their current plan and how much of each limit they are using, then upgrades or downgrades whenever they like.</p>
+        <ul>
+          <li><strong>Checkout</strong> uses whichever <a href="#cfg-payments">gateway</a> you configured - Stripe and PayPal redirect to the provider, the crypto gateways show payment details, and the offline gateway records a manual payment.</li>
+          <li><strong>Instant updates</strong> - the moment a payment confirms (or immediately, with the offline gateway), the new plan's limits and features apply. A downgrade keeps existing data and simply enforces the lower limits from then on.</li>
+        </ul>
+      </section>
+
+      <section class="block" id="use-affiliate">
+        <h2 class="sec"><a class="anchor-h" href="#use-affiliate">Affiliate / referrals</a></h2>
+        <p>When you switch the <a href="#cfg-affiliate">affiliate program</a> on, every customer gets a unique referral link on their <strong>Affiliate</strong> page to share. Anyone who arrives through that link and later upgrades to a paid plan within the cookie window earns the referrer a commission.</p>
+        <ul>
+          <li><strong>Commission</strong> is calculated from the rule you set - a percentage of the payment or a fixed amount per sale.</li>
+          <li><strong>Status</strong> moves from <em>pending</em> to <em>approved</em> once you confirm it, then to <em>paid</em> after a payout.</li>
+          <li><strong>The dashboard</strong> shows referral clicks, sign-ups, and pending versus approved earnings, with a <strong>Request payout</strong> button that unlocks once the balance passes the minimum you set.</li>
+        </ul>
+        <p>You review and approve everything on the admin side under <a href="#admin-affiliate">Affiliate management</a>, so no money moves without your sign-off.</p>
+      </section>
+
+      <section class="block" id="use-account">
+        <h2 class="sec"><a class="anchor-h" href="#use-account">Account &amp; security</a></h2>
+        <p>Under <strong>Account</strong>, users manage their own profile and security. It's split into two tabs:</p>
+        <ul>
+          <li><strong>Profile</strong> - name, email and avatar (uploaded and auto-resized).</li>
+          <li><strong>Security</strong> - change password; enable <strong>two-factor authentication</strong> (authenticator app with QR setup + recovery codes); register <strong>passkeys</strong> (Touch ID, Windows Hello, security keys) for passwordless sign-in; link or unlink <strong>connected accounts</strong> (Google/GitHub/Facebook); and delete the account.</li>
+        </ul>
+        <figure id="shot-account"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">15</span></span><div class="shot__cap">Account → Security - two-factor setup and registered passkeys.</div></div></figure>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Passkeys and secure cookies require your site to be served over <strong>HTTPS</strong>. Make sure AutoSSL / certbot is active (see the <a href="#install-checklist">post-install checklist</a>).</div>
+        </div>
+      </section>
+
+      <section class="block" id="use-support">
+        <h2 class="sec"><a class="anchor-h" href="#use-support">Support tickets</a></h2>
+        <p>LinkForge includes a built-in help desk. Customers open tickets from their <strong>Support</strong> page and exchange replies; you answer them under <a href="#admin-tickets">Admin → Tickets</a>. This keeps customer support inside your platform rather than scattered across email.</p>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 5 · ADMIN GUIDE
+           =================================================================== -->
+
+      <section class="block" id="admin-dashboard">
+        <p class="sec-kicker">Admin guide</p>
+        <h2 class="sec"><a class="anchor-h" href="#admin-dashboard">Admin dashboard</a></h2>
+        <p>The admin area lives under <strong>/admin</strong> and is only visible to administrator accounts. Its dashboard gives you the health of the whole platform at a glance: total users, links and clicks, monthly recurring revenue, new-user and click trends, plan distribution, top links and recent sign-ups.</p>
+        <figure id="shot-admin-dashboard"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">16</span></span><div class="shot__cap">The admin dashboard - platform-wide KPIs and trends.</div></div></figure>
+      </section>
+
+      <section class="block" id="admin-users">
+        <h2 class="sec"><a class="anchor-h" href="#admin-users">Managing users</a></h2>
+        <p>Under <strong>Admin → Users</strong> you can search and filter by plan, status or role, and open any user to see their links and subscriptions. For each user you can:</p>
+        <ul>
+          <li><strong>Edit</strong> their details, change plan, or <strong>suspend</strong> / delete the account.</li>
+          <li><strong>Impersonate</strong> - sign in <em>as</em> that user to see exactly what they see (a banner lets you leave impersonation). Great for support.</li>
+          <li><strong>Send a password-reset link</strong> by email.</li>
+          <li><strong>Export</strong> the user list as CSV.</li>
+        </ul>
+        <figure id="shot-admin-users"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">17</span></span><div class="shot__cap">Admin → Users - searchable list with per-user actions.</div></div></figure>
+      </section>
+
+      <section class="block" id="admin-billing">
+        <h2 class="sec"><a class="anchor-h" href="#admin-billing">Billing &amp; subscriptions</a></h2>
+        <p><strong>Admin → Billing</strong> is your revenue desk: MRR, total and monthly revenue, active subscriptions and paying users. You can browse <strong>subscriptions</strong> (filter by status - trialing, active, past-due, canceled, expired) and <strong>payments</strong> (pending, completed, failed, refunded), and cancel a subscription (which moves the user back to the free plan).</p>
+      </section>
+
+      <section class="block" id="admin-moderation">
+        <h2 class="sec"><a class="anchor-h" href="#admin-moderation">Content moderation</a></h2>
+        <p><strong>Admin → Content</strong> lets you review user-generated content across three tabs - <strong>bio pages</strong>, <strong>QR codes</strong> and <strong>custom domains</strong>. Publish/unpublish or remove anything that breaks your rules. Combined with <a href="#cfg-safety">safety scanning</a>, this keeps your platform clean.</p>
+      </section>
+
+      <section class="block" id="admin-reports">
+        <h2 class="sec"><a class="anchor-h" href="#admin-reports">Abuse reports</a></h2>
+        <p>Anyone can report a suspicious link through the public <code>/report</code> page, so problem links surface even when the abuser is not one of your users. Reports queue under <strong>Admin → Reports</strong> with the reported link, the reason given and the reporter's note.</p>
+        <p>For each one you can <strong>block the link</strong> - it stops redirecting immediately and shows a safe notice instead - and mark the report actioned, or dismiss it as a false alarm. Paired with automated <a href="#cfg-safety">safety scanning</a>, this gives you both proactive and reactive abuse control.</p>
+      </section>
+
+      <section class="block" id="admin-tickets">
+        <h2 class="sec"><a class="anchor-h" href="#admin-tickets">Support tickets</a></h2>
+        <p><strong>Admin → Tickets</strong> is the other side of the <a href="#use-support">customer help desk</a>. See open/answered/resolved tickets with an open-count badge, read the full conversation, reply, and set status and priority.</p>
+      </section>
+
+      <section class="block" id="admin-ads">
+        <h2 class="sec"><a class="anchor-h" href="#admin-ads">Advertisements</a></h2>
+        <p>Run your own ads to monetize free-tier traffic. Under <strong>Admin → Ads</strong>, toggle the ad system on, set the interstitial <strong>skip delay</strong>, and create ad creatives for different placements (interstitial, banner, sidebar) with sort order and active toggles. This pairs with the customer <a href="#use-monetization">Monetization</a> page.</p>
+      </section>
+
+      <section class="block" id="admin-affiliate">
+        <h2 class="sec"><a class="anchor-h" href="#admin-affiliate">Affiliate management</a></h2>
+        <p>When the <a href="#cfg-affiliate">affiliate program</a> is enabled, <strong>Admin → Affiliate</strong> is where you control the money - nothing is paid automatically.</p>
+        <ul>
+          <li><strong>Commissions</strong> - every referred sale creates a pending commission. Review them and <strong>approve</strong> the genuine ones or <strong>reject</strong> the rest (for example, a refunded order).</li>
+          <li><strong>Payout requests</strong> - when an affiliate requests a payout, it lands here. Mark it <strong>paid</strong>, which settles the approved commissions attached to it, or reject it back to the pool.</li>
+        </ul>
+        <p>The commission rate, type and minimum payout themselves live in <a href="#cfg-affiliate">Settings → Affiliate</a>.</p>
+      </section>
+
+      <section class="block" id="admin-cms">
+        <h2 class="sec"><a class="anchor-h" href="#admin-cms">Blog &amp; Help Center</a></h2>
+        <p>LinkForge includes two lightweight content tools to power your marketing and self-serve support:</p>
+        <ul>
+          <li><strong>Blog</strong> (<strong>Admin → Blog</strong>) - write posts with a cover image, slug and draft/published status; they appear at <code>/blog</code>.</li>
+          <li><strong>Help Center</strong> (<strong>Admin → Help</strong>) - write help articles grouped by category; they appear at <code>/help</code> for customers to search.</li>
+        </ul>
+      </section>
+
+      <section class="block" id="admin-audit">
+        <h2 class="sec"><a class="anchor-h" href="#admin-audit">Audit log</a></h2>
+        <p><strong>Admin → Audit</strong> records significant actions across the platform - who did what, and when - so you always have a trail to fall back on. Typical entries include sign-ins, setting changes, plan and subscription changes, user suspensions, link blocks and applied updates.</p>
+        <p>Use it to investigate an unexpected change, settle a support dispute, or simply keep an eye on activity. Each entry keeps the actor, the action and a timestamp.</p>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 6 · LOCALIZATION
+           =================================================================== -->
+
+      <section class="block" id="lang">
+        <p class="sec-kicker">Localization</p>
+        <h2 class="sec"><a class="anchor-h" href="#lang">Languages &amp; translations</a></h2>
+        <p>LinkForge ships an in-admin translation manager - no language files to edit by hand. Under <strong>Admin → Languages</strong> you can:</p>
+        <ul>
+          <li><strong>See installed locales</strong> with a translation <strong>coverage</strong> bar.</li>
+          <li><strong>Add a language</strong> - creates an empty catalog; any untranslated key automatically falls back to English.</li>
+          <li><strong>Translate</strong> in a searchable key grid, with an "untranslated only" filter and right-to-left input support.</li>
+          <li><strong>Import / export</strong> a locale as JSON for offline translation or sharing.</li>
+          <li><strong>Set the default language</strong> new visitors see.</li>
+          <li><strong>Rescan</strong> to pick up any new translatable strings after an update.</li>
+        </ul>
+        <p>Visitors switch language themselves with the globe menu in the header; their choice is remembered. English plus a complete Spanish translation are included.</p>
+        <figure id="shot-languages"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">18</span></span><div class="shot__cap">Admin → Languages - coverage bars and the translation grid editor.</div></div></figure>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 7 · DEVELOPER / API
+           =================================================================== -->
+
+      <section class="block" id="api">
+        <p class="sec-kicker">Developer / API</p>
+        <h2 class="sec"><a class="anchor-h" href="#api">REST API reference</a></h2>
+        <p>LinkForge exposes a small, clean REST API so developers can create and manage links programmatically. It's available to customers on a plan with the <strong>API</strong> feature enabled (see <a href="#cfg-plans">Plans</a>).</p>
+
+        <h3>Authentication</h3>
+        <p>Each user creates a personal access token under <strong>Developer → API tokens</strong>. Send it as a Bearer token on every request:</p>
+        <div class="codeblock"><pre><code>Authorization: Bearer YOUR_API_TOKEN
+Accept: application/json</code></pre></div>
+        <p>The base URL is <code>https://yoursite.com/api/v1</code>. Requests are rate-limited to <strong>120 per minute</strong> per token.</p>
+        <figure id="shot-developer"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">19</span></span><div class="shot__cap">Developer hub - creating an API token and managing webhooks.</div></div></figure>
+
+        <h3>Endpoints</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET</code></td><td><code>/api/v1/me</code></td><td>The authenticated user.</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/v1/links</code></td><td>List your links (paginated).</td></tr>
+            <tr><td><code>POST</code></td><td><code>/api/v1/links</code></td><td>Create a short link.</td></tr>
+            <tr><td><code>GET</code></td><td><code>/api/v1/links/{id}</code></td><td>Retrieve one link.</td></tr>
+            <tr><td><code>PUT</code></td><td><code>/api/v1/links/{id}</code></td><td>Update a link.</td></tr>
+            <tr><td><code>DELETE</code></td><td><code>/api/v1/links/{id}</code></td><td>Delete a link.</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Example - create a link</h3>
+        <span class="code-label">cURL</span>
+        <div class="codeblock"><pre><code>curl -X POST https://yoursite.com/api/v1/links \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+        "long_url": "https://example.com/a/very/long/page",
+        "alias": "spring-sale",
+        "title": "Spring campaign"
+      }'</code></pre></div>
+        <span class="code-label">Response · 201 Created</span>
+        <div class="codeblock"><pre><code>{
+  "data": {
+    "id": 123,
+    "alias": "spring-sale",
+    "short_url": "https://yoursite.com/spring-sale",
+    "destination": "https://example.com/a/very/long/page",
+    "title": "Spring campaign",
+    "type": "direct",
+    "clicks": 0,
+    "is_active": true,
+    "safety_status": "safe",
+    "created_at": "2026-01-01T12:00:00Z"
+  }
+}</code></pre></div>
+
+        <h3>Fields &amp; errors</h3>
+        <ul>
+          <li><code>long_url</code> - required, valid URL, up to 2048 characters.</li>
+          <li><code>alias</code> - optional; auto-generated when omitted.</li>
+          <li><code>title</code> - optional label.</li>
+          <li><code>is_active</code> - optional boolean (on update).</li>
+        </ul>
+        <p>Errors use standard HTTP codes with a JSON body - <code>401</code> for a bad token, <code>403</code> if the plan lacks API access, <code>422</code> for validation problems (e.g. a failed safety check or a hit plan limit), <code>429</code> when rate-limited.</p>
+      </section>
+
+      <section class="block" id="webhooks">
+        <h2 class="sec"><a class="anchor-h" href="#webhooks">Webhooks</a></h2>
+        <p>Webhooks push events to your own systems in real time. A user adds an endpoint URL under <strong>Developer → Webhooks</strong> and chooses which events to receive:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Event</th><th>Fires when…</th></tr></thead>
+          <tbody>
+            <tr><td><code>link.created</code></td><td>A new short link is created.</td></tr>
+            <tr><td><code>link.clicked</code></td><td>A short link is clicked.</td></tr>
+            <tr><td><code>link.flagged</code></td><td>A link is reported as abusive.</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Delivery format</h3>
+        <p>LinkForge sends a <code>POST</code> with a JSON body and these headers:</p>
+        <div class="codeblock"><pre><code>X-LinkForge-Event: link.created
+X-LinkForge-Signature: &lt;HMAC-SHA256 of the raw body, keyed with your webhook secret&gt;
+Content-Type: application/json</code></pre></div>
+        <span class="code-label">Body</span>
+        <div class="codeblock"><pre><code>{
+  "event": "link.created",
+  "data": { "alias": "spring-sale", "short_url": "https://yoursite.com/spring-sale", "destination": "https://example.com/..." },
+  "sent_at": "2026-01-01T12:00:00Z"
+}</code></pre></div>
+
+        <h3>Verifying the signature</h3>
+        <p>Always verify the signature so you know the request really came from LinkForge. In PHP:</p>
+        <span class="code-label">verify-webhook.php</span>
+        <div class="codeblock"><pre><code>$payload   = file_get_contents('php://input');
+$signature = $_SERVER['HTTP_X_LINKFORGE_SIGNATURE'] ?? '';
+$expected  = hash_hmac('sha256', $payload, 'YOUR_WEBHOOK_SECRET');
+
+if (hash_equals($expected, $signature)) {
+    $event = json_decode($payload, true);
+    // …handle $event['event'] and $event['data']…
+    http_response_code(200);
+} else {
+    http_response_code(403); // reject - signature mismatch
+}</code></pre></div>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Webhook endpoints are validated when saved and delivered by the scheduler. For security, LinkForge refuses endpoints pointing at internal/loopback addresses, and delivery requires the <a href="#install-cron">cron job</a>.</div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 8 · MAINTENANCE
+           =================================================================== -->
+
+      <section class="block" id="update">
+        <p class="sec-kicker">Maintenance</p>
+        <h2 class="sec"><a class="anchor-h" href="#update">Updating LinkForge</a></h2>
+        <p>When a new version is released, you can update in one of two ways. Both preserve your data, <span class="path">.env</span>, uploads and license.</p>
+
+        <h3>Option A - In-app updater (easiest)</h3>
+        <ol class="steps">
+          <li>Download the <strong>update package</strong> (<span class="path">linkforge-update-vX.Y.Z.zip</span>) from your CodeCanyon downloads.</li>
+          <li>Go to <strong>Admin → Updates</strong>. It shows your current version and the server's maximum upload size.</li>
+          <li><strong>Upload</strong> the update package. LinkForge inspects it and lists any issues (e.g. PHP version, permissions).</li>
+          <li>Click <strong>Apply</strong>. LinkForge backs up replaced files, runs any new database migrations, clears caches and updates the version. Or <strong>Discard</strong> to cancel.</li>
+        </ol>
+        <div class="callout callout--warn">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>Upload the small <strong>update package</strong> here - not the full install zip (it has no update manifest and will be rejected). Some shared hosts cap uploads at 2&nbsp;MB; if the package is larger than your limit, use Option B.</div>
+        </div>
+
+        <h3>Option B - Manual overwrite</h3>
+        <ol class="steps">
+          <li><strong>Back up first</strong> (see <a href="#backups">Backups</a>).</li>
+          <li>In File Manager, <strong>extract the full install zip over your existing site</strong>, replacing files. Your <span class="path">.env</span>, <span class="path">storage/installed</span> and <span class="path">public/uploads</span> are preserved.</li>
+          <li>Delete the contents of <span class="path">bootstrap/cache/</span> (the <code>*.php</code> files) to clear cached config.</li>
+        </ol>
+        <figure id="shot-updates"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">20</span></span><div class="shot__cap">Admin → Updates - upload, review and apply an update package.</div></div></figure>
+      </section>
+
+      <section class="block" id="backups">
+        <h2 class="sec"><a class="anchor-h" href="#backups">Backups</a></h2>
+        <p>Back up before every update, and on a regular schedule. Two things to save:</p>
+        <ul>
+          <li><strong>The database</strong> - in cPanel → <em>phpMyAdmin</em>, select your database → <em>Export</em> → <em>Go</em> (or use cPanel's <em>Backup Wizard</em>).</li>
+          <li><strong>The files</strong> - at minimum your <span class="path">.env</span> and <span class="path">public/uploads/</span> (logos, avatars, bio uploads). A full account backup in cPanel captures everything.</li>
+        </ul>
+        <div class="callout callout--tip">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>Many hosts offer automated daily backups (e.g. JetBackup). Turning that on is the easiest safety net.</div>
+        </div>
+      </section>
+
+      <section class="block" id="troubleshooting">
+        <h2 class="sec"><a class="anchor-h" href="#troubleshooting">Troubleshooting</a></h2>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Symptom</th><th>Likely fix</th></tr></thead>
+          <tbody>
+            <tr><td>Blank page / 500 error</td><td>Confirm PHP is 8.2+; make <span class="path">storage/</span> and <span class="path">bootstrap/cache/</span> writable (755); clear <span class="path">bootstrap/cache/*.php</span>.</td></tr>
+            <tr><td>"Could not connect to the database"</td><td>Re-check the DB name/user/password and that the user has ALL PRIVILEGES. Host is usually <code>localhost</code>.</td></tr>
+            <tr><td>Page loads but looks unstyled</td><td>Make sure the document root points at <span class="path">public/</span> (Option A) <em>or</em> the root <span class="path">.htaccess</span> is present (Option B), and that <span class="path">public/build/</span> uploaded fully.</td></tr>
+            <tr><td>Stuck on the installer after finishing</td><td>Confirm <span class="path">storage/installed</span> was created and <span class="path">storage/</span> is writable.</td></tr>
+            <tr><td>Analytics charts stay empty</td><td>The <a href="#install-cron">cron job</a> isn't running - add the once-a-minute <code>schedule:run</code> entry.</td></tr>
+            <tr><td>Images / uploads not saving</td><td>Make <span class="path">public/uploads/</span> writable (755).</td></tr>
+            <tr><td>Emails not sending</td><td>Configure <a href="#cfg-email">SMTP</a>; match port↔encryption (587↔tls, 465↔ssl); verify SPF/DKIM for your From domain.</td></tr>
+            <tr><td>Subscriptions stay "pending" after payment</td><td>The gateway <a href="#cfg-payments">webhook/IPN URL</a> isn't reaching your site - re-check it and ensure HTTPS.</td></tr>
+            <tr><td>Customer domain shows your host's 404</td><td>DNS is right but your server doesn't answer for that host - complete the <a href="#cfg-domains">operator domain setup</a>.</td></tr>
+            <tr><td>"Verification TXT record not found"</td><td>The TXT record hasn't propagated or is on the wrong name; wait and retry.</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+
+      <section class="block" id="faq">
+        <h2 class="sec"><a class="anchor-h" href="#faq">Frequently asked questions</a></h2>
+        <h4>Do I need to know how to code?</h4>
+        <p>No. Installing and running LinkForge is point-and-click. The full source is included for developers who <em>want</em> to extend it, but it isn't required.</p>
+        <h4>Do I need Composer, Node or the command line?</h4>
+        <p>No. The download includes the <span class="path">vendor/</span> folder and pre-built assets, and the installer runs in your browser. The only command-line-ish step is adding one cron entry, which cPanel does through a form.</p>
+        <h4>Can it run on shared hosting?</h4>
+        <p>Yes - that's the primary target. No Redis, no daemons, no special services.</p>
+        <h4>Are the AI features required?</h4>
+        <p>No. They're entirely optional and hidden until you add an <a href="#cfg-ai">API key</a>. You own and control any AI spend.</p>
+        <h4>Can customers use their own domains?</h4>
+        <p>Yes, on plans you allow. See <a href="#cfg-domains">operator setup</a> and the <a href="#use-domains">customer flow</a>.</p>
+        <h4>Will updates overwrite my settings?</h4>
+        <p>No. Updates preserve your <span class="path">.env</span>, database, uploads and license - see <a href="#update">Updating</a>.</p>
+        <h4>Can I remove all LinkForge branding?</h4>
+        <p>Yes - upload your own logo and theme under <a href="#cfg-appearance">Appearance</a>, and use the white-label plan feature for a fully unbranded customer experience.</p>
+      </section>
+
+      <!-- ===================================================================
+           CATEGORY 9 · REFERENCE
+           =================================================================== -->
+
+      <section class="block" id="credits">
+        <p class="sec-kicker">Reference</p>
+        <h2 class="sec"><a class="anchor-h" href="#credits">Sources &amp; credits</a></h2>
+        <p>LinkForge bundles the open-source software and data below, each under its own license. The complete notices are in <span class="path">THIRD_PARTY_LICENSES.md</span> in your download. If you redistribute or modify LinkForge, preserve the attributions that require it (notably DB-IP and the OFL fonts).</p>
+        <h3>Data</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Asset</th><th>License</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>DB-IP IP-to-Country Lite</td><td>CC-BY-4.0</td><td><a href="https://db-ip.com" target="_blank" rel="noopener">db-ip.com</a></td></tr>
+          </tbody>
+        </table></div>
+        <h3>Fonts (self-hosted, OFL-1.1)</h3>
+        <p>Plus Jakarta Sans, Poppins, DM Sans, Space Grotesk, Lora - each under the <a href="https://scripts.sil.org/OFL" target="_blank" rel="noopener">SIL Open Font License 1.1</a>.</p>
+        <h3>Icons &amp; graphics</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Asset</th><th>License</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Simple Icons</td><td>CC0 / MIT</td><td><a href="https://github.com/simple-icons/simple-icons" target="_blank" rel="noopener">simple-icons</a></td></tr>
+            <tr><td>Flag Icons</td><td>MIT</td><td><a href="https://github.com/lipis/flag-icons" target="_blank" rel="noopener">lipis/flag-icons</a></td></tr>
+            <tr><td>Lucide</td><td>ISC</td><td><a href="https://github.com/lucide-icons/lucide" target="_blank" rel="noopener">lucide-icons</a></td></tr>
+            <tr><td>Bootstrap Icons</td><td>MIT</td><td><a href="https://github.com/twbs/icons" target="_blank" rel="noopener">twbs/icons</a></td></tr>
+            <tr><td>@svg-maps/world</td><td>MIT</td><td><a href="https://github.com/VictorCazanave/svg-maps" target="_blank" rel="noopener">svg-maps</a></td></tr>
+          </tbody>
+        </table></div>
+        <h3>Libraries</h3>
+        <p><strong>JavaScript:</strong> qr-code-styling (MIT), jsPDF (MIT), Tailwind CSS (MIT), Axios (MIT). <strong>PHP:</strong> Laravel framework, Fortify, Sanctum, Tinker (all MIT), Livewire (MIT), endroid/qr-code (MIT), geoip2/geoip2 (Apache-2.0). Brand marks shown via icon sets remain trademarks of their owners and are used for identification only.</p>
+      </section>
+
+      <section class="block" id="changelog">
+        <h2 class="sec"><a class="anchor-h" href="#changelog">Changelog</a></h2>
+        <div class="callout callout--note">
+          <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+          <div>The authoritative, up-to-date changelog is on the LinkForge CodeCanyon item page under the <em>Comments / Updates</em> section. Notable releases are summarized here.</div>
+        </div>
+        <h4>Version 1.0 - Initial release</h4>
+        <ul>
+          <li>Branded short links with custom domains, aliases, passwords, expiry, click limits, UTM builder, geo/device targeting and weighted rotation.</li>
+          <li>QR Code studio, link-in-bio pages, retargeting pixels, campaigns, bulk create &amp; CSV import.</li>
+          <li>Deep analytics with country/city geo map and CSV export.</li>
+          <li>SaaS billing with four gateways (Stripe, PayPal, CoinPayments, Crypto.com) plus offline, configurable plans, and an affiliate program.</li>
+          <li>Optional AI assistant (Anthropic / OpenRouter), safety scanning, social login, 2FA &amp; passkeys.</li>
+          <li>Browser-based installer, in-app updater, multi-language manager, blog &amp; help center, full admin panel and REST API.</li>
+        </ul>
+      </section>
+
+      <section class="block" id="support">
+        <h2 class="sec"><a class="anchor-h" href="#support">Support &amp; contact</a></h2>
+        <p>We're glad to help. The fastest route is your CodeCanyon item's <strong>Support</strong> tab - that ties your message to your purchase so we can respond quickly. You can also email us directly at <a href="mailto:hello@sangeeth.biz">hello@sangeeth.biz</a>.</p>
+        <h3>Before you reach out, please include</h3>
+        <ul>
+          <li>Your <strong>LinkForge version</strong> (shown in <em>Admin → Updates</em>).</li>
+          <li>Your <strong>hosting type</strong> (cPanel shared, VPS, etc.) and <strong>PHP version</strong>.</li>
+          <li>The <strong>exact steps</strong> to reproduce, and any error message or screenshot.</li>
+          <li>Whether you've checked the relevant <a href="#troubleshooting">Troubleshooting</a> row.</li>
+        </ul>
+        <p>Item support covers installation help, bug fixes and answering usage questions. Significant customization of your install is outside standard support, but we're happy to point you in the right direction. Thank you for choosing LinkForge!</p>
+      </section>
+
+      <footer class="docfooter">
+        <p>LinkForge Documentation · Version 1.0 · This guide is included with your purchase and works fully offline.</p>
+      </footer>
+
+    </main>
+  </div>
+</div>
+
+<button class="iconbtn backtotop" id="backTop" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script src="assets/script.js"></script>
+</body>
+</html>
