@@ -110,6 +110,11 @@ class User extends Authenticatable implements PasskeyUser
         return $this->hasMany(QrCode::class);
     }
 
+    public function campaigns(): HasMany
+    {
+        return $this->hasMany(Campaign::class);
+    }
+
     public function qrTemplates(): HasMany
     {
         return $this->hasMany(QrTemplate::class);

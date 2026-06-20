@@ -24,10 +24,13 @@ class LinkController extends Controller
 
     public function index(Request $request)
     {
+        $user = $request->user();
         $q = trim((string) $request->query('q', ''));
+        $campaignId = $request->integer('campaign') ?: null;
+        $tag = strtolower(preg_replace('/[^a-z0-9\- ]/i', '', (string) $request->query('tag', '')));
 
-        $links = $request->user()->links()
-            ->with('domain')
+        $links = $user->links()
+            ->with(['domain', 'campaign'])
             ->when($q !== '', function ($query) use ($q) {
                 $query->where(function ($w) use ($q) {
                     $w->where('alias', 'like', "%{$q}%")
@@ -35,6 +38,8 @@ class LinkController extends Controller
                         ->orWhere('title', 'like', "%{$q}%");
                 });
             })
+            ->when($campaignId, fn ($query) => $query->where('campaign_id', $campaignId))
+            ->when($tag !== '', fn ($query) => $query->where('tags', 'like', '%"'.$tag.'"%'))
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -43,6 +48,9 @@ class LinkController extends Controller
             'links' => $links,
             'q' => $q,
             'domain' => $this->domains->default(),
+            'campaigns' => $user->campaigns()->orderBy('name')->get(),
+            'campaignId' => $campaignId,
+            'tag' => $tag,
         ]);
     }
 
@@ -58,6 +66,7 @@ class LinkController extends Controller
             'suggestion' => $domain ? $this->aliases->generate($domain->id) : '',
             'pixels' => $user->pixels()->get(),
             'attachedPixelIds' => [],
+            'campaigns' => $user->campaigns()->orderBy('name')->get(),
             'aiEnabled' => app(ClaudeClient::class)->enabled(),
         ]);
     }
@@ -86,10 +95,12 @@ class LinkController extends Controller
 
         $link = $user->links()->create([
             'domain_id' => $domain->id,
+            'campaign_id' => $this->resolveCampaignId($request),
             'alias' => $alias,
             'long_url' => $data['long_url'],
             'params' => $this->buildParams($data),
             'title' => $data['title'] ?? null,
+            'tags' => $this->parseTags($data['tags'] ?? null),
             'type' => $data['type'] ?? 'direct',
             'password' => ! empty($data['password']) ? Hash::make($data['password']) : null,
             'expires_at' => $data['expires_at'] ?? null,
@@ -129,6 +140,7 @@ class LinkController extends Controller
             'domains' => $domains,
             'pixels' => $request->user()->pixels()->get(),
             'attachedPixelIds' => $link->pixels()->pluck('pixels.id')->all(),
+            'campaigns' => $request->user()->campaigns()->orderBy('name')->get(),
             'aiEnabled' => app(ClaudeClient::class)->enabled(),
         ]);
     }
@@ -157,10 +169,12 @@ class LinkController extends Controller
 
         $link->fill([
             'domain_id' => $domain->id,
+            'campaign_id' => $this->resolveCampaignId($request),
             'alias' => $alias,
             'long_url' => $data['long_url'],
             'params' => $this->buildParams($data),
             'title' => $data['title'] ?? null,
+            'tags' => $this->parseTags($data['tags'] ?? null),
             'type' => $data['type'] ?? 'direct',
             'expires_at' => $data['expires_at'] ?? null,
             'click_limit' => $data['click_limit'] ?? null,
@@ -225,6 +239,8 @@ class LinkController extends Controller
             'long_url' => ['required', 'url', 'max:2048'],
             'alias' => ['nullable', 'string', 'max:190'],
             'title' => ['nullable', 'string', 'max:255'],
+            'tags' => ['nullable', 'string', 'max:300'],
+            'campaign_id' => ['nullable', 'integer'],
             'type' => ['nullable', 'in:direct,frame,splash,overlay,cta'],
             'expires_at' => ['nullable', 'date'],
             'password' => ['nullable', 'string', 'max:100'],
@@ -243,6 +259,37 @@ class LinkController extends Controller
         }
 
         return $data;
+    }
+
+    /** Resolve the posted campaign to one the user owns, or null. */
+    private function resolveCampaignId(Request $request): ?int
+    {
+        $id = $request->integer('campaign_id') ?: null;
+        if ($id && ! $request->user()->campaigns()->whereKey($id)->exists()) {
+            return null;
+        }
+
+        return $id;
+    }
+
+    /**
+     * Parse a comma/newline list of tags into a normalised array (lowercase,
+     * deduped, max 10 tags of 30 chars), or null when empty.
+     *
+     * @return array<int, string>|null
+     */
+    private function parseTags(?string $raw): ?array
+    {
+        $tags = collect(preg_split('/[,\n]+/', (string) $raw))
+            ->map(fn ($t) => trim(preg_replace('/[^a-z0-9\- ]/', '', strtolower($t))))
+            ->filter()
+            ->unique()
+            ->take(10)
+            ->map(fn ($t) => substr($t, 0, 30))
+            ->values()
+            ->all();
+
+        return $tags ?: null;
     }
 
     /**

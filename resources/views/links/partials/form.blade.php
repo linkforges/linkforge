@@ -121,6 +121,23 @@
                class="lf-input" placeholder="Spring campaign">
     </div>
 
+    <div class="grid gap-4 sm:grid-cols-2">
+        <div>
+            <label for="campaign_id" class="lf-label">Campaign <span class="font-normal text-slate-400">(optional)</span></label>
+            <select id="campaign_id" name="campaign_id" class="lf-input">
+                <option value="">No campaign</option>
+                @foreach (($campaigns ?? []) as $c)
+                    <option value="{{ $c->id }}" @selected((int) old('campaign_id', $link?->campaign_id) === (int) $c->id)>{{ $c->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label for="tags" class="lf-label">Tags <span class="font-normal text-slate-400">(comma-separated)</span></label>
+            <input id="tags" name="tags" type="text" value="{{ old('tags', $link ? implode(', ', $link->tags ?? []) : '') }}"
+                   class="lf-input" placeholder="sale, q2, newsletter">
+        </div>
+    </div>
+
     <details class="rounded-xl border border-slate-200 bg-slate-50/60 p-4" @if($link && ($link->password || $link->expires_at || $link->click_limit)) open @endif>
         <summary class="cursor-pointer text-sm font-medium text-slate-700 [&::-webkit-details-marker]:hidden">Advanced options</summary>
         <div class="mt-4 grid gap-4 sm:grid-cols-2">

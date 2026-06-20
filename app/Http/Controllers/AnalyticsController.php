@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BioPage;
+use App\Models\Campaign;
 use App\Models\Link;
 use App\Models\QrCode;
 use App\Services\Ai\ClaudeClient;
@@ -145,6 +146,42 @@ class AnalyticsController extends Controller
             'seriesTitle' => 'Views over time',
             'exportUrl' => route('bio.stats.export', ['bioPage' => $bioPage->id] + $this->exportParams($range, $from, $to)),
         ]);
+    }
+
+    /** Aggregated analytics across every link in a campaign. */
+    public function campaignShow(Request $request, Campaign $campaign)
+    {
+        abort_unless((int) $campaign->user_id === (int) $request->user()->id, 403);
+        [$from, $to, $range] = $this->range($request);
+
+        $linkIds = $campaign->links()->pluck('id');
+        $scope = $linkIds->isNotEmpty() ? fn ($q) => $q->whereIn('link_id', $linkIds) : fn ($q) => $q->whereRaw('1 = 0');
+        $p = $this->payload($scope, $from, $to, $range);
+
+        return view('analytics.item', $p + [
+            'source' => null,
+            'pageTitle' => 'Campaign analytics',
+            'backUrl' => route('campaigns.index'),
+            'itemTitle' => $campaign->name,
+            'itemSubtitle' => $linkIds->count().' '.\Illuminate\Support\Str::plural('link', $linkIds->count()),
+            'totalsCards' => [
+                ['label' => 'Total clicks', 'value' => $p['totals']['clicks']],
+                ['label' => 'Unique visitors', 'value' => $p['totals']['uniques']],
+                ['label' => 'Links', 'value' => $linkIds->count()],
+            ],
+            'seriesTitle' => 'Clicks over time',
+            'exportUrl' => route('campaigns.stats.export', ['campaign' => $campaign->id] + $this->exportParams($range, $from, $to)),
+        ]);
+    }
+
+    public function exportCampaign(Request $request, Campaign $campaign): StreamedResponse
+    {
+        abort_unless((int) $campaign->user_id === (int) $request->user()->id, 403);
+        [$from, $to] = $this->range($request);
+        $linkIds = $campaign->links()->pluck('id');
+        $scope = $linkIds->isNotEmpty() ? fn ($q) => $q->whereIn('link_id', $linkIds) : fn ($q) => $q->whereRaw('1 = 0');
+
+        return $this->streamCsv($this->svc->series($scope, $from, $to), 'campaign-'.$campaign->id);
     }
 
     public function exportQr(Request $request, QrCode $qr): StreamedResponse

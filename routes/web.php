@@ -18,6 +18,7 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ApiTokenController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BioController;
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DomainController;
@@ -59,6 +60,13 @@ Route::middleware(['auth'])->group(function () {
     // NB: avoid the URL segment "stats" — cPanel/ModSecurity reserve & 403 it. Route names kept for back-compat.
     Route::get('/links/{link}/analytics', [AnalyticsController::class, 'show'])->name('links.stats');
     Route::get('/links/{link}/analytics/export', [AnalyticsController::class, 'exportLink'])->name('links.stats.export');
+
+    Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
+    Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+    Route::put('/campaigns/{campaign}', [CampaignController::class, 'update'])->name('campaigns.update');
+    Route::delete('/campaigns/{campaign}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+    Route::get('/campaigns/{campaign}/analytics', [AnalyticsController::class, 'campaignShow'])->name('campaigns.stats');
+    Route::get('/campaigns/{campaign}/analytics/export', [AnalyticsController::class, 'exportCampaign'])->name('campaigns.stats.export');
 
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('/analytics/export', [AnalyticsController::class, 'export'])->name('analytics.export');

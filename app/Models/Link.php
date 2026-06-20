@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 class Link extends Model
 {
     protected $fillable = [
-        'user_id', 'workspace_id', 'domain_id', 'alias', 'long_url', 'params', 'title', 'type',
+        'user_id', 'workspace_id', 'domain_id', 'campaign_id', 'alias', 'long_url', 'params', 'title', 'tags', 'type',
         'password', 'expires_at', 'click_limit', 'clicks', 'is_active',
         'safety_status', 'safety_score', 'meta', 'qr_id', 'last_click_at',
     ];
@@ -24,11 +24,17 @@ class Link extends Model
         return [
             'meta' => 'array',
             'params' => 'array',
+            'tags' => 'array',
             'is_active' => 'boolean',
             'expires_at' => 'datetime',
             'last_click_at' => 'datetime',
             'clicks' => 'integer',
         ];
+    }
+
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class);
     }
 
     /**

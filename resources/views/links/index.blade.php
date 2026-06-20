@@ -9,9 +9,20 @@
     @endif
 
     <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <form method="GET" class="relative w-full sm:max-w-xs">
-            <svg class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            <input name="q" value="{{ $q }}" class="lf-input pl-9" placeholder="Search links...">
+        <form method="GET" class="flex w-full flex-col gap-2 sm:max-w-lg sm:flex-row">
+            <div class="relative flex-1">
+                <svg class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                <input name="q" value="{{ $q }}" class="lf-input pl-9" placeholder="Search links...">
+            </div>
+            @if ($campaigns->isNotEmpty())
+                <select name="campaign" class="lf-input sm:w-44" onchange="this.form.submit()">
+                    <option value="">All campaigns</option>
+                    @foreach ($campaigns as $c)
+                        <option value="{{ $c->id }}" @selected($campaignId === (int) $c->id)>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            @endif
+            @if ($tag !== '')<input type="hidden" name="tag" value="{{ $tag }}">@endif
         </form>
         <a href="{{ route('links.create') }}" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -19,14 +30,28 @@
         </a>
     </div>
 
+    @if ($tag !== '' || $campaignId)
+        <div class="mb-4 flex flex-wrap items-center gap-2 text-xs">
+            <span class="text-slate-400">Filtered by</span>
+            @if ($campaignId)
+                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600">{{ $campaigns->firstWhere('id', $campaignId)?->name ?? 'campaign' }}</span>
+            @endif
+            @if ($tag !== '')
+                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600">#{{ $tag }}</span>
+            @endif
+            <a href="{{ route('links.index') }}" class="font-medium text-brand-600 hover:underline">Clear</a>
+        </div>
+    @endif
+
     @if ($links->isEmpty())
         <div class="lf-card flex flex-col items-center justify-center px-6 py-16 text-center">
             <span class="flex h-12 w-12 items-center justify-center rounded-2xl text-white" style="background-image:linear-gradient(135deg,var(--color-brand-500),var(--color-brand-700))">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757"/><path d="M10.81 15.312a4.5 4.5 0 0 1-1.242-7.244l4.5-4.5a4.5 4.5 0 0 1 6.364 6.364l-1.757 1.757"/></svg>
             </span>
-            <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ $q !== '' ? 'No links match your search' : 'No links yet' }}</h3>
-            <p class="mt-1.5 max-w-sm text-sm text-slate-500">{{ $q !== '' ? 'Try a different search term.' : 'Create your first short link to start tracking clicks.' }}</p>
-            @if ($q === '')
+            @php $filtered = $q !== '' || $tag !== '' || $campaignId; @endphp
+            <h3 class="mt-4 text-lg font-semibold text-slate-900">{{ $filtered ? 'No links match your filters' : 'No links yet' }}</h3>
+            <p class="mt-1.5 max-w-sm text-sm text-slate-500">{{ $filtered ? 'Try a different search or clear the filters.' : 'Create your first short link to start tracking clicks.' }}</p>
+            @if (! $filtered)
                 <a href="{{ route('links.create') }}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">Create a short link</a>
             @endif
         </div>
@@ -68,6 +93,18 @@
                                     </div>
                                     @if ($link->title)
                                         <div class="mt-0.5 text-xs text-slate-400">{{ $link->title }}</div>
+                                    @endif
+                                    @if ($link->campaign || ! empty($link->tags))
+                                        <div class="mt-1 flex flex-wrap items-center gap-1">
+                                            @if ($link->campaign)
+                                                <a href="{{ route('links.index', ['campaign' => $link->campaign->id]) }}" class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700 hover:bg-brand-100">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>{{ $link->campaign->name }}
+                                                </a>
+                                            @endif
+                                            @foreach (($link->tags ?? []) as $t)
+                                                <a href="{{ route('links.index', ['tag' => $t]) }}" class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 hover:bg-slate-200">#{{ $t }}</a>
+                                            @endforeach
+                                        </div>
                                     @endif
                                 </td>
                                 <td class="max-w-xs px-5 py-3.5">
