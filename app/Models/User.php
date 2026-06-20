@@ -28,6 +28,8 @@ class User extends Authenticatable implements PasskeyUser
         'email',
         'avatar',
         'google_id',
+        'github_id',
+        'facebook_id',
         'password',
         'role',
         'status',

@@ -11,7 +11,7 @@
         <div class="mb-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{{ session('error') }}</div>
     @endif
 
-    @php $googleOn = config('services.google.enabled') && config('services.google.client_id'); @endphp
+    @php $socialOn = ! empty(\App\Services\Auth\SocialProviders::enabled()); @endphp
 
     <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
@@ -40,13 +40,13 @@
         <button type="submit" class="lf-btn">{{ __('Sign in') }}</button>
     </form>
 
-    {{-- Alternative sign-in methods. Visible when Google is on (server) or passkeys are supported (JS). --}}
-    <div data-alt-auth @class(['space-y-3', 'hidden' => ! $googleOn])>
+    {{-- Alternative sign-in methods. Visible when a social provider is on (server) or passkeys are supported (JS). --}}
+    <div data-alt-auth @class(['space-y-3', 'hidden' => ! $socialOn])>
         <div class="my-5 flex items-center gap-3 text-xs font-medium text-slate-400">
             <span class="h-px flex-1 bg-slate-200"></span>{{ __('OR') }}<span class="h-px flex-1 bg-slate-200"></span>
         </div>
 
-        @include('partials.google-button')
+        @include('partials.social-buttons')
 
         <div data-pk-login-wrap class="hidden">
             <button type="button" data-pk-login

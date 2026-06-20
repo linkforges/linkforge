@@ -97,17 +97,19 @@ class SettingsServiceProvider extends ServiceProvider
         }
     }
 
-    /** @param array<string,string> $s Social login (Google OAuth). */
+    /** @param array<string,string> $s Social login (Google / GitHub / Facebook OAuth). */
     private function applyAuth(array $s): void
     {
-        if (isset($s['google_login_enabled'])) {
-            config(['services.google.enabled' => $s['google_login_enabled'] === '1']);
-        }
-        if (! empty($s['google_client_id'])) {
-            config(['services.google.client_id' => $s['google_client_id']]);
-        }
-        if (! empty($s['google_client_secret'])) {
-            config(['services.google.client_secret' => $s['google_client_secret']]);
+        foreach (\App\Services\Auth\SocialProviders::keys() as $provider) {
+            if (isset($s["{$provider}_login_enabled"])) {
+                config(["services.{$provider}.enabled" => $s["{$provider}_login_enabled"] === '1']);
+            }
+            if (! empty($s["{$provider}_client_id"])) {
+                config(["services.{$provider}.client_id" => $s["{$provider}_client_id"]]);
+            }
+            if (! empty($s["{$provider}_client_secret"])) {
+                config(["services.{$provider}.client_secret" => $s["{$provider}_client_secret"]]);
+            }
         }
     }
 

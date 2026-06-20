@@ -47,7 +47,7 @@ class SettingController extends Controller
         'stripe_secret', 'stripe_webhook_secret', 'ai_key', 'mail_password',
         'paypal_secret', 'coinpayments_private_key', 'coinpayments_ipn_secret',
         'cryptocom_secret_key', 'cryptocom_webhook_secret', 'openrouter_key',
-        'google_client_secret', 'geoip_maxmind_key',
+        'google_client_secret', 'github_client_secret', 'facebook_client_secret', 'geoip_maxmind_key',
     ];
 
     public function index(Request $request)
@@ -220,13 +220,16 @@ class SettingController extends Controller
     {
         $data = $request->validate([
             'google_client_id' => ['nullable', 'string', 'max:255'],
+            'github_client_id' => ['nullable', 'string', 'max:255'],
+            'facebook_client_id' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $out = [
-            'google_login_enabled' => $request->boolean('google_login_enabled') ? '1' : '0',
-            'google_client_id' => (string) ($data['google_client_id'] ?? ''),
-        ];
-        $this->applySecret($out, $request, 'google_client_secret');
+        $out = [];
+        foreach (\App\Services\Auth\SocialProviders::keys() as $provider) {
+            $out["{$provider}_login_enabled"] = $request->boolean("{$provider}_login_enabled") ? '1' : '0';
+            $out["{$provider}_client_id"] = (string) ($data["{$provider}_client_id"] ?? '');
+            $this->applySecret($out, $request, "{$provider}_client_secret");
+        }
         Setting::putMany($out);
 
         return $this->done('login', 'Social login settings saved.');

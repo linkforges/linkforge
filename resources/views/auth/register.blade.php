@@ -46,11 +46,11 @@
         <button type="submit" class="lf-btn">{{ __('Create account') }}</button>
     </form>
 
-    @if (config('services.google.enabled') && config('services.google.client_id'))
+    @if (! empty(\App\Services\Auth\SocialProviders::enabled()))
         <div class="my-5 flex items-center gap-3 text-xs font-medium text-slate-400">
             <span class="h-px flex-1 bg-slate-200"></span>{{ __('OR') }}<span class="h-px flex-1 bg-slate-200"></span>
         </div>
-        @include('partials.google-button')
+        <div class="space-y-3">@include('partials.social-buttons')</div>
     @endif
 
     <p class="mt-6 text-center text-sm text-slate-500">

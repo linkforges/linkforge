@@ -4,7 +4,7 @@ use App\Http\Controllers\AbuseReportController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdvertisementController;
-use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Admin\BillingController as AdminBillingController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\ModerationController;
@@ -160,9 +160,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.password');
     Route::delete('/account', [AccountController::class, 'destroy'])->name('account.destroy');
 
-    // Connected accounts (link / unlink Google to the signed-in user).
-    Route::get('/account/connections/google', [GoogleAuthController::class, 'connect'])->middleware('throttle:30,1')->name('account.google.connect');
-    Route::delete('/account/connections/google', [GoogleAuthController::class, 'disconnect'])->name('account.google.disconnect');
+    // Connected accounts (link / unlink a social provider to the signed-in user).
+    foreach (\App\Services\Auth\SocialProviders::keys() as $socialProvider) {
+        Route::get("/account/connections/{$socialProvider}", [SocialAuthController::class, 'connect'])->defaults('provider', $socialProvider)->middleware('throttle:30,1')->name("account.{$socialProvider}.connect");
+        Route::delete("/account/connections/{$socialProvider}", [SocialAuthController::class, 'disconnect'])->defaults('provider', $socialProvider)->name("account.{$socialProvider}.disconnect");
+    }
 
     // Leave an admin impersonation session (available to the impersonated account).
     Route::post('/impersonate/leave', [AdminUserController::class, 'leaveImpersonation'])->name('impersonate.leave');
@@ -260,9 +262,11 @@ Route::get('/help/{slug}', [HelpController::class, 'show'])->name('help.show')->
 // Public: switch the UI language (guest + authenticated).
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', '[A-Za-z_-]+');
 
-// Public: "Sign in with Google" OAuth (guest accessible; 404s when disabled).
-Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:30,1')->name('auth.google.redirect');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:30,1')->name('auth.google.callback');
+// Public: social-login OAuth (Google, GitHub, Facebook — guest accessible; 404s when disabled).
+foreach (\App\Services\Auth\SocialProviders::keys() as $socialProvider) {
+    Route::get("/auth/{$socialProvider}/redirect", [SocialAuthController::class, 'redirect'])->defaults('provider', $socialProvider)->middleware('throttle:30,1')->name("auth.{$socialProvider}.redirect");
+    Route::get("/auth/{$socialProvider}/callback", [SocialAuthController::class, 'callback'])->defaults('provider', $socialProvider)->middleware('throttle:30,1')->name("auth.{$socialProvider}.callback");
+}
 
 // Public: unlock a password-protected link.
 Route::post('/unlock/{alias}', [RedirectController::class, 'unlock'])
