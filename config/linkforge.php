@@ -22,7 +22,7 @@ return [
 
     // Shipped version. The applied version is tracked in the `app_version` setting
     // and bumped by the in-app updater; this is the floor for a fresh install.
-    'version' => '1.0.36',
+    'version' => '1.0.37',
     'tagline' => env('LF_TAGLINE', 'Forge links that work harder.'),
     'description' => env('LF_DESCRIPTION', 'A premium, AI-native link platform with branded domains, deep analytics, a QR studio and safety scanning, on hosting you own.'),
 
@@ -70,10 +70,10 @@ return [
 
     // Built-in theme presets the admin can switch between (extensible).
     'presets' => [
-        'forge'   => ['label' => 'Forge (emerald + amber)', 'brand' => 'emerald', 'spark' => 'amber'],
-        'sapphire'=> ['label' => 'Sapphire (blue + sky)',   'brand' => 'blue',    'spark' => 'sky'],
-        'sunset'  => ['label' => 'Sunset (amber + rose)',   'brand' => 'amber',   'spark' => 'rose'],
-        'graphite'=> ['label' => 'Graphite (slate + teal)', 'brand' => 'slate',   'spark' => 'teal'],
+        'forge' => ['label' => 'Forge (emerald + amber)', 'brand' => 'emerald', 'spark' => 'amber'],
+        'sapphire' => ['label' => 'Sapphire (blue + sky)',   'brand' => 'blue',    'spark' => 'sky'],
+        'sunset' => ['label' => 'Sunset (amber + rose)',   'brand' => 'amber',   'spark' => 'rose'],
+        'graphite' => ['label' => 'Graphite (slate + teal)', 'brand' => 'slate',   'spark' => 'teal'],
     ],
 
     /*
@@ -223,6 +223,13 @@ return [
         // with LF_LICENSE_RELAY, or set to '' to disable online verification.
         'relay_url' => env('LF_LICENSE_RELAY', 'https://license.sangeeth.biz'),
         'item_id' => env('LF_ENVATO_ITEM_ID', ''), // your CodeCanyon item id (optional cross-check)
+
+        // Ed25519 PUBLIC key that the relay's verify responses are signed with. Baked in (a
+        // trust root, like the OTA key): the app only trusts a "valid" verdict carrying a
+        // signature this key verifies, so a fake/local relay cannot forge a valid license.
+        // The matching SECRET lives only on the author's relay (LICENSE_SIGNING_SECRET).
+        // Missing/unsigned => the install is treated as "unverified" (fail-open, never blocked).
+        'verify_public_key' => '9CAUHqWaB46SSpp2A3GOZnoMwKTUwRiZaetUVdjbZCo=',
     ],
 
     // Demo mode: public showcase. Destructive + config-changing actions are blocked,

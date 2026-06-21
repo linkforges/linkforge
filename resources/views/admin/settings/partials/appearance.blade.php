@@ -52,11 +52,7 @@
                 @php $logo = $s['brand_logo'] ?? ''; @endphp
                 <div class="flex items-center gap-4">
                     <span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                        @if ($logo)
-                            <img src="{{ $logo }}" alt="Current logo" class="h-full w-full object-contain p-1.5">
-                        @else
-                            <svg class="h-6 w-6 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg>
-                        @endif
+                        <img src="{{ $logo ?: asset('logo.png') }}" alt="{{ $logo ? 'Current logo' : 'Default logo' }}" class="h-full w-full object-contain p-1.5">
                     </span>
                     <div class="min-w-0 flex-1">
                         <input type="file" name="logo_file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-3.5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700">
@@ -77,11 +73,7 @@
                 @php $favicon = $s['brand_favicon'] ?? ''; @endphp
                 <div class="flex items-center gap-4">
                     <span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                        @if ($favicon)
-                            <img src="{{ $favicon }}" alt="Current favicon" class="h-8 w-8 object-contain">
-                        @else
-                            <svg class="h-6 w-6 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>
-                        @endif
+                        <img src="{{ $favicon ?: asset('favicon.png') }}" alt="{{ $favicon ? 'Current favicon' : 'Default favicon' }}" class="h-8 w-8 object-contain">
                     </span>
                     <div class="min-w-0 flex-1">
                         <input type="file" name="favicon_file" accept=".ico,.png,.svg,image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-3.5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700">

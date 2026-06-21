@@ -2,7 +2,7 @@
     $brand = config('linkforge.theme.brand.600') ?: '#059669';
     $appName = config('linkforge.name');
     $appUrl = config('app.url');
-    $logo = config('linkforge.logo');
+    $logo = config('linkforge.logo') ?: asset('logo.png');
 @endphp
 <!DOCTYPE html>
 <html lang="en">

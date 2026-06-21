@@ -248,6 +248,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/updates/discard', [UpdateController::class, 'discard'])->name('updates.discard');
     Route::post('/updates/check', [UpdateController::class, 'checkRemote'])->name('updates.check');
     Route::post('/updates/download', [UpdateController::class, 'downloadRemote'])->name('updates.download');
+    Route::get('/license', [\App\Http\Controllers\Admin\LicenseController::class, 'show'])->name('license');
+    Route::post('/license/recheck', [\App\Http\Controllers\Admin\LicenseController::class, 'recheck'])->name('license.recheck');
     Route::get('/languages', [LanguageController::class, 'index'])->name('languages');
     Route::post('/languages', [LanguageController::class, 'store'])->name('languages.store');
     Route::post('/languages/default', [LanguageController::class, 'setDefault'])->name('languages.default');

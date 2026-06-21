@@ -108,12 +108,27 @@ class InstallerTest extends TestCase
 
     public function test_license_service_verifies_against_the_relay(): void
     {
-        config(['linkforge.license.relay_url' => 'https://relay.test']);
-        \Illuminate\Support\Facades\Http::fake([
-            'relay.test/verify' => \Illuminate\Support\Facades\Http::response(['valid' => true, 'license' => ['buyer' => 'bob', 'item_id' => '123']], 200),
+        // A "valid" verdict is only trusted as confirmed when it carries a signature the
+        // app's baked public key verifies (otherwise it's stored as merely "unverified").
+        $kp = sodium_crypto_sign_keypair();
+        config([
+            'linkforge.license.relay_url' => 'https://relay.test',
+            'linkforge.license.verify_public_key' => base64_encode(sodium_crypto_sign_publickey($kp)),
+        ]);
+        $code = '8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f';
+        $domain = 'buyer.test';
+        $issuedAt = gmdate('c');
+        $sig = base64_encode(sodium_crypto_sign_detached(
+            'lf-license-v1|'.$code.'|'.$domain.'|valid|'.$issuedAt,
+            sodium_crypto_sign_secretkey($kp)
+        ));
+        Http::fake([
+            'relay.test/verify' => Http::response([
+                'valid' => true, 'license' => ['buyer' => 'bob', 'item_id' => '123'], 'issued_at' => $issuedAt, 'signature' => $sig,
+            ], 200),
         ]);
 
-        $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
+        $result = app(LicenseService::class)->verify($code, $domain);
 
         $this->assertTrue($result['valid']);
         $this->assertFalse($result['unverified'] ?? false);
@@ -123,8 +138,8 @@ class InstallerTest extends TestCase
     public function test_license_service_hard_fails_on_a_relay_rejection(): void
     {
         config(['linkforge.license.relay_url' => 'https://relay.test']);
-        \Illuminate\Support\Facades\Http::fake([
-            'relay.test/verify' => \Illuminate\Support\Facades\Http::response(['valid' => false, 'message' => 'Purchase code not found.'], 422),
+        Http::fake([
+            'relay.test/verify' => Http::response(['valid' => false, 'message' => 'Purchase code not found.'], 422),
         ]);
 
         $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
@@ -136,8 +151,8 @@ class InstallerTest extends TestCase
     public function test_license_service_fails_open_on_relay_error(): void
     {
         config(['linkforge.license.relay_url' => 'https://relay.test']);
-        \Illuminate\Support\Facades\Http::fake([
-            'relay.test/verify' => \Illuminate\Support\Facades\Http::response('upstream down', 502),
+        Http::fake([
+            'relay.test/verify' => Http::response('upstream down', 502),
         ]);
 
         $result = app(LicenseService::class)->verify('8f3c9d21-1a2b-4c5d-9e8f-0a1b2c3d4e5f');
