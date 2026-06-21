@@ -453,7 +453,8 @@
                 <a href="{{ route('blog.index') }}" class="hover:text-slate-800">Blog</a>
                 <a href="{{ route('help.index') }}" class="hover:text-slate-800">Help</a>
             </nav>
-            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} {{ config('linkforge.name') }}. Built to be owned.</p>
+            @php $lfFooter = \App\Models\Setting::get('footer_text'); @endphp
+            <p class="text-xs text-slate-400">{!! $lfFooter ? str_replace('{year}', date('Y'), $lfFooter) : '&copy; '.date('Y').' '.e(config('linkforge.name')).'. Built to be owned.' !!}</p>
         </div>
     </footer>
 </body>

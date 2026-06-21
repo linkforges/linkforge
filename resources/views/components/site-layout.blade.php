@@ -62,7 +62,8 @@
                 <a href="{{ route('help.index') }}" class="hover:text-slate-800">Help</a>
                 <a href="{{ route('register') }}" class="hover:text-slate-800">Get started</a>
             </nav>
-            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} {{ config('linkforge.name') }}.</p>
+            @php $lfFooter = \App\Models\Setting::get('footer_text'); @endphp
+            <p class="text-xs text-slate-400">{!! $lfFooter ? str_replace('{year}', date('Y'), $lfFooter) : '&copy; '.date('Y').' '.e(config('linkforge.name')).'.' !!}</p>
         </div>
     </footer>
 </body>

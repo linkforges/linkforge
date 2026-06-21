@@ -491,7 +491,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <thead><tr><th>Tab</th><th>What you set</th></tr></thead>
           <tbody>
             <tr><td><a href="#cfg-general">General</a></td><td>Site name, registrations, guest shortening, maintenance mode.</td></tr>
-            <tr><td><a href="#cfg-appearance">Appearance</a></td><td>Logo, color theme, font, default light/dark scheme.</td></tr>
+            <tr><td><a href="#cfg-appearance">Appearance</a></td><td>Logo, favicon, color theme, font, default light/dark scheme, custom CSS/head code and footer.</td></tr>
             <tr><td><a href="#cfg-social">Social login</a></td><td>Google / GitHub / Facebook sign-in.</td></tr>
             <tr><td><a href="#cfg-safety">Safety</a></td><td>Blocklists, threat feeds, Turnstile CAPTCHA.</td></tr>
             <tr><td><a href="#cfg-payments">Billing</a></td><td>Payment gateway and currency.</td></tr>
@@ -525,11 +525,14 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
         <p>Make LinkForge yours. Nothing here requires touching code or rebuilding assets.</p>
         <ul>
           <li><strong>Logo</strong> - upload a PNG, SVG, JPG or WebP (max 2&nbsp;MB). It appears in the header, login and emails. Tick <em>Remove</em> to clear it and fall back to the text logo.</li>
+          <li><strong>Favicon</strong> - upload your own browser-tab icon (PNG, SVG or ICO, square, up to 1&nbsp;MB). It replaces the bundled icon everywhere, including the admin panel. Tick <em>Remove</em> to fall back to the default.</li>
           <li><strong>Color theme</strong> - choose a built-in preset: <em>Forge</em> (emerald + amber), <em>Sapphire</em> (blue + sky), <em>Sunset</em> (amber + rose) or <em>Graphite</em> (slate + teal). The whole UI re-colors instantly.</li>
           <li><strong>Default color scheme</strong> - <em>Light</em>, <em>Dark</em> or <em>System</em> (follows the visitor's device). Each visitor can still override it with the header toggle.</li>
           <li><strong>Font</strong> - pick from the bundled, self-hosted font families.</li>
+          <li><strong>Custom code</strong> - add your own <em>Custom CSS</em> and <em>Custom head HTML</em> (fonts, meta tags or trusted third-party snippets). Both inject into the public site and customer dashboard, never the admin panel.</li>
+          <li><strong>Footer</strong> - override the small copyright line on the public site. HTML is allowed (e.g. links); use <code>{year}</code> for the current year. Leave blank for the default.</li>
         </ul>
-        <figure id="shot-appearance"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">07</span></span><div class="shot__cap">Appearance settings - logo upload, theme presets and color scheme.</div></div></figure>
+        <figure id="shot-appearance"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">07</span></span><div class="shot__cap">Appearance settings - logo and favicon upload, theme presets, custom code and footer.</div></div></figure>
         <div class="callout callout--note">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
           <div>Full white-labelling (removing all "LinkForge" branding for your customers) is available on plans with the <em>White label</em> feature enabled - see <a href="#cfg-plans">Plans &amp; pricing</a>.</div>

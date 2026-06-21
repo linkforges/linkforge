@@ -41,3 +41,12 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ $gaId }}');</script>
 @endif
+
+{{-- Operator custom code from Appearance settings. Injected on the public site and
+     dashboard, never the admin panel. Trusted single-operator input, like GA/GTM above. --}}
+@php
+    $lfCustomCss = \App\Models\Setting::get('custom_css');
+    $lfCustomHead = \App\Models\Setting::get('custom_head');
+@endphp
+@if ($lfCustomCss)<style>{!! $lfCustomCss !!}</style>@endif
+@if ($lfCustomHead){!! $lfCustomHead !!}@endif

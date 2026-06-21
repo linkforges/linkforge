@@ -71,7 +71,55 @@
                     </div>
                 </div>
             </div>
+
+            <div>
+                <label class="lf-label">Favicon</label>
+                @php $favicon = $s['brand_favicon'] ?? ''; @endphp
+                <div class="flex items-center gap-4">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                        @if ($favicon)
+                            <img src="{{ $favicon }}" alt="Current favicon" class="h-8 w-8 object-contain">
+                        @else
+                            <svg class="h-6 w-6 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>
+                        @endif
+                    </span>
+                    <div class="min-w-0 flex-1">
+                        <input type="file" name="favicon_file" accept=".ico,.png,.svg,image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon" class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-3.5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700">
+                        @error('favicon_file')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        <p class="mt-1 text-xs text-slate-400">PNG, SVG or ICO, square and 32&times;32 or larger, up to 1&nbsp;MB. Shown in the browser tab across the whole app.</p>
+                        @if ($favicon)
+                            <label class="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
+                                <input type="checkbox" name="favicon_clear" value="1" class="h-3.5 w-3.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30">
+                                Remove current favicon
+                            </label>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="lf-card p-6">
+        <h3 class="mb-1 text-sm font-semibold text-slate-900">Custom code</h3>
+        <p class="mb-4 text-xs text-slate-400">Injected into the public site and customer dashboard (never the admin panel). For brand tweaks or third-party snippets you trust.</p>
+        <div class="space-y-4">
+            <div>
+                <label class="lf-label" for="custom_css">Custom CSS</label>
+                <textarea id="custom_css" name="custom_css" rows="5" class="lf-input font-mono text-xs" placeholder=".lf-card { border-radius: 1rem; }">{{ old('custom_css', $s['custom_css'] ?? '') }}</textarea>
+                <p class="mt-1 text-xs text-slate-400">Wrapped in a &lt;style&gt; tag automatically.</p>
+            </div>
+            <div>
+                <label class="lf-label" for="custom_head">Custom head HTML</label>
+                <textarea id="custom_head" name="custom_head" rows="4" class="lf-input font-mono text-xs" placeholder="&lt;link rel=&quot;stylesheet&quot; href=&quot;https://...&quot;&gt;">{{ old('custom_head', $s['custom_head'] ?? '') }}</textarea>
+                <p class="mt-1 text-xs text-slate-400">Added to the end of &lt;head&gt;: fonts, meta tags or trusted scripts.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="lf-card p-6">
+        <h3 class="mb-1 text-sm font-semibold text-slate-900">Footer</h3>
+        <p class="mb-4 text-xs text-slate-400">The small copyright line on the public site. Leave blank for the default. HTML is allowed (e.g. links); use <code class="rounded bg-slate-100 px-1 text-[11px]">{year}</code> for the current year.</p>
+        <input type="text" name="footer_text" value="{{ old('footer_text', $s['footer_text'] ?? '') }}" class="lf-input" placeholder="&copy; {year} Your Brand. All rights reserved.">
     </div>
 
     <div class="flex justify-end">

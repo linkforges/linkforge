@@ -181,9 +181,20 @@ class SettingController extends Controller
             'theme_font' => ['required', Rule::in(ThemePalette::FONTS)],
             'theme_scheme' => ['nullable', Rule::in(['light', 'dark', 'system'])],
             'logo_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,gif,svg', 'max:2048'],
+            'favicon_file' => ['nullable', 'file', 'mimes:ico,png,svg,jpg,jpeg,webp', 'max:1024'],
+            'custom_css' => ['nullable', 'string', 'max:20000'],
+            'custom_head' => ['nullable', 'string', 'max:20000'],
+            'footer_text' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $out = ['theme_preset' => $data['theme_preset'], 'theme_font' => $data['theme_font'], 'theme_scheme' => $data['theme_scheme'] ?? 'system'];
+        $out = [
+            'theme_preset' => $data['theme_preset'],
+            'theme_font' => $data['theme_font'],
+            'theme_scheme' => $data['theme_scheme'] ?? 'system',
+            'custom_css' => $data['custom_css'] ?? '',
+            'custom_head' => $data['custom_head'] ?? '',
+            'footer_text' => $data['footer_text'] ?? '',
+        ];
 
         if ($request->hasFile('logo_file')) {
             $out['brand_logo'] = $this->storeLogo($request->file('logo_file'));
@@ -191,9 +202,43 @@ class SettingController extends Controller
             $out['brand_logo'] = '';
         }
 
+        if ($request->hasFile('favicon_file')) {
+            $out['brand_favicon'] = $this->storeFavicon($request->file('favicon_file'));
+        } elseif ($request->boolean('favicon_clear')) {
+            $out['brand_favicon'] = '';
+        }
+
         Setting::putMany($out);
 
         return $this->done('appearance', 'Appearance saved.');
+    }
+
+    /** Store an uploaded favicon. SVG/ICO are kept as-is; other rasters become a 64px PNG. */
+    private function storeFavicon(\Illuminate\Http\UploadedFile $file): string
+    {
+        $dir = public_path('uploads/branding');
+        if (! is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $base = 'favicon-'.\Illuminate\Support\Str::random(10);
+        $ext = strtolower($file->getClientOriginalExtension());
+
+        if (in_array($ext, ['svg', 'ico'], true)) {
+            $file->move($dir, $base.'.'.$ext);
+
+            return asset('uploads/branding/'.$base.'.'.$ext);
+        }
+
+        $dest = $dir.DIRECTORY_SEPARATOR.$base.'.png';
+        if (\App\Support\ImageResizer::fitToPng($file->getPathname(), $dest, 64)) {
+            return asset('uploads/branding/'.$base.'.png');
+        }
+
+        // Resize failed (unreadable): keep the original.
+        $file->move($dir, $base.'.'.$ext);
+
+        return asset('uploads/branding/'.$base.'.'.$ext);
     }
 
     /** Store an uploaded logo (raster auto-downscaled to 256px; SVG kept as-is) and return its public URL. */
