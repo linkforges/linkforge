@@ -26,15 +26,27 @@ class Demo
      * gateway, etc. — stays usable so visitors can try the real features.
      */
     private const BLOCKED = [
+        // Admin: every screen is explorable (GETs pass), but no write changes demo state.
         'admin.settings',      // settings (incl. mail, license, the demo toggle itself)
         'admin.updates',       // the in-app updater
         'admin.languages',     // language file editing
-        'admin.users.update', 'admin.users.destroy', // don't mutate/delete accounts
+        'admin.users.update', 'admin.users.destroy',         // mutate / delete accounts
+        'admin.users.impersonate', 'admin.users.reset-link', // impersonation + outbound reset mail
         'admin.moderation',    // don't let demo admins delete other users' content
-        'account.password', 'account.profile', 'account.destroy', // keep demo logins stable
+        'admin.links',         // block / delete any link
+        'admin.plans',         // change the plans visitors see and can buy
+        'admin.billing',       // refund / cancel payments + subscriptions
+        'admin.ads',           // create / edit / delete ads
+        'admin.affiliate',     // approve commissions / pay affiliates out
+        'admin.reports',       // resolve abuse reports
+        'admin.tickets',       // reply to / close support tickets
+        'admin.blog', 'admin.help', 'admin.pages', // CMS content other visitors see
+        // Account / auth: keep the demo logins stable.
+        'account.password', 'account.profile', 'account.destroy',
+        'user-profile-information', 'user-password', // Fortify's parallel profile/password routes
         'register',            // one-click logins are the entry point; no account sprawl
         'password.email', 'password.update', // password reset (no real mail in demo)
-        // Config / security actions — visible to explore, but not changeable in the demo:
+        // Customer config / security actions — visible to explore, but not changeable in the demo:
         'domains',             // add / verify / delete custom domains
         'tokens',              // API tokens
         'webhooks',            // webhook endpoints (also avoids outbound abuse from the demo)

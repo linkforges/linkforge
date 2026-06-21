@@ -7,6 +7,7 @@ use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -34,27 +35,30 @@ class DatabaseSeeder extends Seeder
             ['email' => 'guest@system.local'],
             [
                 'name' => 'Guest',
-                'password' => Hash::make(\Illuminate\Support\Str::random(40)),
+                'password' => Hash::make(Str::random(40)),
                 'role' => 'user',
                 'status' => 'active',
                 'plan_id' => Plan::where('slug', 'free')->value('id'),
             ]
         );
 
-        // Admin account (change the password after first login).
-        $business = Plan::where('slug', 'business')->first();
+        // Non-production convenience admin. Production installs create the administrator through
+        // the web installer, so a known-password account is never seeded on a live site.
+        if (! app()->environment('production')) {
+            $business = Plan::where('slug', 'business')->first();
 
-        User::firstOrCreate(
-            ['email' => 'admin@linkforge.test'],
-            [
-                'name' => 'LinkForge Admin',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'status' => 'active',
-                'plan_id' => $business?->id,
-                'ai_credits' => (int) ($business?->limit('ai_credits') ?? 0),
-                'email_verified_at' => now(),
-            ]
-        );
+            User::firstOrCreate(
+                ['email' => 'admin@linkforge.test'],
+                [
+                    'name' => 'LinkForge Admin',
+                    'password' => Hash::make('password'),
+                    'role' => 'admin',
+                    'status' => 'active',
+                    'plan_id' => $business?->id,
+                    'ai_credits' => (int) ($business?->limit('ai_credits') ?? 0),
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
     }
 }

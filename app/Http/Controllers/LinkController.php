@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ScanLink;
+use App\Models\Domain;
 use App\Models\Link;
 use App\Models\User;
 use App\Models\Webhook;
@@ -12,6 +13,7 @@ use App\Services\Linking\AliasGenerator;
 use App\Services\Linking\DomainResolver;
 use App\Services\Safety\LinkSafety;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -206,9 +208,9 @@ class LinkController extends Controller
      * verified (active) custom domains, but only while their plan allows custom
      * domains. The default is always first.
      *
-     * @return \Illuminate\Support\Collection<int, \App\Models\Domain>
+     * @return Collection<int, Domain>
      */
-    private function selectableDomains(User $user): \Illuminate\Support\Collection
+    private function selectableDomains(User $user): Collection
     {
         $domains = collect();
         if ($default = $this->domains->default()) {
@@ -239,14 +241,25 @@ class LinkController extends Controller
     /** @return array<string, mixed> */
     private function validateLink(Request $request): array
     {
+        // Deep links use custom app schemes (myapp://), so http(s) can't be required — but
+        // script-executing schemes must be rejected: they run when the link is opened
+        // (href / window.location in the deeplink view). Strip whitespace/control chars first
+        // so "java\tscript:" can't sneak past.
+        $safeScheme = static function (string $attribute, mixed $value, \Closure $fail): void {
+            $bare = strtolower((string) preg_replace('/[\s\x00-\x20]+/', '', (string) $value));
+            if (preg_match('/^(javascript|data|vbscript|file):/', $bare)) {
+                $fail('That deep link uses a scheme that is not allowed.');
+            }
+        };
+
         $data = $request->validate([
             'long_url' => ['required', 'url', 'max:2048'],
             'alias' => ['nullable', 'string', 'max:190'],
             'title' => ['nullable', 'string', 'max:255'],
             'tags' => ['nullable', 'string', 'max:300'],
             'campaign_id' => ['nullable', 'integer'],
-            'deep_link_ios' => ['nullable', 'string', 'max:2048'],
-            'deep_link_android' => ['nullable', 'string', 'max:2048'],
+            'deep_link_ios' => ['nullable', 'string', 'max:2048', $safeScheme],
+            'deep_link_android' => ['nullable', 'string', 'max:2048', $safeScheme],
             'type' => ['nullable', 'in:direct,frame,splash,overlay,cta'],
             'expires_at' => ['nullable', 'date'],
             'password' => ['nullable', 'string', 'max:100'],
@@ -363,7 +376,10 @@ class LinkController extends Controller
             if (! in_array($type, ['geo', 'device', 'os', 'language', 'time', 'rotation'], true)) {
                 continue;
             }
-            if ($target === '' || ! filter_var($target, FILTER_VALIDATE_URL)) {
+            // Rule targets are web redirects: require http(s). FILTER_VALIDATE_URL alone
+            // passes "javascript://…" which would execute in window.location on the splash view.
+            $scheme = strtolower((string) parse_url($target, PHP_URL_SCHEME));
+            if ($target === '' || ! in_array($scheme, ['http', 'https'], true) || ! filter_var($target, FILTER_VALIDATE_URL)) {
                 continue;
             }
 

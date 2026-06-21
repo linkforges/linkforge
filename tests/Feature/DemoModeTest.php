@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\HelpArticle;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\Demo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class DemoModeTest extends TestCase
@@ -47,14 +49,14 @@ class DemoModeTest extends TestCase
         $this->get('/'.$user->bioPages()->first()->slug)->assertOk();
 
         // A full starter Help Center (20+ articles) is seeded.
-        $this->assertGreaterThanOrEqual(20, \App\Models\HelpArticle::where('status', 'published')->count());
+        $this->assertGreaterThanOrEqual(20, HelpArticle::where('status', 'published')->count());
 
         // Analytics history is seeded + rolled up (clicks → daily + country/city dimensions).
         $linkIds = $user->links()->pluck('id');
-        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('clicks')->whereIn('link_id', $linkIds)->count());
-        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_daily')->whereIn('link_id', $linkIds)->sum('clicks'));
-        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'country')->count());
-        $this->assertGreaterThan(0, \Illuminate\Support\Facades\DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'city')->count());
+        $this->assertGreaterThan(0, DB::table('clicks')->whereIn('link_id', $linkIds)->count());
+        $this->assertGreaterThan(0, DB::table('stat_daily')->whereIn('link_id', $linkIds)->sum('clicks'));
+        $this->assertGreaterThan(0, DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'country')->count());
+        $this->assertGreaterThan(0, DB::table('stat_dimension')->whereIn('link_id', $linkIds)->where('dimension', 'city')->count());
     }
 
     public function test_one_click_admin_login(): void
@@ -180,6 +182,38 @@ class DemoModeTest extends TestCase
         // Admin deleting a user — blocked.
         $this->actingAs($admin)->delete(route('admin.users.destroy', $user));
         $this->assertDatabaseHas('users', ['id' => $user->id]);
+    }
+
+    public function test_demo_blocks_the_parallel_fortify_profile_and_password_routes(): void
+    {
+        $this->artisan('demo:reset', ['--force' => true]);
+        $this->enableDemo();
+        $admin = User::where('email', Demo::ADMIN_EMAIL)->firstOrFail();
+
+        // Fortify registers PUT /user/profile-information independently of the app's own
+        // account.profile route. Without blocking it, a demo visitor could change the demo
+        // account's email (no password challenge) and the hijack would survive demo:reset.
+        $this->actingAs($admin)->put('/user/profile-information', [
+            'name' => 'Hijacked', 'email' => 'attacker@evil.test',
+        ])->assertRedirect();
+
+        $this->assertSame(Demo::ADMIN_EMAIL, $admin->fresh()->email);
+        $this->assertDatabaseMissing('users', ['email' => 'attacker@evil.test']);
+    }
+
+    public function test_demo_blocks_destructive_admin_writes(): void
+    {
+        // The admin panel stays fully explorable (GETs pass), but money / shared-content
+        // writes are locked so a demo visitor cannot deface or simulate transactions.
+        foreach ([
+            'admin.plans.update', 'admin.billing.payments.update', 'admin.ads.update',
+            'admin.affiliate.payout', 'admin.reports.update', 'admin.tickets.reply',
+            'admin.links.update', 'admin.blog.update', 'admin.help.update', 'admin.pages.update',
+            'admin.users.impersonate', 'admin.users.reset-link',
+            'user-profile-information.update', 'user-password.update',
+        ] as $route) {
+            $this->assertTrue(Demo::blocks($route), $route.' must be blocked in demo mode');
+        }
     }
 
     public function test_demo_marks_sensitive_pages_read_only(): void

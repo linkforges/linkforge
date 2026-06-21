@@ -95,6 +95,51 @@ class DeepLinkTest extends TestCase
         $this->assertSame('myapp://y', data_get($link->meta, 'deep_link.android'));
     }
 
+    public function test_script_scheme_deep_links_are_rejected(): void
+    {
+        $user = $this->proUser();
+
+        // javascript: would execute when the deep link is opened (window.location on the view).
+        $this->actingAs($user)->post('/links', [
+            'long_url' => 'https://example.com', 'alias' => 'xss',
+            'deep_link_ios' => 'javascript:alert(document.cookie)',
+        ])->assertSessionHasErrors('deep_link_ios');
+        $this->assertDatabaseMissing('links', ['alias' => 'xss']);
+
+        // Whitespace / control-char obfuscation (java\tscript:) is also rejected.
+        $this->actingAs($user)->post('/links', [
+            'long_url' => 'https://example.com', 'alias' => 'xss2',
+            'deep_link_android' => "java\tscript:alert(1)",
+        ])->assertSessionHasErrors('deep_link_android');
+        $this->assertDatabaseMissing('links', ['alias' => 'xss2']);
+
+        // A legitimate custom app scheme still saves.
+        $this->actingAs($user)->post('/links', [
+            'long_url' => 'https://example.com', 'alias' => 'ok',
+            'deep_link_ios' => 'myapp://item/1',
+        ])->assertRedirect(route('links.index'));
+        $this->assertSame('myapp://item/1', data_get($user->links()->where('alias', 'ok')->first()->meta, 'deep_link.ios'));
+    }
+
+    public function test_rule_target_urls_reject_script_schemes(): void
+    {
+        $user = $this->proUser();
+
+        // FILTER_VALIDATE_URL passes "javascript://…", which executes in window.location on the
+        // splash view. The safe https rule must persist; the script one must be dropped.
+        $this->actingAs($user)->post('/links', [
+            'long_url' => 'https://example.com', 'alias' => 'ruled',
+            'rules' => [
+                ['type' => 'geo', 'match' => 'US', 'target_url' => 'javascript://%0aalert(document.cookie)'],
+                ['type' => 'geo', 'match' => 'GB', 'target_url' => 'https://safe.example.com'],
+            ],
+        ])->assertRedirect(route('links.index'));
+
+        $targets = $user->links()->where('alias', 'ruled')->firstOrFail()->rules()->pluck('target_url')->all();
+        $this->assertContains('https://safe.example.com', $targets);
+        $this->assertNotContains('javascript://%0aalert(document.cookie)', $targets);
+    }
+
     public function test_free_user_cannot_save_deep_links(): void
     {
         $user = $this->freeUser();
