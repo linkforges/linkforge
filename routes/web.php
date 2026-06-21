@@ -246,6 +246,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/updates', [UpdateController::class, 'upload'])->name('updates.upload');
     Route::post('/updates/apply', [UpdateController::class, 'apply'])->name('updates.apply');
     Route::post('/updates/discard', [UpdateController::class, 'discard'])->name('updates.discard');
+    Route::post('/updates/check', [UpdateController::class, 'checkRemote'])->name('updates.check');
+    Route::post('/updates/download', [UpdateController::class, 'downloadRemote'])->name('updates.download');
     Route::get('/languages', [LanguageController::class, 'index'])->name('languages');
     Route::post('/languages', [LanguageController::class, 'store'])->name('languages.store');
     Route::post('/languages/default', [LanguageController::class, 'setDefault'])->name('languages.default');
