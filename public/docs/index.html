@@ -892,12 +892,16 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
 
       <section class="block" id="use-ai">
         <h2 class="sec"><a class="anchor-h" href="#use-ai">AI assist <span class="badge badge--optional">if enabled</span></a></h2>
-        <p>When you've configured an <a href="#cfg-ai">AI provider</a>, two helpers appear for users:</p>
+        <p>When you've configured an <a href="#cfg-ai">AI provider</a>, these helpers appear for users:</p>
         <ul>
-          <li><strong>Suggest with AI</strong> - on the link form, proposes short, memorable aliases based on the destination URL and title.</li>
-          <li><strong>Ask your links</strong> - a plain-English analytics assistant: "Which links got the most clicks from mobile last week?" The model only maps questions onto safe, pre-approved metrics - it never writes or runs database queries directly.</li>
+          <li><strong>Suggest with AI</strong> - on the link form, proposes short, memorable aliases from the destination URL and title.</li>
+          <li><strong>Write title with AI</strong> - on the link form, writes a clear title and short description for a destination URL in one click.</li>
+          <li><strong>Ask your links</strong> - a plain-English analytics assistant. Ask things like "Which links got the most clicks?", "Clicks this week vs last week", or "Top cities last 30 days". It answers with overall totals, per-link rankings, period comparisons, and breakdowns by country, city, device, OS, browser, referrer or language. The model only maps questions onto safe, pre-approved metrics; it never writes or runs database queries.</li>
+          <li><strong>AI performance summary</strong> - on any link's analytics page, a one-click plain-language read on how that link is doing, with a practical suggestion.</li>
+          <li><strong>Write bio with AI</strong> - in the bio-page builder, generates a display name, tagline and bio from a short description of the person or brand.</li>
+          <li><strong>Weekly insight</strong> - a short performance summary on each active user's dashboard, refreshed weekly.</li>
         </ul>
-        <p>Each use spends <a href="#cfg-ai">AI credits</a> from the user's plan allowance.</p>
+        <p>Each use spends <a href="#cfg-ai">AI credits</a> from the user's plan allowance, so AI spend stays predictable.</p>
       </section>
 
       <section class="block" id="use-billing">

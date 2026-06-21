@@ -151,9 +151,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/support/{ticket}/reply', [SupportController::class, 'reply'])->middleware('throttle:30,1')->name('support.reply');
     Route::post('/support/{ticket}/close', [SupportController::class, 'close'])->name('support.close');
 
-    // AI assist (alias suggestions, "ask your links"). Inert without an API key.
+    // AI assist (alias suggestions, "ask your links", title/bio writers, link insight).
+    // All inert without an API key.
     Route::post('/ai/alias', [AiController::class, 'suggestAlias'])->middleware('throttle:20,1')->name('ai.alias');
     Route::post('/ai/ask', [AiController::class, 'ask'])->middleware('throttle:20,1')->name('ai.ask');
+    Route::post('/ai/title', [AiController::class, 'writeTitle'])->middleware('throttle:20,1')->name('ai.title');
+    Route::post('/ai/bio-copy', [AiController::class, 'bioCopy'])->middleware('throttle:20,1')->name('ai.bio-copy');
+    Route::post('/ai/links/{link}/insight', [AiController::class, 'linkInsight'])->middleware('throttle:20,1')->name('ai.link-insight');
 
     // Account settings (profile, avatar, password, 2FA, account deletion).
     Route::get('/account', [AccountController::class, 'edit'])->name('account');
@@ -246,6 +250,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/settings/geo/download/start', [SettingController::class, 'geoDownloadStart'])->name('settings.geo.download.start');
     Route::post('/settings/geo/download/chunk', [SettingController::class, 'geoDownloadChunk'])->name('settings.geo.download.chunk');
     Route::post('/settings/geo/download/finish', [SettingController::class, 'geoDownloadFinish'])->name('settings.geo.download.finish');
+    Route::post('/settings/ai/test', [SettingController::class, 'aiTest'])->name('settings.ai.test');
 });
 
 // Public: anonymous link shortening from the landing page (rate-limited).

@@ -321,6 +321,32 @@ class SettingController extends Controller
         return $this->done('ai', 'AI settings saved.');
     }
 
+    /**
+     * Send a tiny request to the active AI provider so the operator can confirm
+     * the saved key + model actually work. Always returns 200 with {ok, message}.
+     */
+    public function aiTest(\App\Services\Ai\ClaudeClient $claude)
+    {
+        if (\App\Support\Demo::enabled()) {
+            return response()->json(['ok' => false, 'message' => 'Connection testing is disabled in demo mode.']);
+        }
+
+        if (! $claude->enabled()) {
+            return response()->json(['ok' => false, 'message' => 'No API key is set for the active provider. Save a key first, then test.']);
+        }
+
+        try {
+            $reply = $claude->text('You are a connection test. Reply with the single word OK.', 'Reply OK.', 16);
+
+            return response()->json([
+                'ok' => true,
+                'message' => 'Connection OK. Model "'.$claude->model().'" replied: '.\Illuminate\Support\Str::limit(trim($reply) ?: 'OK', 60),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json(['ok' => false, 'message' => 'Test failed: '.\Illuminate\Support\Str::limit($e->getMessage(), 140)]);
+        }
+    }
+
     private function saveEmail(Request $request)
     {
         $data = $request->validate([

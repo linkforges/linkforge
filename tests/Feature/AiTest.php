@@ -181,6 +181,143 @@ class AiTest extends TestCase
         $this->assertSame(5, (int) $user->fresh()->ai_credits);
     }
 
+    public function test_ask_ranks_top_links(): void
+    {
+        $this->enableAi();
+        $user = User::factory()->create(['ai_credits' => 5]);
+        $domain = Domain::query()->first();
+        $a = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'aaa', 'title' => 'Big Sale', 'long_url' => 'https://example.com/a']);
+        $b = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'bbb', 'long_url' => 'https://example.com/b']);
+        DB::table('stat_daily')->insert([
+            ['link_id' => $a->id, 'day' => now()->toDateString(), 'clicks' => 50, 'uniques' => 40, 'bots' => 0],
+            ['link_id' => $b->id, 'day' => now()->toDateString(), 'clicks' => 12, 'uniques' => 9, 'bots' => 0],
+        ]);
+        $this->fakeClaude([
+            json_encode(['metric' => 'clicks', 'dimension' => 'link', 'range_days' => 30, 'top_n' => 8, 'compare' => false, 'understood' => true]),
+            'Your top link is Big Sale with 50 clicks.',
+        ]);
+
+        $res = $this->actingAs($user)->postJson('/ai/ask', ['question' => 'which links got the most clicks?'])
+            ->assertOk()
+            ->assertJsonPath('data.kind', 'links')
+            ->assertJsonPath('data.rows.0.label', 'Big Sale') // title preferred over alias
+            ->assertJsonPath('data.rows.0.clicks', 50);
+        $this->assertSame('bbb', $res->json('data.rows.1.label')); // no title falls back to alias
+    }
+
+    public function test_ask_compares_to_the_previous_period(): void
+    {
+        $this->enableAi();
+        $user = User::factory()->create(['ai_credits' => 5]);
+        $domain = Domain::query()->first();
+        $link = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'cmp', 'long_url' => 'https://example.com']);
+        // 30 clicks in the current 7-day window; 10 in the preceding one (8 days ago).
+        DB::table('stat_daily')->insert([
+            ['link_id' => $link->id, 'day' => now()->toDateString(), 'clicks' => 30, 'uniques' => 20, 'bots' => 0],
+            ['link_id' => $link->id, 'day' => now()->subDays(8)->toDateString(), 'clicks' => 10, 'uniques' => 8, 'bots' => 0],
+        ]);
+        $this->fakeClaude([
+            json_encode(['metric' => 'clicks', 'dimension' => 'none', 'range_days' => 7, 'top_n' => 8, 'compare' => true, 'understood' => true]),
+            'Clicks are up versus last week.',
+        ]);
+
+        $this->actingAs($user)->postJson('/ai/ask', ['question' => 'clicks this week vs last week'])
+            ->assertOk()
+            ->assertJsonPath('data.kind', 'total')
+            ->assertJsonPath('data.value', 30)
+            ->assertJsonPath('data.previous', 10)
+            ->assertJsonPath('data.change_pct', 200);
+    }
+
+    public function test_ask_supports_the_city_dimension(): void
+    {
+        $this->enableAi();
+        $user = User::factory()->create(['ai_credits' => 5]);
+        $domain = Domain::query()->first();
+        $link = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'cty', 'long_url' => 'https://example.com']);
+        DB::table('stat_dimension')->insert([
+            ['link_id' => $link->id, 'day' => now()->toDateString(), 'dimension' => 'city', 'label' => 'London', 'clicks' => 20],
+            ['link_id' => $link->id, 'day' => now()->toDateString(), 'dimension' => 'city', 'label' => 'Paris', 'clicks' => 8],
+        ]);
+        $this->fakeClaude([
+            json_encode(['metric' => 'clicks', 'dimension' => 'city', 'range_days' => 30, 'top_n' => 8, 'compare' => false, 'understood' => true]),
+            'London leads with 20 clicks.',
+        ]);
+
+        $this->actingAs($user)->postJson('/ai/ask', ['question' => 'top cities last 30 days'])
+            ->assertOk()
+            ->assertJsonPath('data.kind', 'breakdown')
+            ->assertJsonPath('data.dimension', 'city')
+            ->assertJsonPath('data.rows.0.label', 'London')
+            ->assertJsonPath('data.rows.0.clicks', 20);
+    }
+
+    public function test_ai_title_writes_a_title_and_charges(): void
+    {
+        $this->enableAi();
+        $this->fakeClaude([json_encode(['title' => 'Spring Sale 2026', 'description' => 'Shop the spring sale now.'])]);
+        $user = User::factory()->create(['ai_credits' => 5]);
+
+        $this->actingAs($user)->postJson('/ai/title', ['long_url' => 'https://example.com/spring-sale'])
+            ->assertOk()
+            ->assertJson(['title' => 'Spring Sale 2026', 'description' => 'Shop the spring sale now.', 'credits' => 4]);
+        $this->assertSame(4, (int) $user->fresh()->ai_credits);
+    }
+
+    public function test_link_insight_summarises_a_single_link(): void
+    {
+        $this->enableAi();
+        $this->fakeClaude(['This link is up this week, led by the US. Keep sharing it.']);
+        $user = User::factory()->create(['ai_credits' => 5]);
+        $domain = Domain::query()->first();
+        $link = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'ins', 'long_url' => 'https://example.com']);
+        DB::table('stat_daily')->insert(['link_id' => $link->id, 'day' => now()->toDateString(), 'clicks' => 9, 'uniques' => 7, 'bots' => 0]);
+
+        $this->actingAs($user)->postJson('/ai/links/'.$link->id.'/insight')
+            ->assertOk()
+            ->assertJsonPath('summary', 'This link is up this week, led by the US. Keep sharing it.')
+            ->assertJsonPath('credits', 4);
+    }
+
+    public function test_link_insight_rejects_another_users_link_without_charging(): void
+    {
+        $this->enableAi();
+        Http::fake();
+        $owner = User::factory()->create();
+        $domain = Domain::query()->first();
+        $link = $owner->links()->create(['domain_id' => $domain->id, 'alias' => 'mine', 'long_url' => 'https://example.com']);
+        $intruder = User::factory()->create(['ai_credits' => 5]);
+
+        $this->actingAs($intruder)->postJson('/ai/links/'.$link->id.'/insight')->assertStatus(403);
+
+        Http::assertNothingSent();
+        $this->assertSame(5, (int) $intruder->fresh()->ai_credits);
+    }
+
+    public function test_bio_copy_writes_profile_copy(): void
+    {
+        $this->enableAi();
+        $this->fakeClaude([json_encode(['display_name' => 'Maya Travels', 'headline' => 'Bali-based travel photographer', 'bio' => 'Capturing island light, one frame at a time.'])]);
+        $user = User::factory()->create(['ai_credits' => 5]);
+
+        $this->actingAs($user)->postJson('/ai/bio-copy', ['topic' => 'travel photographer in Bali'])
+            ->assertOk()
+            ->assertJson(['display_name' => 'Maya Travels', 'headline' => 'Bali-based travel photographer', 'credits' => 4]);
+    }
+
+    public function test_ai_helpers_render_on_their_pages_when_enabled(): void
+    {
+        $this->enableAi();
+        $user = User::factory()->create(['ai_credits' => 5]);
+        $domain = Domain::query()->first();
+        $link = $user->links()->create(['domain_id' => $domain->id, 'alias' => 'pg', 'long_url' => 'https://example.com']);
+
+        // The AI-gated blocks only render when AI is enabled; assert each one is present.
+        $this->actingAs($user)->get(route('links.create'))->assertOk()->assertSee('Write title with AI');
+        $this->actingAs($user)->get(route('bio.create'))->assertOk()->assertSee('Write with AI');
+        $this->actingAs($user)->get(route('links.stats', $link))->assertOk()->assertSee('AI performance summary');
+    }
+
     public function test_weekly_insights_command_generates_and_stores_an_insight(): void
     {
         $this->enableAi();

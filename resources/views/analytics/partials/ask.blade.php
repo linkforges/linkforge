@@ -21,11 +21,12 @@
         </div>
 
         <div class="mt-3 flex flex-wrap gap-2">
-            @foreach (['How many clicks in the last 7 days?', 'Top countries this month', 'Which devices last 30 days?', 'Top referrers last 90 days'] as $example)
+            @foreach (['Which links got the most clicks?', 'Clicks this week vs last week', 'Top countries this month', 'Top cities last 30 days', 'Which devices last 30 days?'] as $example)
                 <button type="button" data-ask-example
                         class="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700">{{ $example }}</button>
             @endforeach
         </div>
+        <p class="mt-2 text-[11px] text-slate-400">Answers read your live analytics. Each question uses {{ (int) config('linkforge.ai.cost.ask', 1) }} AI credit.</p>
 
         <div data-ask-result class="mt-4 hidden rounded-xl border border-slate-200 bg-slate-50/70 p-4">
             <p data-ask-answer class="text-sm leading-relaxed text-slate-800"></p>
@@ -105,7 +106,7 @@
                 }).then(function (res) {
                     if (!res.ok) { throw new Error(res.body.message || 'Could not answer that.'); }
                     render('ok', res.body.answer || 'No answer.');
-                    if (res.body.data && res.body.data.kind === 'breakdown') {
+                    if (res.body.data && (res.body.data.kind === 'breakdown' || res.body.data.kind === 'links')) {
                         renderBars(res.body.data.rows);
                     }
                 }).catch(function (e) {

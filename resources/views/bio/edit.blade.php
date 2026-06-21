@@ -97,6 +97,72 @@
                     <label class="lf-label" for="bio-title">Display name</label>
                     <input id="bio-title" name="title" value="{{ old('title', $page?->title) }}" class="lf-input" placeholder="Your name or brand">
                 </div>
+
+                @if ($aiEnabled ?? false)
+                    <div class="sm:col-span-2" data-ai-bio data-ai-bio-url="{{ route('ai.bio-copy') }}">
+                        <div class="flex flex-col gap-2 rounded-xl border border-spark-200 bg-spark-50/60 p-3 sm:flex-row sm:items-center">
+                            <input type="text" data-ai-bio-topic maxlength="200" class="lf-input flex-1 bg-white" placeholder="Describe yourself, e.g. travel photographer in Bali">
+                            <button type="button" data-ai-bio-trigger
+                                    class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-spark-300 bg-white px-3 py-2 text-xs font-semibold text-spark-700 transition hover:bg-spark-100 disabled:cursor-not-allowed disabled:opacity-60">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.8L18.7 9l-4.8 1.9L12 15.7 10.1 10.9 5.3 9l4.8-1.2L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
+                                <span data-ai-bio-label>Write with AI</span>
+                                <span class="font-normal text-spark-500">· {{ (int) config('linkforge.ai.cost.alias', 1) }} credit</span>
+                            </button>
+                        </div>
+                        <p data-ai-bio-error class="mt-1.5 hidden text-xs text-red-600"></p>
+                        <p data-ai-bio-hint class="mt-1.5 hidden text-xs text-slate-500"></p>
+                    </div>
+
+                    <script>
+                        (function () {
+                            var root = document.querySelector('[data-ai-bio]');
+                            if (!root || root.dataset.bound) return;
+                            root.dataset.bound = '1';
+
+                            var btn = root.querySelector('[data-ai-bio-trigger]');
+                            var label = root.querySelector('[data-ai-bio-label]');
+                            var topic = root.querySelector('[data-ai-bio-topic]');
+                            var err = root.querySelector('[data-ai-bio-error]');
+                            var hint = root.querySelector('[data-ai-bio-hint]');
+                            var meta = document.querySelector('meta[name="csrf-token"]');
+                            var token = meta ? meta.getAttribute('content') : '';
+
+                            function setField(id, value) {
+                                var f = document.getElementById(id);
+                                if (f && value) { f.value = value; f.dispatchEvent(new Event('input', { bubbles: true })); }
+                            }
+
+                            btn.addEventListener('click', function () {
+                                var t = (topic.value || '').trim();
+                                err.classList.add('hidden'); hint.classList.add('hidden');
+                                if (!t) { err.textContent = 'Describe yourself or your page first.'; err.classList.remove('hidden'); topic.focus(); return; }
+
+                                btn.disabled = true; label.textContent = 'Writing';
+
+                                fetch(root.dataset.aiBioUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json', 'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'
+                                    },
+                                    body: JSON.stringify({ topic: t })
+                                }).then(function (r) {
+                                    return r.json().then(function (d) { return { ok: r.ok, body: d }; });
+                                }).then(function (res) {
+                                    if (!res.ok) { throw new Error(res.body.message || 'Could not write copy.'); }
+                                    setField('bio-title', res.body.display_name);
+                                    setField('bio-description', res.body.bio);
+                                    if (res.body.headline) { hint.textContent = 'Suggested tagline: ' + res.body.headline; hint.classList.remove('hidden'); }
+                                }).catch(function (e) {
+                                    err.textContent = e.message || 'The AI service is unavailable right now.'; err.classList.remove('hidden');
+                                }).finally(function () {
+                                    btn.disabled = false; label.textContent = 'Write with AI';
+                                });
+                            });
+                        })();
+                    </script>
+                @endif
+
                 <label class="flex items-center gap-2 text-sm text-slate-600 sm:col-span-2">
                     <input type="checkbox" name="is_published" value="1" @checked(old('is_published', $page?->is_published)) class="h-4 w-4 rounded border-slate-300 text-brand-600">
                     Published (publicly visible)

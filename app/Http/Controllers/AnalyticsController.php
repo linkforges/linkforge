@@ -84,6 +84,7 @@ class AnalyticsController extends Controller
 
         return view('analytics.show', $this->payload($scope, $from, $to, $range) + [
             'link' => $link,
+            'aiEnabled' => app(ClaudeClient::class)->enabled(),
             'exportUrl' => route('links.stats.export', ['link' => $link->id] + $this->exportParams($range, $from, $to)),
         ]);
     }

@@ -23,7 +23,7 @@ class BioController extends Controller
 
     public function create()
     {
-        return view('bio.edit', ['page' => null]);
+        return view('bio.edit', ['page' => null, 'aiEnabled' => app(\App\Services\Ai\ClaudeClient::class)->enabled()]);
     }
 
     public function store(Request $request)
@@ -43,7 +43,7 @@ class BioController extends Controller
     {
         abort_unless((int) $bioPage->user_id === (int) $request->user()->id, 403);
 
-        return view('bio.edit', ['page' => $bioPage->load('blocks')]);
+        return view('bio.edit', ['page' => $bioPage->load('blocks'), 'aiEnabled' => app(\App\Services\Ai\ClaudeClient::class)->enabled()]);
     }
 
     public function update(Request $request, BioPage $bioPage)

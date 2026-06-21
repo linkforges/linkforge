@@ -45,6 +45,7 @@
                         class="inline-flex items-center gap-1.5 rounded-lg border border-spark-300 bg-spark-50 px-3 py-1.5 text-xs font-semibold text-spark-700 transition hover:bg-spark-100 disabled:cursor-not-allowed disabled:opacity-60">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.8L18.7 9l-4.8 1.9L12 15.7 10.1 10.9 5.3 9l4.8-1.2L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
                     <span data-ai-label>Suggest with AI</span>
+                    <span class="font-normal text-spark-500">· {{ (int) config('linkforge.ai.cost.alias', 1) }} credit</span>
                 </button>
                 <p data-ai-error class="mt-2 hidden text-xs text-red-600"></p>
                 <div data-ai-chips class="mt-2 flex flex-wrap gap-2"></div>
@@ -119,6 +120,63 @@
         <label for="title" class="lf-label">Title <span class="font-normal text-slate-400">(optional)</span></label>
         <input id="title" name="title" type="text" value="{{ old('title', $link?->title ?? '') }}"
                class="lf-input" placeholder="Spring campaign">
+
+        @if ($aiEnabled ?? false)
+            <div class="mt-2" data-ai-title data-ai-title-url="{{ route('ai.title') }}">
+                <button type="button" data-ai-title-trigger
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-spark-300 bg-spark-50 px-3 py-1.5 text-xs font-semibold text-spark-700 transition hover:bg-spark-100 disabled:cursor-not-allowed disabled:opacity-60">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.8L18.7 9l-4.8 1.9L12 15.7 10.1 10.9 5.3 9l4.8-1.2L12 3z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>
+                    <span data-ai-title-label>Write title with AI</span>
+                    <span class="font-normal text-spark-500">· {{ (int) config('linkforge.ai.cost.alias', 1) }} credit</span>
+                </button>
+                <p data-ai-title-error class="mt-2 hidden text-xs text-red-600"></p>
+                <p data-ai-title-desc class="mt-2 hidden text-xs text-slate-400"></p>
+            </div>
+
+            <script>
+                (function () {
+                    var root = document.querySelector('[data-ai-title]');
+                    if (!root || root.dataset.bound) return;
+                    root.dataset.bound = '1';
+
+                    var btn = root.querySelector('[data-ai-title-trigger]');
+                    var label = root.querySelector('[data-ai-title-label]');
+                    var err = root.querySelector('[data-ai-title-error]');
+                    var desc = root.querySelector('[data-ai-title-desc]');
+                    var meta = document.querySelector('meta[name="csrf-token"]');
+                    var token = meta ? meta.getAttribute('content') : '';
+
+                    btn.addEventListener('click', function () {
+                        var urlField = document.getElementById('long_url');
+                        var titleField = document.getElementById('title');
+                        var url = urlField ? urlField.value.trim() : '';
+                        err.classList.add('hidden'); desc.classList.add('hidden');
+                        if (!url) { err.textContent = 'Enter a destination URL first.'; err.classList.remove('hidden'); return; }
+
+                        btn.disabled = true; label.textContent = 'Writing';
+
+                        fetch(root.dataset.aiTitleUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json', 'Accept': 'application/json',
+                                'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ long_url: url, title: titleField ? titleField.value : '' })
+                        }).then(function (r) {
+                            return r.json().then(function (d) { return { ok: r.ok, body: d }; });
+                        }).then(function (res) {
+                            if (!res.ok) { throw new Error(res.body.message || 'Could not write a title.'); }
+                            if (titleField && res.body.title) { titleField.value = res.body.title; titleField.focus(); }
+                            if (res.body.description) { desc.textContent = 'Suggested description: ' + res.body.description; desc.classList.remove('hidden'); }
+                        }).catch(function (e) {
+                            err.textContent = e.message || 'The AI service is unavailable right now.'; err.classList.remove('hidden');
+                        }).finally(function () {
+                            btn.disabled = false; label.textContent = 'Write title with AI';
+                        });
+                    });
+                })();
+            </script>
+        @endif
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
