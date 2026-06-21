@@ -21,14 +21,15 @@ class WebhookController extends Controller
             'events.*' => ['in:link.created,link.clicked,link.flagged'],
         ]);
 
-        $request->user()->webhooks()->create([
+        $webhook = $request->user()->webhooks()->create([
             'url' => $data['url'],
             'events' => $data['events'],
             'secret' => Str::random(40),
             'is_active' => true,
         ]);
 
-        return back()->with('status', 'Webhook endpoint added.');
+        // Surface the signing secret once so the operator can verify signatures.
+        return back()->with('status', 'Webhook endpoint added.')->with('webhook_secret', $webhook->secret);
     }
 
     public function destroy(Request $request, Webhook $webhook)

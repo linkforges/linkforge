@@ -142,6 +142,12 @@
                 @endisset
             </div>
 
+            <a href="{{ parse_url(url('help'), PHP_URL_PATH) }}" target="_blank" rel="noopener"
+               class="flex h-9 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+               title="{{ __('Help Center (opens in a new tab)') }}">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg>
+                <span class="hidden sm:block">{{ __('Help') }}</span>
+            </a>
             @include('partials.locale-switcher')
             @include('partials.theme-toggle')
 

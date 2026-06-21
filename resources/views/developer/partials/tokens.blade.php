@@ -41,12 +41,76 @@
                 </div>
             @endif
 
+            @php $apiBase = rtrim(config('app.url'), '/').'/api/v1'; @endphp
             <div class="lf-card mt-6 p-5">
-                <h3 class="text-sm font-semibold text-slate-900">Using the API</h3>
-                <pre class="mt-3 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs leading-relaxed text-slate-100"><code>curl {{ rtrim(config('app.url'), '/') }}/api/v1/links \
+                <h3 class="text-sm font-semibold text-slate-900">API reference</h3>
+                <p class="mt-1 text-sm text-slate-500">A small REST API for creating and managing your links. All responses are JSON.</p>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">Authentication</h4>
+                <p class="mt-1.5 text-sm text-slate-600">Send your token as a <strong>Bearer</strong> header on every request. Keep tokens secret — anyone with one can act as your account. Requests are rate limited to <strong>120 per minute</strong> per token.</p>
+                <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs leading-relaxed text-white"><code>Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+Base URL:  {{ $apiBase }}</code></pre>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">Endpoints</h4>
+                <div class="mt-2 overflow-x-auto rounded-lg border border-slate-200">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 text-left text-xs tracking-wide text-slate-400 uppercase">
+                            <tr><th class="px-4 py-2 font-medium">Method</th><th class="px-4 py-2 font-medium">Endpoint</th><th class="px-4 py-2 font-medium">Description</th></tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-600">
+                            <tr><td class="px-4 py-2 font-mono text-xs text-emerald-700">GET</td><td class="px-4 py-2 font-mono text-xs">/me</td><td class="px-4 py-2">The authenticated account</td></tr>
+                            <tr><td class="px-4 py-2 font-mono text-xs text-emerald-700">GET</td><td class="px-4 py-2 font-mono text-xs">/links</td><td class="px-4 py-2">List your links (paginated)</td></tr>
+                            <tr><td class="px-4 py-2 font-mono text-xs text-sky-700">POST</td><td class="px-4 py-2 font-mono text-xs">/links</td><td class="px-4 py-2">Create a link</td></tr>
+                            <tr><td class="px-4 py-2 font-mono text-xs text-emerald-700">GET</td><td class="px-4 py-2 font-mono text-xs">/links/{id}</td><td class="px-4 py-2">Fetch one link</td></tr>
+                            <tr><td class="px-4 py-2 font-mono text-xs text-amber-700">PATCH</td><td class="px-4 py-2 font-mono text-xs">/links/{id}</td><td class="px-4 py-2">Update a link</td></tr>
+                            <tr><td class="px-4 py-2 font-mono text-xs text-red-700">DELETE</td><td class="px-4 py-2 font-mono text-xs">/links/{id}</td><td class="px-4 py-2">Delete a link</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">Create a link</h4>
+                <p class="mt-1.5 text-sm text-slate-600">Body fields: <code class="text-xs">long_url</code> (required), <code class="text-xs">alias</code> (optional, leave out for a random one), <code class="text-xs">title</code> (optional).</p>
+                <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs leading-relaxed text-white"><code>curl -X POST {{ $apiBase }}/links \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"long_url":"https://example.com/page"}'</code></pre>
+  -d '{"long_url":"https://example.com/page","alias":"summer","title":"Summer sale"}'</code></pre>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">List, update &amp; delete</h4>
+                <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs leading-relaxed text-white"><code># List (paginate with ?per_page=1..100 &amp; ?page=)
+curl {{ $apiBase }}/links?per_page=50 -H "Authorization: Bearer YOUR_TOKEN"
+
+# Update the destination, title, or active state
+curl -X PATCH {{ $apiBase }}/links/123 \
+  -H "Authorization: Bearer YOUR_TOKEN" -H "Content-Type: application/json" \
+  -d '{"is_active":false}'
+
+# Delete
+curl -X DELETE {{ $apiBase }}/links/123 -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">The link object</h4>
+                <pre class="mt-2 overflow-x-auto rounded-lg bg-slate-900 p-4 text-xs leading-relaxed text-white"><code>{
+  "id": 123,
+  "alias": "summer",
+  "short_url": "https://yourdomain.com/summer",
+  "destination": "https://example.com/page",
+  "title": "Summer sale",
+  "type": "direct",
+  "clicks": 0,
+  "is_active": true,
+  "safety_status": "safe",
+  "created_at": "2026-01-01T12:00:00+00:00"
+}</code></pre>
+
+                <h4 class="mt-5 text-xs font-semibold tracking-wide text-slate-400 uppercase">Response codes</h4>
+                <ul class="mt-1.5 space-y-1 text-sm text-slate-600">
+                    <li><code class="text-xs">200 / 201</code> — success.</li>
+                    <li><code class="text-xs">401</code> — missing or invalid token.</li>
+                    <li><code class="text-xs">403</code> — the link is not yours, or your plan has no API access.</li>
+                    <li><code class="text-xs">422</code> — validation failed (a <code class="text-xs">message</code> and <code class="text-xs">errors</code> object are returned).</li>
+                    <li><code class="text-xs">429</code> — rate limit exceeded; slow down and retry.</li>
+                </ul>
             </div>
         </div>
 
