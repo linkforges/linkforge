@@ -89,6 +89,15 @@ class EmailEvents
             'action_text' => 'View customer',
             'placeholders' => ['customer_name', 'customer_email'],
         ],
+        'admin_new_report' => [
+            'label' => 'New abuse report (staff alert)',
+            'description' => 'Notifies your team when a visitor reports a link for abuse.',
+            'audience' => 'Staff',
+            'subject' => 'New abuse report for /{{ alias }}',
+            'body' => "A link has been reported for abuse on {{ app_name }}.\n\nShort link: {{ short_url }}\nDestination: {{ target_url }}\nReason: {{ reason }}",
+            'action_text' => 'Review reports',
+            'placeholders' => ['alias', 'short_url', 'target_url', 'reason'],
+        ],
     ];
 
     /** All placeholder tokens available to an event (global + event-specific). */

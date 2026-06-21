@@ -66,6 +66,15 @@ class SettingsServiceProvider extends ServiceProvider
             config(['app.locale' => $s['default_locale']]);
         }
 
+        // Localization: operator timezone + display date format.
+        if (! empty($s['app_timezone']) && in_array($s['app_timezone'], timezone_identifiers_list(), true)) {
+            config(['app.timezone' => $s['app_timezone']]);
+            date_default_timezone_set($s['app_timezone']);
+        }
+        if (! empty($s['date_format'])) {
+            config(['linkforge.date_format' => $s['date_format']]);
+        }
+
         $this->applySafety($s);
         $this->applyBilling($s);
         $this->applyAi($s);

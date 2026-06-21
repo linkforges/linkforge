@@ -24,6 +24,8 @@
 </head>
 <body class="flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased">
     @include('partials.demo-chrome')
+    @include('partials.announcement')
+    @include('partials.cookie-consent')
     <header class="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md dark:bg-[#0f172a]/80">
         <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-5 sm:px-6">
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5">
@@ -57,9 +59,12 @@
                 <x-application-logo size="h-7 w-7" />
                 <span class="text-sm font-semibold text-slate-900">{{ config('linkforge.name') }}</span>
             </div>
-            <nav class="flex items-center gap-5 text-sm text-slate-500">
+            <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm text-slate-500">
                 <a href="{{ route('blog.index') }}" class="hover:text-slate-800">Blog</a>
                 <a href="{{ route('help.index') }}" class="hover:text-slate-800">Help</a>
+                @foreach (\App\Support\FooterPages::all() as $fp)
+                    <a href="{{ url('/page/'.$fp->slug) }}" class="hover:text-slate-800">{{ $fp->title }}</a>
+                @endforeach
                 <a href="{{ route('register') }}" class="hover:text-slate-800">Get started</a>
             </nav>
             @php $lfFooter = \App\Models\Setting::get('footer_text'); @endphp

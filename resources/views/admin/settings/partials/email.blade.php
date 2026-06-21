@@ -52,6 +52,46 @@
     </div>
 </form>
 
+<div class="lf-card mt-6 p-6">
+    <h3 class="mb-1 text-sm font-semibold text-slate-900">Test connection</h3>
+    <p class="mb-4 text-xs text-slate-400">Save your SMTP settings first, then send a test email to your own address ({{ auth()->user()->email }}) to confirm delivery works.</p>
+    <button type="button" data-email-test data-email-test-url="{{ route('admin.settings.email.test') }}"
+            class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-60">
+        <span data-email-test-label>Send test email</span>
+    </button>
+    <p data-email-test-result class="mt-3 hidden text-sm"></p>
+</div>
+
+<script>
+    (function () {
+        var btn = document.querySelector('[data-email-test]');
+        if (!btn || btn.dataset.bound) return;
+        btn.dataset.bound = '1';
+        var label = btn.querySelector('[data-email-test-label]');
+        var out = document.querySelector('[data-email-test-result]');
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        var token = meta ? meta.getAttribute('content') : '';
+
+        btn.addEventListener('click', function () {
+            btn.disabled = true; label.textContent = 'Sending…';
+            out.classList.add('hidden');
+            fetch(btn.dataset.emailTestUrl, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                out.className = 'mt-3 text-sm ' + (d.ok ? 'text-emerald-600' : 'text-red-600');
+                out.textContent = d.message || (d.ok ? 'Sent' : 'Failed');
+            }).catch(function () {
+                out.className = 'mt-3 text-sm text-red-600';
+                out.textContent = 'Could not reach the server.';
+            }).finally(function () {
+                out.classList.remove('hidden');
+                btn.disabled = false; label.textContent = 'Send test email';
+            });
+        });
+    })();
+</script>
+
 {{-- Email notifications: per-event templates + on/off --}}
 <div class="lf-card mt-6 p-6">
     <h3 class="text-sm font-semibold text-slate-900">Email notifications</h3>

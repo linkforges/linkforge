@@ -38,6 +38,20 @@ class AbuseReportController extends Controller
             'status' => 'open',
         ]);
 
+        // Alert staff (honours the per-event toggle + on/off in Settings -> Email).
+        $link = $linkId ? Link::find($linkId) : null;
+        app(\App\Services\Mail\Postman::class)->send(
+            'admin_new_report',
+            \App\Models\User::where('role', 'admin')->pluck('email')->all(),
+            [
+                'alias' => ($data['alias'] ?? '') ?: '(unknown)',
+                'short_url' => $link ? $request->getSchemeAndHttpHost().'/'.$link->alias : '(not found)',
+                'target_url' => $link?->long_url ?? '(not found)',
+                'reason' => $data['reason'],
+                'action_url' => route('admin.reports'),
+            ]
+        );
+
         return redirect()->route('report.create')->with('status', 'Thank you. Our team will review this link.');
     }
 }

@@ -48,8 +48,17 @@ class CreateNewUser implements CreatesNewUsers
             throw ValidationException::withMessages(['email' => 'Please sign up with a permanent email address.']);
         }
 
-        // New accounts start on the Free plan (if seeded) with its AI credit allowance.
-        $free = Plan::where('slug', 'free')->first();
+        // Operator email-domain blocklist (Settings -> General).
+        $blocked = collect(preg_split('/[\s,]+/', (string) \App\Models\Setting::get('signup_blocked_domains'), -1, PREG_SPLIT_NO_EMPTY))
+            ->map(fn ($d) => ltrim(mb_strtolower(trim($d)), '@'))->filter()->all();
+        $emailDomain = mb_strtolower((string) substr((string) strrchr($input['email'], '@'), 1));
+        if ($emailDomain !== '' && in_array($emailDomain, $blocked, true)) {
+            throw ValidationException::withMessages(['email' => 'Registrations from this email domain are not allowed.']);
+        }
+
+        // Starting plan: the operator-selected default (Settings -> General), else Free.
+        $defaultPlanId = \App\Models\Setting::get('signup_default_plan');
+        $free = ($defaultPlanId ? Plan::find($defaultPlanId) : null) ?: Plan::where('slug', 'free')->first();
 
         $user = User::create([
             'name' => $input['name'],

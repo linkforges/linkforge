@@ -159,6 +159,13 @@ class SettingController extends Controller
             'site_tagline' => ['nullable', 'string', 'max:200'],
             'site_description' => ['nullable', 'string', 'max:500'],
             'maintenance_message' => ['nullable', 'string', 'max:300'],
+            'announcement_text' => ['nullable', 'string', 'max:500'],
+            'announcement_style' => ['nullable', Rule::in(['info', 'warning', 'success'])],
+            'cookie_consent_text' => ['nullable', 'string', 'max:500'],
+            'app_timezone' => ['nullable', Rule::in(timezone_identifiers_list())],
+            'date_format' => ['nullable', Rule::in(['M j, Y', 'F j, Y', 'd/m/Y', 'm/d/Y', 'Y-m-d', 'd M Y'])],
+            'signup_blocked_domains' => ['nullable', 'string', 'max:5000'],
+            'signup_default_plan' => ['nullable', 'integer', 'exists:plans,id'],
         ]);
 
         Setting::putMany([
@@ -169,6 +176,15 @@ class SettingController extends Controller
             'guest_shorten' => $request->boolean('guest_shorten') ? '1' : '0',
             'maintenance_mode' => $request->boolean('maintenance_mode') ? '1' : '0',
             'maintenance_message' => (string) ($data['maintenance_message'] ?? ''),
+            'announcement_enabled' => $request->boolean('announcement_enabled') ? '1' : '0',
+            'announcement_text' => (string) ($data['announcement_text'] ?? ''),
+            'announcement_style' => $data['announcement_style'] ?? 'info',
+            'cookie_consent_enabled' => $request->boolean('cookie_consent_enabled') ? '1' : '0',
+            'cookie_consent_text' => (string) ($data['cookie_consent_text'] ?? ''),
+            'app_timezone' => $data['app_timezone'] ?? 'UTC',
+            'date_format' => $data['date_format'] ?? 'M j, Y',
+            'signup_blocked_domains' => (string) ($data['signup_blocked_domains'] ?? ''),
+            'signup_default_plan' => (string) ($data['signup_default_plan'] ?? ''),
         ]);
 
         return $this->done('general', 'General settings saved.');
@@ -389,6 +405,32 @@ class SettingController extends Controller
             ]);
         } catch (\Throwable $e) {
             return response()->json(['ok' => false, 'message' => 'Test failed: '.\Illuminate\Support\Str::limit($e->getMessage(), 140)]);
+        }
+    }
+
+    /** Send a test email to the current admin so the saved SMTP settings can be verified. */
+    public function emailTest(Request $request)
+    {
+        if (\App\Support\Demo::enabled()) {
+            return response()->json(['ok' => false, 'message' => 'Sending email is disabled in demo mode.']);
+        }
+
+        $to = $request->user()->email;
+        $from = config('mail.from.address') ?: (config('mail.username') ?: 'no-reply@'.parse_url((string) config('app.url'), PHP_URL_HOST));
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw(
+                'This is a test email from '.config('linkforge.name').'. If you can read this, your SMTP settings are working.',
+                function ($m) use ($to, $from) {
+                    $m->from($from, config('mail.from.name') ?: config('linkforge.name'))
+                        ->to($to)
+                        ->subject(config('linkforge.name').' test email');
+                }
+            );
+
+            return response()->json(['ok' => true, 'message' => 'Test email sent to '.$to.'. Check your inbox (and spam folder).']);
+        } catch (\Throwable $e) {
+            return response()->json(['ok' => false, 'message' => 'Failed: '.\Illuminate\Support\Str::limit($e->getMessage(), 160)]);
         }
     }
 

@@ -28,5 +28,8 @@ class AppServiceProvider extends ServiceProvider
 
         // Surface lazy-loading / mass-assignment mistakes during development.
         Model::shouldBeStrict($this->app->isLocal());
+
+        // @lfdate($date) prints a date in the operator's chosen format + timezone.
+        \Illuminate\Support\Facades\Blade::directive('lfdate', fn ($expr) => "<?php echo \App\Support\Dates::format($expr); ?>");
     }
 }

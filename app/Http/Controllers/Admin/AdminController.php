@@ -135,4 +135,33 @@ class AdminController extends Controller
             'logs' => \App\Models\AuditLog::with('user')->latest()->paginate(40),
         ]);
     }
+
+    /** Run a safe maintenance command from the admin panel (no shell/cron needed). */
+    public function maintenance(Request $request)
+    {
+        if (\App\Support\Demo::enabled()) {
+            return back()->with('error', 'Maintenance tools are disabled in demo mode.');
+        }
+
+        $actions = [
+            'clear-cache' => 'Caches cleared',
+            'run-rollup' => 'Analytics rollup finished',
+            'run-queue' => 'Queued jobs processed',
+        ];
+        $action = (string) $request->input('action');
+        abort_unless(isset($actions[$action]), 400);
+
+        try {
+            match ($action) {
+                'clear-cache' => array_map(fn ($c) => \Illuminate\Support\Facades\Artisan::call($c), ['cache:clear', 'config:clear', 'view:clear', 'route:clear']),
+                'run-rollup' => \Illuminate\Support\Facades\Artisan::call('clicks:rollup'),
+                'run-queue' => \Illuminate\Support\Facades\Artisan::call('queue:work', ['--stop-when-empty' => true, '--max-time' => 20]),
+            };
+            \App\Models\AuditLog::record('maintenance.'.$action, $actions[$action]);
+
+            return back()->with('status', $actions[$action].'.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Failed: '.\Illuminate\Support\Str::limit($e->getMessage(), 160));
+        }
+    }
 }

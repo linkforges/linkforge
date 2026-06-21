@@ -11,6 +11,8 @@
 </head>
 <body class="min-h-screen bg-slate-50">
     @include('partials.demo-chrome')
+    @include('partials.announcement')
+    @include('partials.cookie-consent')
     @if (session('impersonator_id'))
         <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-amber-500 px-4 py-2 text-center text-sm font-medium text-white">
             <span>You are viewing the app as {{ auth()->user()->name }}.</span>

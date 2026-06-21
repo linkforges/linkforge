@@ -90,6 +90,30 @@ class UserController extends Controller
         return back()->with('status', "Password reset link sent to {$user->email}.");
     }
 
+    /** Send a one-off email to a single user from the admin panel. */
+    public function email(Request $request, User $user)
+    {
+        if (\App\Support\Demo::enabled()) {
+            return back()->with('error', 'Sending email is disabled in demo mode.');
+        }
+
+        $data = $request->validate([
+            'subject' => ['required', 'string', 'max:200'],
+            'message' => ['required', 'string', 'max:8000'],
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)
+                ->send(new \App\Mail\TemplatedMail($data['subject'], $data['message'], null, null));
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Could not send: '.\Illuminate\Support\Str::limit($e->getMessage(), 140));
+        }
+
+        AuditLog::record('user.email', "Emailed {$user->email}: ".$data['subject'], $user);
+
+        return back()->with('status', "Email sent to {$user->email}.");
+    }
+
     /** Sign in as the user, remembering the admin to return to. */
     public function impersonate(Request $request, User $user)
     {
@@ -118,7 +142,46 @@ class UserController extends Controller
         abort_if((int) $user->id === (int) $request->user()->id, 403);
 
         AuditLog::record('user.delete', "Deleted {$user->email} and all their content", $user);
+        $this->cascadeDelete($user);
 
+        return redirect()->route('admin.users')->with('status', 'User and all their content deleted.');
+    }
+
+    /** Bulk activate / suspend / delete selected users (never yourself or other admins). */
+    public function bulk(Request $request)
+    {
+        if (\App\Support\Demo::enabled()) {
+            return back()->with('error', 'Bulk actions are disabled in demo mode.');
+        }
+
+        $data = $request->validate([
+            'action' => ['required', Rule::in(['activate', 'suspend', 'delete'])],
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer'],
+        ]);
+
+        $users = User::whereIn('id', $data['ids'])
+            ->where('id', '!=', $request->user()->id)
+            ->where('role', '!=', 'admin')
+            ->get();
+
+        foreach ($users as $user) {
+            match ($data['action']) {
+                'activate' => $user->update(['status' => 'active']),
+                'suspend' => $user->update(['status' => 'suspended']),
+                'delete' => $this->cascadeDelete($user),
+            };
+        }
+
+        $count = $users->count();
+        AuditLog::record('users.bulk', "Bulk {$data['action']} on {$count} user(s).");
+
+        return back()->with('status', "Applied '{$data['action']}' to {$count} user(s).");
+    }
+
+    /** Delete a user and all of their content in one transaction. */
+    private function cascadeDelete(User $user): void
+    {
         DB::transaction(function () use ($user) {
             $user->links()->delete();
             $user->bioPages()->delete();
@@ -133,8 +196,6 @@ class UserController extends Controller
             $user->tokens()->delete();
             $user->delete();
         });
-
-        return redirect()->route('admin.users')->with('status', 'User and all their content deleted.');
     }
 
     public function export(Request $request)

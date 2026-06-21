@@ -22,9 +22,12 @@ return [
 
     // Shipped version. The applied version is tracked in the `app_version` setting
     // and bumped by the in-app updater; this is the floor for a fresh install.
-    'version' => '1.0.32',
+    'version' => '1.0.33',
     'tagline' => env('LF_TAGLINE', 'Forge links that work harder.'),
     'description' => env('LF_DESCRIPTION', 'A premium, AI-native link platform with branded domains, deep analytics, a QR studio and safety scanning, on hosting you own.'),
+
+    // Display date format (PHP date() syntax). Operator-overridable in Settings -> General.
+    'date_format' => env('LF_DATE_FORMAT', 'M j, Y'),
 
     // Theme tokens (overridable per install / per tenant)
     'theme' => [

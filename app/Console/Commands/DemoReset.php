@@ -293,5 +293,8 @@ class DemoReset extends Command
         // The full starter Help Center library (25+ articles), reset to a clean set.
         HelpArticle::query()->delete();
         (new \Database\Seeders\HelpArticleSeeder)->run();
+
+        // Terms / Privacy / Contact pages (idempotent; keeps existing edits).
+        (new \Database\Seeders\PageSeeder)->run();
     }
 }

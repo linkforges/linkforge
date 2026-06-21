@@ -128,6 +128,21 @@
                 @endforelse
             </div>
 
+            <form method="POST" action="{{ route('admin.users.email', $user) }}" class="lf-card space-y-3 p-5"
+                  data-confirm="Send this email to {{ $user->email }}?" data-confirm-ok="Send email">
+                @csrf
+                <h3 class="text-sm font-semibold text-slate-900">Email this user</h3>
+                <div>
+                    <input name="subject" value="{{ old('subject') }}" required class="lf-input" placeholder="Subject">
+                    @error('subject')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <textarea name="message" rows="4" required class="lf-input" placeholder="Your message. Basic HTML is supported.">{{ old('message') }}</textarea>
+                    @error('message')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                </div>
+                <button type="submit" class="rounded-lg bg-brand-600 px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-brand-700">Send email</button>
+            </form>
+
             <div class="rounded-xl border border-red-200 bg-red-50/40 p-5">
                 <h3 class="text-sm font-semibold text-red-800">Danger zone</h3>
                 <p class="mt-1 text-xs text-red-600/80">Permanently deletes this user and all their links, bio pages, QR codes and domains.</p>

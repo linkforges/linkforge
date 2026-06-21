@@ -194,13 +194,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/help/{article}/edit', [\App\Http\Controllers\Admin\HelpArticleController::class, 'edit'])->name('help.edit');
     Route::put('/help/{article}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'update'])->name('help.update');
     Route::delete('/help/{article}', [\App\Http\Controllers\Admin\HelpArticleController::class, 'destroy'])->name('help.destroy');
+
+    Route::get('/pages', [\App\Http\Controllers\Admin\PageController::class, 'index'])->name('pages.index');
+    Route::get('/pages/create', [\App\Http\Controllers\Admin\PageController::class, 'create'])->name('pages.create');
+    Route::post('/pages', [\App\Http\Controllers\Admin\PageController::class, 'store'])->name('pages.store');
+    Route::get('/pages/{page}/edit', [\App\Http\Controllers\Admin\PageController::class, 'edit'])->name('pages.edit');
+    Route::put('/pages/{page}', [\App\Http\Controllers\Admin\PageController::class, 'update'])->name('pages.update');
+    Route::delete('/pages/{page}', [\App\Http\Controllers\Admin\PageController::class, 'destroy'])->name('pages.destroy');
     Route::get('/users', [AdminUserController::class, 'index'])->name('users');
     Route::get('/users/export', [AdminUserController::class, 'export'])->name('users.export');
+    Route::post('/users/bulk', [AdminUserController::class, 'bulk'])->name('users.bulk');
     Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::post('/users/{user}/impersonate', [AdminUserController::class, 'impersonate'])->name('users.impersonate');
     Route::post('/users/{user}/reset-link', [AdminUserController::class, 'sendResetLink'])->name('users.reset-link');
+    Route::post('/users/{user}/email', [AdminUserController::class, 'email'])->name('users.email');
     Route::get('/links', [AdminController::class, 'links'])->name('links');
     Route::put('/links/{link}', [AdminController::class, 'updateLink'])->name('links.update');
     Route::get('/plans', [PlanController::class, 'index'])->name('plans');
@@ -231,6 +240,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::put('/reports/{report}', [AdminController::class, 'updateReport'])->name('reports.update');
     Route::get('/audit', [AdminController::class, 'audit'])->name('audit');
+    Route::get('/broadcast', [\App\Http\Controllers\Admin\BroadcastController::class, 'index'])->name('broadcast');
+    Route::post('/broadcast', [\App\Http\Controllers\Admin\BroadcastController::class, 'send'])->name('broadcast.send');
     Route::get('/updates', [UpdateController::class, 'index'])->name('updates');
     Route::post('/updates', [UpdateController::class, 'upload'])->name('updates.upload');
     Route::post('/updates/apply', [UpdateController::class, 'apply'])->name('updates.apply');
@@ -251,6 +262,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/settings/geo/download/chunk', [SettingController::class, 'geoDownloadChunk'])->name('settings.geo.download.chunk');
     Route::post('/settings/geo/download/finish', [SettingController::class, 'geoDownloadFinish'])->name('settings.geo.download.finish');
     Route::post('/settings/ai/test', [SettingController::class, 'aiTest'])->name('settings.ai.test');
+    Route::post('/settings/email/test', [SettingController::class, 'emailTest'])->name('settings.email.test');
+    Route::post('/maintenance', [AdminController::class, 'maintenance'])->name('maintenance');
 });
 
 // Public: anonymous link shortening from the landing page (rate-limited).
@@ -268,6 +281,9 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show')->where('slug', '[A-Za-z0-9\-]+');
 Route::get('/help', [HelpController::class, 'index'])->name('help.index');
 Route::get('/help/{slug}', [HelpController::class, 'show'])->name('help.show')->where('slug', '[A-Za-z0-9\-]+');
+Route::get('/page/{slug}', [App\Http\Controllers\PageController::class, 'show'])->name('page.show')->where('slug', '[A-Za-z0-9\-]+');
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
 
 // Public: switch the UI language (guest + authenticated).
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', '[A-Za-z_-]+');

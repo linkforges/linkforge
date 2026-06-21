@@ -91,6 +91,8 @@ class InstallController extends Controller
             Artisan::call('db:seed', ['--class' => \Database\Seeders\SettingSeeder::class, '--force' => true]);
             // Ship a ready-made Help Center (operators can edit or delete the articles).
             Artisan::call('db:seed', ['--class' => \Database\Seeders\HelpArticleSeeder::class, '--force' => true]);
+            // Ship ready-to-edit Terms / Privacy / Contact pages, linked in the footer.
+            Artisan::call('db:seed', ['--class' => \Database\Seeders\PageSeeder::class, '--force' => true]);
         } catch (\Throwable $e) {
             return back()->withInput()->with('error', 'Database setup failed: '.$e->getMessage());
         }
