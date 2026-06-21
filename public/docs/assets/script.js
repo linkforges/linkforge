@@ -112,34 +112,6 @@
     try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta);
   }
 
-  /* ---------- Auto-load real screenshots when present ----------
-     Drop an image into images/ named after each figure (see DOC-SCREENSHOTS.md):
-     figure id="shot-dashboard"  ->  images/dashboard.png (or .jpg / .webp).
-     Until a file exists, the styled placeholder stays. No HTML editing needed. */
-  document.querySelectorAll('figure[id^="shot-"]').forEach(function (fig) {
-    var name = fig.id.replace(/^shot-/, '');
-    var capEl = fig.querySelector('.shot__cap');
-    var alt = capEl ? capEl.textContent.trim() : name;
-    var exts = ['png', 'jpg', 'jpeg', 'webp'];
-    var i = 0;
-    (function tryNext() {
-      if (i >= exts.length) return;           // none found - keep the placeholder
-      var src = 'images/' + name + '.' + exts[i++];
-      var probe = new Image();
-      probe.onload = function () {
-        fig.innerHTML = '';
-        var img = document.createElement('img');
-        img.src = src; img.alt = alt; img.loading = 'lazy';
-        fig.appendChild(img);
-        var fc = document.createElement('figcaption');
-        fc.textContent = alt;
-        fig.appendChild(fc);
-      };
-      probe.onerror = tryNext;
-      probe.src = src;
-    })();
-  });
-
   /* ---------- Scrollspy ---------- */
   var sections = Array.prototype.slice.call(document.querySelectorAll('section.block[id], section.sec-wrap[id]'));
   var byId = {};

@@ -305,19 +305,6 @@ figure img {
   display:block;
 }
 figure figcaption { font-size:.83rem; color:var(--text-faint); margin-top:8px; text-align:center; }
-.shot {
-  border:1.5px dashed var(--border-strong); border-radius:12px; background:
-    repeating-linear-gradient(45deg,var(--bg-soft),var(--bg-soft) 12px,transparent 12px,transparent 24px);
-  background-color:var(--bg-soft); padding:34px 22px; text-align:center; color:var(--text-faint);
-}
-.shot__tag {
-  display:inline-flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--border);
-  border-radius:999px; padding:5px 14px; font-size:.74rem; font-weight:700; color:var(--brand-700);
-  text-transform:uppercase; letter-spacing:.08em; box-shadow:var(--shadow);
-}
-html[data-theme="dark"] .shot__tag { color:var(--brand-400); }
-.shot__cap { margin-top:11px; font-size:.9rem; color:var(--text-soft); max-width:520px; margin-left:auto; margin-right:auto; }
-.shot__num { font-variant-numeric:tabular-nums; }
 
 /* ---------- Badges ---------- */
 .badge {
@@ -411,6 +398,6 @@ html[data-theme="dark"] .quicklinks a:hover { color:var(--brand-300); background
   .sidebar,.topbar,.theme-toggle,.backtotop,.codeblock .copy { display:none !important; }
   .main { margin-left:0; }
   .content { max-width:100%; padding:0; }
-  a { color:#000; } .shot { border-color:#999; }
+  a { color:#000; }
   section.block { page-break-inside:avoid; }
 }

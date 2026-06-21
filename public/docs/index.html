@@ -368,23 +368,21 @@
 
         <h3>1 · Requirements</h3>
         <p>A green / red checklist of PHP version, extensions and folder permissions. When everything is green, click <strong>Continue</strong>. If something is red, fix it (usually the PHP version or a folder permission) and refresh.</p>
-        <figure id="shot-install-requirements"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">01</span></span><div class="shot__cap">Installer - the Requirements check, showing PHP, extensions and writable folders.</div></div></figure>
+        <figure><img src="images/install-requirements.png" alt="Installer - the Requirements check, showing PHP, extensions and writable folders." loading="lazy"><figcaption>Installer - the Requirements check, showing PHP, extensions and writable folders.</figcaption></figure>
 
         <h3>2 · Database &amp; site</h3>
         <p>Enter your <strong>site name</strong>, your <strong>site URL</strong> (e.g. <code>https://links.yourbrand.com</code>), and the four database details you wrote down in Step 1. Click <strong>Test &amp; continue</strong> - LinkForge verifies the connection before moving on, then runs the database setup automatically.</p>
-        <figure id="shot-install-database"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">02</span></span><div class="shot__cap">Installer - Database &amp; site details, with the live connection test.</div></div></figure>
+        <figure><img src="images/install-database.png" alt="Installer - Database &amp; site details, with the live connection test." loading="lazy"><figcaption>Installer - Database &amp; site details, with the live connection test.</figcaption></figure>
 
         <h3>3 · Admin account</h3>
         <p>Create your owner login - name, email and password. This is your admin account; you'll use it to sign in and manage everything.</p>
-        <figure id="shot-install-admin"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">03</span></span><div class="shot__cap">Installer - creating the administrator account.</div></div></figure>
+        <figure><img src="images/install-admin.png" alt="Installer - creating the administrator account." loading="lazy"><figcaption>Installer - creating the administrator account.</figcaption></figure>
 
         <h3>4 · License</h3>
         <p>Enter your <strong>CodeCanyon purchase code</strong> to complete the install. A valid code is <strong>required</strong> - there is no skip - so have it ready before you start. See <a href="#install-license">License &amp; purchase code</a> for where to find the code and how verification works.</p>
-        <figure id="shot-install-license"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">04</span></span><div class="shot__cap">Installer - entering the Envato purchase code.</div></div></figure>
 
         <h3>5 · Done</h3>
         <p>The installer seals itself (so it can't be run again) and hands you a <strong>Sign in</strong> button. Log in with the admin account you just created - you'll land on your new dashboard.</p>
-        <figure id="shot-install-complete"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">05</span></span><div class="shot__cap">Installer - the completion screen with the exact cron command for your server.</div></div></figure>
         <div class="callout callout--warn">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
           <div>The final screen shows the <strong>exact cron command for your server</strong> (with the correct PHP and project paths). Copy it now - you'll need it in the next section. The <span class="path">/install</span> wizard is locked automatically once setup completes and cannot be re-run unless you delete <span class="path">storage/installed</span>.</div>
@@ -503,7 +501,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
             <tr><td><a href="#cfg-affiliate">Affiliate</a></td><td>Referral program and commissions.</td></tr>
           </tbody>
         </table></div>
-        <figure id="shot-settings"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">06</span></span><div class="shot__cap">Admin → Settings, showing the tabbed configuration screens.</div></div></figure>
+        <figure><img src="images/settings.png" alt="Admin → Settings, showing the tabbed configuration screens." loading="lazy"><figcaption>Admin → Settings, showing the tabbed configuration screens.</figcaption></figure>
         <div class="callout callout--note">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
           <div>Secret values (API keys, passwords) are stored <strong>encrypted</strong> and are never shown back to you in full once saved - you'll see a masked placeholder. Leave a secret field blank to keep the existing value.</div>
@@ -543,7 +541,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Custom code</strong> - add your own <em>Custom CSS</em> and <em>Custom head HTML</em> (fonts, meta tags or trusted third-party snippets). Both inject into the public site and customer dashboard, never the admin panel.</li>
           <li><strong>Footer</strong> - override the small copyright line on the public site. HTML is allowed (e.g. links); use <code>{year}</code> for the current year. Leave blank for the default.</li>
         </ul>
-        <figure id="shot-appearance"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">07</span></span><div class="shot__cap">Appearance settings - logo and favicon upload, theme presets, custom code and footer.</div></div></figure>
+        <figure><img src="images/appearance.png" alt="Appearance settings - logo and favicon upload, theme presets, custom code and footer." loading="lazy"><figcaption>Appearance settings - logo and favicon upload, theme presets, custom code and footer.</figcaption></figure>
         <div class="callout callout--note">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
           <div>Full white-labelling (removing all "LinkForge" branding for your customers) is available on plans with the <em>White label</em> feature enabled - see <a href="#cfg-plans">Plans &amp; pricing</a>.</div>
@@ -576,7 +574,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
       <section class="block" id="cfg-payments">
         <h2 class="sec"><a class="anchor-h" href="#cfg-payments">Payment gateways</a></h2>
         <p>Only needed if you charge customers. On the <strong>Billing</strong> tab, choose your <strong>gateway</strong> and <strong>currency</strong>. LinkForge supports five options out of the box; pick one.</p>
-        <figure id="shot-billing-settings"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">08</span></span><div class="shot__cap">Billing settings - selecting a gateway reveals only that gateway's fields.</div></div></figure>
+        <figure><img src="images/billing-settings.png" alt="Billing settings - selecting a gateway reveals only that gateway&#039;s fields." loading="lazy"><figcaption>Billing settings - selecting a gateway reveals only that gateway's fields.</figcaption></figure>
 
         <h3>Offline / manual</h3>
         <p>The default. Plan changes apply immediately with no online payment - perfect for bank transfer, invoicing, a private install, or testing. No keys needed.</p>
@@ -691,7 +689,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Cloudflare headers</strong> - if your site sits behind Cloudflare (free), country is read straight from Cloudflare's visitor headers with zero setup.</li>
           <li><strong>Local GeoIP database</strong> - a MaxMind-format <span class="path">.mmdb</span> file. A <strong>country-level database is bundled</strong>, so country analytics work out of the box. For <strong>city-level</strong> detail, download a city database from the tab with one click (DB-IP, no account required) or supply a MaxMind license key.</li>
         </ul>
-        <figure id="shot-geo"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">09</span></span><div class="shot__cap">Geo settings - database status and one-click download of a city-level database.</div></div></figure>
+        <figure><img src="images/geo.png" alt="Geo settings - database status and one-click download of a city-level database." loading="lazy"><figcaption>Geo settings - database status and one-click download of a city-level database.</figcaption></figure>
         <div class="callout callout--note">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
           <div>City and region detail only appears once a city-level database is configured; the bundled country database gives country-level stats only. The free DB-IP data requires the attribution "IP Geolocation by DB-IP", which LinkForge displays automatically.</div>
@@ -775,7 +773,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
         <h2 class="sec"><a class="anchor-h" href="#use-dashboard">The customer dashboard</a></h2>
         <p>This chapter describes the day-to-day experience for a signed-in user. It's useful for you to know, and you're welcome to reuse any of it in your own customer-facing help content.</p>
         <p>After signing in, users land on the <strong>Dashboard</strong> - an at-a-glance overview with total clicks, top links, recent activity, a clicks-over-time chart and their current plan usage. The left sidebar is the main menu: Links, Campaigns, QR Codes, Bio Pages, Analytics, and so on.</p>
-        <figure id="shot-dashboard"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">10</span></span><div class="shot__cap">The customer dashboard - KPIs, click trend and plan usage.</div></div></figure>
+        <figure><img src="images/dashboard.png" alt="The customer dashboard - KPIs, click trend and plan usage." loading="lazy"><figcaption>The customer dashboard - KPIs, click trend and plan usage.</figcaption></figure>
       </section>
 
       <section class="block" id="use-links">
@@ -807,7 +805,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
 
         <h3>Mobile deep links <span class="badge badge--pro">Pro</span></h3>
         <p>Open a native mobile app instead of the browser. Enter the app's URI scheme (e.g. <code>myapp://path</code>) for iOS and Android; visitors without the app fall through to the normal destination.</p>
-        <figure id="shot-link-create"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">11</span></span><div class="shot__cap">The link editor with advanced options, targeting rules and the UTM builder expanded.</div></div></figure>
+        <figure><img src="images/link-create.png" alt="The link editor with advanced options, targeting rules and the UTM builder expanded." loading="lazy"><figcaption>The link editor with advanced options, targeting rules and the UTM builder expanded.</figcaption></figure>
       </section>
 
       <section class="block" id="use-bulk">
@@ -842,7 +840,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Bulk-generate</strong> many codes at once.</li>
         </ul>
         <p>Every short link also has its own QR code on its detail page. QR codes are tracked, so scans show up in <a href="#use-analytics">analytics</a>.</p>
-        <figure id="shot-qr"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">12</span></span><div class="shot__cap">The QR Code studio - live preview with color, shape and logo styling.</div></div></figure>
+        <figure><img src="images/qr.png" alt="The QR Code studio - live preview with color, shape and logo styling." loading="lazy"><figcaption>The QR Code studio - live preview with color, shape and logo styling.</figcaption></figure>
       </section>
 
       <section class="block" id="use-bio">
@@ -857,7 +855,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Gates</strong> - optionally password-protect the page or show a sensitive-content acknowledgement first.</li>
         </ul>
         <p>Bio pages have their own analytics (views and per-block clicks).</p>
-        <figure id="shot-bio"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">13</span></span><div class="shot__cap">The bio-page builder alongside its live mobile preview.</div></div></figure>
+        <figure><img src="images/bio.png" alt="The bio-page builder alongside its live mobile preview." loading="lazy"><figcaption>The bio-page builder alongside its live mobile preview.</figcaption></figure>
       </section>
 
       <section class="block" id="use-pixels">
@@ -889,7 +887,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Top referrers</strong> - where the traffic came from.</li>
           <li><strong>CSV export</strong> - download the underlying data for any view.</li>
         </ul>
-        <figure id="shot-analytics"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">14</span></span><div class="shot__cap">Analytics - click trend, interactive geo map and top dimensions.</div></div></figure>
+        <figure><img src="images/analytics.png" alt="Analytics - click trend, interactive geo map and top dimensions." loading="lazy"><figcaption>Analytics - click trend, interactive geo map and top dimensions.</figcaption></figure>
         <div class="callout callout--warn">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
           <div>Analytics are aggregated by the scheduler, so the <a href="#install-cron">cron job</a> must be running. New clicks appear within a minute or two - not instantly - which keeps redirects fast even under load.</div>
@@ -948,7 +946,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Profile</strong> - name, email and avatar (uploaded and auto-resized).</li>
           <li><strong>Security</strong> - change password; enable <strong>two-factor authentication</strong> (authenticator app with QR setup + recovery codes); register <strong>passkeys</strong> (Touch ID, Windows Hello, security keys) for passwordless sign-in; link or unlink <strong>connected accounts</strong> (Google/GitHub/Facebook); and delete the account.</li>
         </ul>
-        <figure id="shot-account"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">15</span></span><div class="shot__cap">Account → Security - two-factor setup and registered passkeys.</div></div></figure>
+        <figure><img src="images/account.png" alt="Account → Security - two-factor setup and registered passkeys." loading="lazy"><figcaption>Account → Security - two-factor setup and registered passkeys.</figcaption></figure>
         <div class="callout callout--note">
           <span class="callout__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
           <div>Passkeys and secure cookies require your site to be served over <strong>HTTPS</strong>. Make sure AutoSSL / certbot is active (see the <a href="#install-checklist">post-install checklist</a>).</div>
@@ -968,7 +966,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
         <p class="sec-kicker">Admin guide</p>
         <h2 class="sec"><a class="anchor-h" href="#admin-dashboard">Admin dashboard</a></h2>
         <p>The admin area lives under <strong>/admin</strong> and is only visible to administrator accounts. Its dashboard gives you the health of the whole platform at a glance: total users, links and clicks, monthly recurring revenue, new-user and click trends, plan distribution, top links and recent sign-ups.</p>
-        <figure id="shot-admin-dashboard"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">16</span></span><div class="shot__cap">The admin dashboard - platform-wide KPIs and trends.</div></div></figure>
+        <figure><img src="images/admin-dashboard.png" alt="The admin dashboard - platform-wide KPIs and trends." loading="lazy"><figcaption>The admin dashboard - platform-wide KPIs and trends.</figcaption></figure>
       </section>
 
       <section class="block" id="admin-users">
@@ -983,7 +981,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
         <p><strong>Bulk actions:</strong> tick several users in the list and activate, suspend or delete them in one step (admins and your own account are always protected).</p>
         <h3>Broadcast email</h3>
         <p><strong>Admin → Broadcast</strong> sends a one-off email to <strong>all users</strong> or to everyone on a chosen plan. Messages are queued and delivered as the cron-driven queue drains, so even a large list never blocks.</p>
-        <figure id="shot-admin-users"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">17</span></span><div class="shot__cap">Admin → Users - searchable list with per-user actions.</div></div></figure>
+        <figure><img src="images/admin-users.png" alt="Admin → Users - searchable list with per-user actions." loading="lazy"><figcaption>Admin → Users - searchable list with per-user actions.</figcaption></figure>
       </section>
 
       <section class="block" id="admin-billing">
@@ -1059,7 +1057,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
           <li><strong>Rescan</strong> to pick up any new translatable strings after an update.</li>
         </ul>
         <p>Visitors switch language themselves with the globe menu in the header; their choice is remembered. English plus a complete Spanish translation are included.</p>
-        <figure id="shot-languages"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">18</span></span><div class="shot__cap">Admin → Languages - coverage bars and the translation grid editor.</div></div></figure>
+        <figure><img src="images/languages.png" alt="Admin → Languages - coverage bars and the translation grid editor." loading="lazy"><figcaption>Admin → Languages - coverage bars and the translation grid editor.</figcaption></figure>
       </section>
 
       <!-- ===================================================================
@@ -1076,7 +1074,7 @@ sudo chmod -R 775 storage bootstrap/cache</code></pre></div>
         <div class="codeblock"><pre><code>Authorization: Bearer YOUR_API_TOKEN
 Accept: application/json</code></pre></div>
         <p>The base URL is <code>https://yoursite.com/api/v1</code>. Requests are rate-limited to <strong>120 per minute</strong> per token.</p>
-        <figure id="shot-developer"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">19</span></span><div class="shot__cap">Developer hub - creating an API token and managing webhooks.</div></div></figure>
+        <figure><img src="images/developer.png" alt="Developer hub - creating an API token and managing webhooks." loading="lazy"><figcaption>Developer hub - creating an API token and managing webhooks.</figcaption></figure>
 
         <h3>Endpoints</h3>
         <div class="tablewrap"><table>
@@ -1199,7 +1197,7 @@ if (hash_equals($expected, $signature)) {
           <li>In File Manager, <strong>extract the full install zip over your existing site</strong>, replacing files. Your <span class="path">.env</span>, <span class="path">storage/installed</span> and <span class="path">public/uploads</span> are preserved.</li>
           <li>Delete the contents of <span class="path">bootstrap/cache/</span> (the <code>*.php</code> files) to clear cached config.</li>
         </ol>
-        <figure id="shot-updates"><div class="shot"><span class="shot__tag">📷 Screenshot <span class="shot__num">20</span></span><div class="shot__cap">Admin → Updates - upload, review and apply an update package.</div></div></figure>
+        <figure><img src="images/updates.png" alt="Admin → Updates - upload, review and apply an update package." loading="lazy"><figcaption>Admin → Updates - upload, review and apply an update package.</figcaption></figure>
       </section>
 
       <section class="block" id="backups">
