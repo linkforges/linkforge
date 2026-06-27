@@ -12,6 +12,8 @@ Branded short links, a QR studio, link-in-bio pages, deep analytics, monetizatio
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4.svg)](composer.json)
 [![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20.svg)](https://laravel.com)
 
+### [🔗 Try the live demo → linkforge.store](https://linkforge.store)
+
 </div>
 
 ---
@@ -106,7 +108,9 @@ Full operator + user docs ship with the app and are served at **`/docs`** on any
 Use **Admin → Updates** to upload and apply a release package, or for a Git checkout just `git pull`
 followed by `composer install`, `php artisan migrate`, and `npm run build`.
 
-## Demo mode
+## Demo
+
+Try the live demo at **[linkforge.store](https://linkforge.store)**.
 
 LinkForge includes a built-in demo mode that turns an install into a safe, read-only public showcase
 (one-click logins, hourly reset, no real email). Run it on a **separate** install only — see [DEMO.md](DEMO.md).
