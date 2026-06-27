@@ -13,6 +13,7 @@ updates:
 
   # Front-end / npm — one grouped PR per week for all updates
   # (keeps coupled bumps like vite + laravel-vite-plugin together so CI validates them as a set).
+  # The repo's .npmrc pins the public registry so Dependabot doesn't try GitHub Packages auth.
   - package-ecosystem: npm
     directory: "/"
     schedule:
