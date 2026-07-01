@@ -60,16 +60,11 @@ class RedirectController extends Controller
         }
 
         // Smart routing: geo / device / os / language / time targeting + weighted rotation.
-        // Cloudflare visitor headers are only trusted when the operator has confirmed the
-        // site sits behind Cloudflare (Admin > Settings > Geo). Otherwise any client could
-        // spoof CF-IPCountry to defeat geo-targeting and poison analytics, so we ignore them
-        // and resolve geo from the bundled database against the real connecting IP.
-        $cf = Setting::get('geo_cf_headers') === '1';
-        $cfCountry = $cf ? $request->headers->get('CF-IPCountry') : null;
-        $ip = $cf ? ($request->headers->get('CF-Connecting-IP') ?: $request->ip()) : $request->ip();
+        // Geo resolution uses the visitor's real connecting IP, not Cloudflare proxy headers.
+        $ip = $request->ip();
         $parsed = UaParser::parse($request->userAgent());
         $routeCtx = [
-            'country' => app(GeoResolver::class)->country($ip, $cfCountry),
+            'country' => app(GeoResolver::class)->country($ip),
             'device' => $parsed['device'],
             'os' => $parsed['os'],
             'language' => $request->getPreferredLanguage() ? substr((string) $request->getPreferredLanguage(), 0, 5) : null,
@@ -84,9 +79,6 @@ class RedirectController extends Controller
             'short_url' => $request->url(),
             'target' => $target,
             'ip' => $ip,
-            'cf_country' => $cfCountry,
-            'cf_city' => $cf ? $request->headers->get('CF-IPCity') : null,
-            'cf_region' => $cf ? $request->headers->get('CF-Region') : null,
             'ua' => $request->userAgent(),
             'referer' => $request->headers->get('referer'),
             'language' => substr((string) $request->getPreferredLanguage(), 0, 10) ?: null,

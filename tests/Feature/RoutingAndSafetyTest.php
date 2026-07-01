@@ -156,44 +156,30 @@ class RoutingAndSafetyTest extends TestCase
         $this->assertDatabaseHas('abuse_reports', ['reason' => 'This is a phishing link', 'status' => 'open']);
     }
 
-    public function test_geo_resolver_prefers_cloudflare_country_header(): void
+    public function test_geo_resolver_uses_local_db_when_ip2location_is_not_configured(): void
     {
         $geo = app(GeoResolver::class);
 
-        $this->assertSame('DE', $geo->country('1.2.3.4', 'DE'));
-        $this->assertSame('GB', $geo->country(null, 'gb'));   // case-normalized
-        $this->assertNull($geo->country('127.0.0.1', 'XX'));  // Cloudflare "unknown" ignored; localhost has no DB result
-        $this->assertNull($geo->country('127.0.0.1', null));  // local IP, no header, no DB
+        $this->assertNull($geo->country('127.0.0.1'));
         $this->assertSame('US', $geo->country('8.8.8.8'));    // falls back to the bundled DB
     }
 
-    public function test_redirect_geo_targets_using_cloudflare_header(): void
+    public function test_redirect_geo_targets_by_resolved_ip_only(): void
     {
-        Setting::put('geo_cf_headers', '1'); // operator confirmed they are behind Cloudflare
         $link = $this->makeLink(['alias' => 'geo', 'long_url' => 'https://global.example.com']);
         $link->rules()->create(['type' => 'geo', 'match_value' => ['values' => ['DE']], 'target_url' => 'https://de.example.com', 'sort' => 0]);
 
-        $this->withHeaders(['CF-IPCountry' => 'DE'])->get('/geo')->assertRedirect('https://de.example.com');
-        $this->withHeaders(['CF-IPCountry' => 'US'])->get('/geo')->assertRedirect('https://global.example.com');
+        $this->withHeaders(['CF-IPCountry' => 'DE'])->withServerVariables(['REMOTE_ADDR' => '8.8.8.8'])
+            ->get('/geo')->assertRedirect('https://global.example.com');
     }
 
-    public function test_click_records_country_from_cloudflare_header_when_enabled(): void
+    public function test_click_records_country_from_resolved_ip(): void
     {
-        Setting::put('geo_cf_headers', '1');
         $link = $this->makeLink(['alias' => 'cc']);
 
-        $this->withHeaders(['CF-IPCountry' => 'FR'])->get('/cc');
+        $this->withServerVariables(['REMOTE_ADDR' => '8.8.8.8'])->get('/cc');
 
-        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'FR']);
-    }
-
-    public function test_cloudflare_geo_header_is_ignored_by_default(): void
-    {
-        // Default (toggle off): a spoofed CF-IPCountry must NOT drive geo routing.
-        $link = $this->makeLink(['alias' => 'geo2', 'long_url' => 'https://global.example.com']);
-        $link->rules()->create(['type' => 'geo', 'match_value' => ['values' => ['DE']], 'target_url' => 'https://de.example.com', 'sort' => 0]);
-
-        $this->withHeaders(['CF-IPCountry' => 'DE'])->get('/geo2')->assertRedirect('https://global.example.com');
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'US']);
     }
 
     public function test_password_unlock_is_rate_limited(): void

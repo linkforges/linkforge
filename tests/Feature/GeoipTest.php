@@ -51,6 +51,31 @@ class GeoipTest extends TestCase
         $this->assertSame('US', app(GeoResolver::class)->country('8.8.8.8'));
     }
 
+    public function test_ip2location_api_uses_a_random_configured_key(): void
+    {
+        config(['linkforge.geo.ip2location_keys' => 'K1,K2,K3,K4']);
+
+        Http::fake(function ($request) {
+            $url = $request->url();
+            $this->assertTrue(
+                str_contains($url, 'key=K1&') || str_contains($url, 'key=K2&') ||
+                str_contains($url, 'key=K3&') || str_contains($url, 'key=K4&')
+            );
+
+            return Http::response([
+                'country_code' => 'US',
+                'region_name' => 'California',
+                'city_name' => 'Mountain View',
+            ], 200);
+        });
+
+        $geo = app(GeoResolver::class);
+
+        $this->assertSame('US', $geo->country('8.8.8.8'));
+        $this->assertSame('California', $geo->region('8.8.8.8'));
+        $this->assertSame('Mountain View', $geo->city('8.8.8.8'));
+    }
+
     public function test_country_resolves_from_a_city_database(): void
     {
         // A City-type .mmdb (DB-IP / GeoLite2 City) answers ->city() but throws

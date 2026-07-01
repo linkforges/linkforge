@@ -4,15 +4,15 @@ namespace App\Services\Analytics;
 
 use GeoIp2\Database\Reader;
 use GeoIp2\Model\City;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Resolves a visitor's ISO country code.
  *
  * Order of preference:
- *   1. Cloudflare's CF-IPCountry header (free, instant, no database) — the
- *      recommended production setup puts Cloudflare in front of the app.
- *   2. A local MaxMind-format .mmdb (GeoLite2, or the no-account DB-IP /
- *      IPinfo "country lite" databases) at config('linkforge.geo.db_path').
+ *   1. IP2Location HTTP API when configured with one or more API keys.
+ *   2. A local MaxMind-format .mmdb (GeoLite2, or the no-account DB-IP / IPinfo
+ *      country databases) at config('linkforge.geo.db_path').
  *
  * Registered as a singleton so the .mmdb reader is opened once per request.
  */
@@ -22,30 +22,129 @@ class GeoResolver
 
     private bool $readerResolved = false;
 
+    private array $apiResponses = [];
+
     /** Memoized City lookup for the most recent IP (one mmdb read per IP). */
     private ?string $cityIp = null;
 
     private ?City $cityRec = null;
 
-    public function country(?string $ip, ?string $cfCountry = null): ?string
+    public function country(?string $ip): ?string
     {
-        return $this->normalize($cfCountry) ?? $this->fromDatabase($ip);
+        return $this->normalize($this->countryFromApi($ip)) ?? $this->fromDatabase($ip);
     }
 
     /**
-     * City name, when available. Prefers Cloudflare's CF-IPCity header (enable
-     * the "Add visitor location headers" managed transform), then a local
+     * City name, when available. Prefers the IP2Location API first, then a local
      * City-level .mmdb (GeoLite2-City / DB-IP City). Null when neither resolves.
      */
-    public function city(?string $ip, ?string $cfCity = null): ?string
+    public function city(?string $ip): ?string
     {
-        return $this->clean($cfCity, 120) ?? $this->clean($this->cityRecord($ip)?->city->name, 120);
+        return $this->clean($this->cityFromApi($ip), 120) ?? $this->clean($this->cityRecord($ip)?->city->name, 120);
     }
 
     /** Region / state name, when available (same sources as city). */
-    public function region(?string $ip, ?string $cfRegion = null): ?string
+    public function region(?string $ip): ?string
     {
-        return $this->clean($cfRegion, 80) ?? $this->clean($this->cityRecord($ip)?->mostSpecificSubdivision->name, 80);
+        return $this->clean($this->regionFromApi($ip), 80) ?? $this->clean($this->cityRecord($ip)?->mostSpecificSubdivision->name, 80);
+    }
+
+    private function countryFromApi(?string $ip): ?string
+    {
+        $record = $this->apiRecord($ip);
+
+        return is_array($record) ? ($record['country_code'] ?? null) : null;
+    }
+
+    private function cityFromApi(?string $ip): ?string
+    {
+        $record = $this->apiRecord($ip);
+
+        return is_array($record) ? ($record['city_name'] ?? null) : null;
+    }
+
+    private function regionFromApi(?string $ip): ?string
+    {
+        $record = $this->apiRecord($ip);
+
+        return is_array($record) ? ($record['region_name'] ?? null) : null;
+    }
+
+    private function apiRecord(?string $ip): ?array
+    {
+        if (! $this->isLookupableIp($ip)) {
+            return null;
+        }
+
+        $ip = trim((string) $ip);
+        if (isset($this->apiResponses[$ip])) {
+            return $this->apiResponses[$ip];
+        }
+
+        $keys = $this->apiKeys();
+        if ($keys === []) {
+            return $this->apiResponses[$ip] = null;
+        }
+
+        shuffle($keys);
+        foreach ($keys as $key) {
+            try {
+                $response = Http::timeout(5)->get($this->ip2LocationUrl($ip, $key));
+            } catch (\Throwable $e) {
+                continue;
+            }
+
+            if (! $response->successful()) {
+                continue;
+            }
+
+            $payload = $response->json();
+            if (! is_array($payload) || empty($payload['country_code'])) {
+                continue;
+            }
+
+            $payload['country_code'] = $this->normalize($payload['country_code']);
+            if ($payload['country_code'] === null) {
+                continue;
+            }
+
+            return $this->apiResponses[$ip] = $payload;
+        }
+
+        return $this->apiResponses[$ip] = null;
+    }
+
+    private function apiKeys(): array
+    {
+        $raw = config('linkforge.geo.ip2location_keys');
+        if (is_array($raw)) {
+            $raw = implode(',', $raw);
+        }
+
+        if (! is_string($raw) || trim($raw) === '') {
+            return [];
+        }
+
+        return array_values(array_filter(array_map('trim', explode(',', $raw)), static fn (?string $key) => $key !== ''));
+    }
+
+    private function ip2LocationUrl(string $ip, string $key): string
+    {
+        return 'https://api.ip2location.com/v2/?ip='.urlencode($ip).'&key='.urlencode($key).'&format=json';
+    }
+
+    private function isLookupableIp(?string $ip): bool
+    {
+        if (! $ip) {
+            return false;
+        }
+
+        $ip = trim((string) $ip);
+        if ($ip === '127.0.0.1' || $ip === '::1') {
+            return false;
+        }
+
+        return (bool) filter_var($ip, FILTER_VALIDATE_IP);
     }
 
     private function normalize(?string $code): ?string

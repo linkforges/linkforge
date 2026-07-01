@@ -21,9 +21,9 @@ class RecordClick
         try {
             $parsed = UaParser::parse($ctx['ua'] ?? null);
             $ip = (string) ($ctx['ip'] ?? '');
-            $country = $this->geo->country($ip, $ctx['cf_country'] ?? null);
-            $region = $this->geo->region($ip, $ctx['cf_region'] ?? null);
-            $city = $this->geo->city($ip, $ctx['cf_city'] ?? null);
+            $country = $this->geo->country($ip);
+            $region = $this->geo->region($ip);
+            $city = $this->geo->city($ip);
             $refererHost = ! empty($ctx['referer']) ? parse_url((string) $ctx['referer'], PHP_URL_HOST) : null;
 
             DB::table('clicks')->insert([

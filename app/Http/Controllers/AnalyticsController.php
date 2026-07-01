@@ -90,6 +90,40 @@ class AnalyticsController extends Controller
         ]);
     }
 
+    public function resetLinkAnalytics(Request $request, Link $link)
+    {
+        abort_unless((int) $link->user_id === (int) $request->user()->id, 403);
+
+        DB::transaction(function () use ($link) {
+            DB::table('clicks')->where('link_id', $link->id)->delete();
+            DB::table('stat_daily')->where('link_id', $link->id)->delete();
+            DB::table('stat_dimension')->where('link_id', $link->id)->delete();
+            DB::table('links')->where('id', $link->id)->update([
+                'clicks' => 0,
+                'last_click_at' => null,
+            ]);
+        });
+
+        return redirect()->route('links.stats', $link)->with('status', 'Link analytics have been reset.');
+    }
+
+    public function publicShow(Request $request, Link $link)
+    {
+        abort_unless($request->hasValidSignature(), 403);
+        $link->load('domain');
+
+        [$from, $to, $range] = $this->range($request);
+        $scope = fn ($q) => $q->where('link_id', $link->id);
+
+        return view('analytics.public', $this->payload($scope, $from, $to, $range) + [
+            'link' => $link,
+            'range' => $range,
+            'from' => $from,
+            'to' => $to,
+            'exportUrl' => null,
+        ]);
+    }
+
     /** Per-item analytics for a single QR code (scoped to its tracked link). */
     public function qrShow(Request $request, QrCode $qr)
     {

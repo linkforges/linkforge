@@ -115,14 +115,15 @@ return [
     | Geo resolution
     |--------------------------------------------------------------------------
     |
-    | Country is resolved from Cloudflare's CF-IPCountry header first (free,
-    | zero-DB, works behind Cloudflare). Otherwise a local MaxMind-format .mmdb
-    | at this path is read via geoip2 — GeoLite2, or the no-account DB-IP /
-    | IPinfo country databases. Relative paths resolve from the project root.
+    | Country is resolved from the IP2Location HTTP API first when API keys
+    | are configured. Otherwise the app falls back to a local MaxMind-format
+    | .mmdb at config('linkforge.geo.db_path'), which can be GeoLite2 or DB-IP.
+    | Relative paths resolve from the project root.
     |
     */
     'geo' => [
         'db_path' => env('GEOLITE_DB_PATH'),
+        'ip2location_keys' => env('IP2LOCATION_API_KEYS'),
     ],
 
     /*

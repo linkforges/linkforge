@@ -192,6 +192,44 @@ class AnalyticsTest extends TestCase
 
         $this->actingAs($intruder)->get(route('links.stats', $link))->assertForbidden();
         $this->actingAs($intruder)->get(route('links.stats.export', $link))->assertForbidden();
+        $this->actingAs($intruder)->post(route('links.stats.reset', $link))->assertForbidden();
+    }
+
+    public function test_link_analytics_reset_clears_click_data_and_rollups(): void
+    {
+        $owner = User::factory()->create();
+        $link = $this->link($owner);
+
+        $this->click($link->id, ['ip_hash' => 'x']);
+        $this->click($link->id, ['ip_hash' => 'y', 'country' => 'CA']);
+        $this->artisan('clicks:rollup');
+
+        $this->assertDatabaseCount('clicks', 2);
+        $this->assertDatabaseHas('stat_daily', ['link_id' => $link->id]);
+        $this->assertDatabaseHas('stat_dimension', ['link_id' => $link->id]);
+
+        $response = $this->actingAs($owner)->post(route('links.stats.reset', $link));
+        $response->assertRedirect(route('links.stats', $link));
+        $response->assertSessionHas('status', 'Link analytics have been reset.');
+
+        $this->assertSame(0, DB::table('clicks')->where('link_id', $link->id)->count());
+        $this->assertSame(0, DB::table('stat_daily')->where('link_id', $link->id)->count());
+        $this->assertSame(0, DB::table('stat_dimension')->where('link_id', $link->id)->count());
+        $this->assertSame(0, $link->fresh()->clicks);
+        $this->assertNull($link->fresh()->last_click_at);
+    }
+
+    public function test_public_link_analytics_url_can_be_viewed_without_login(): void
+    {
+        $owner = User::factory()->create();
+        $link = $this->link($owner);
+        $this->click($link->id, ['ip_hash' => 'x']);
+        $this->artisan('clicks:rollup');
+
+        $this->get($link->publicAnalyticsUrl())
+            ->assertOk()
+            ->assertSee('Public analytics')
+            ->assertSee('Total clicks');
     }
 
     public function test_ownership_check_tolerates_id_type_differences(): void

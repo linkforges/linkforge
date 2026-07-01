@@ -11,6 +11,42 @@
         </div>
     </div>
 
+    <div class="lf-card mb-5 border-brand-100 bg-brand-50/70 p-5">
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <p class="text-sm font-semibold text-brand-700">Public analytics dashboard</p>
+                <p class="mt-1 text-sm text-brand-700/80">Share this link with anyone to view the analytics without signing in.</p>
+            </div>
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <input type="text" value="{{ $link->publicAnalyticsUrl() }}" readonly class="min-w-[280px] rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:outline-none">
+                    <button type="button" data-copy-public="{{ $link->publicAnalyticsUrl() }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                        Copy URL
+                    </button>
+                </div>
+                <form method="POST" action="{{ route('links.stats.reset', $link) }}" onsubmit="return confirm('Reset analytics for this link? This will delete all recorded clicks and chart data permanently.');" class="self-start sm:self-auto">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:bg-rose-50">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6v12M16 6v12M5 6l1 14h12l1-14"/></svg>
+                        Reset analytics
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    <script>
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('[data-copy-public]');
+            if (!btn) return;
+            navigator.clipboard.writeText(btn.getAttribute('data-copy-public')).then(function () {
+                const label = btn.textContent;
+                btn.textContent = 'Copied';
+                setTimeout(function () { btn.textContent = label; }, 1200);
+            });
+        });
+    </script>
+
     @if ($aiEnabled ?? false)
         <div class="lf-card mb-5 overflow-hidden" data-ai-insight data-ai-insight-url="{{ route('ai.link-insight', $link) }}">
             <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4">

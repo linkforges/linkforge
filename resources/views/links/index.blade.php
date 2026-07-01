@@ -128,6 +128,9 @@
                                         <a href="{{ route('links.stats', $link) }}" class="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" title="Analytics" aria-label="Analytics">
                                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 14l3-3 3 3 5-6"/></svg>
                                         </a>
+                                        <button type="button" data-copy="{{ $link->publicAnalyticsUrl() }}" class="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" title="Copy public analytics URL" aria-label="Copy public analytics URL">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a2 2 0 0 1 0-4h6a2 2 0 0 1 0 4"/><path d="M8 8a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2"/><path d="M8 6h8a2 2 0 0 1 2 2v8"/></svg>
+                                        </button>
                                         <a href="{{ route('links.edit', $link) }}" class="rounded-md p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700" title="Edit" aria-label="Edit">
                                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
                                         </a>

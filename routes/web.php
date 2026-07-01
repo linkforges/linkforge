@@ -49,6 +49,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
+Route::get('/public/links/{link}/analytics', [AnalyticsController::class, 'publicShow'])
+    ->name('links.public.analytics')
+    ->middleware('signed');
+
 // First-run web installer (sealed off once the site is installed).
 Route::middleware('install.guard')->prefix('install')->name('install.')->group(function () {
     Route::get('/', [InstallController::class, 'welcome'])->name('welcome');
@@ -74,6 +78,7 @@ Route::middleware(['auth'])->group(function () {
     // NB: avoid the URL segment "stats" — cPanel/ModSecurity reserve & 403 it. Route names kept for back-compat.
     Route::get('/links/{link}/analytics', [AnalyticsController::class, 'show'])->name('links.stats');
     Route::get('/links/{link}/analytics/export', [AnalyticsController::class, 'exportLink'])->name('links.stats.export');
+    Route::post('/links/{link}/analytics/reset', [AnalyticsController::class, 'resetLinkAnalytics'])->name('links.stats.reset');
 
     Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
     Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');

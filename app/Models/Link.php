@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\URL;
 
 class Link extends Model
 {
@@ -149,6 +150,11 @@ class Link extends Model
         }
 
         return rtrim((string) $host, '/').'/'.$this->alias;
+    }
+
+    public function publicAnalyticsUrl(): string
+    {
+        return URL::signedRoute('links.public.analytics', ['link' => $this->getKey()], now()->addYears(1));
     }
 
     public function isExpired(): bool
