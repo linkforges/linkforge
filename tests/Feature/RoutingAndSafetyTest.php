@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Jobs\ScanLink;
 use App\Models\Domain;
 use App\Models\Link;
-use App\Models\Setting;
 use App\Models\User;
 use App\Services\Analytics\GeoResolver;
 use App\Services\Linking\RuleResolver;

@@ -2,7 +2,6 @@
 
 namespace App\Services\Analytics;
 
-use App\Models\Setting;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
