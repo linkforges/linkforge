@@ -236,8 +236,7 @@ class RoutingAndSafetyTest extends TestCase
         $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => null]);
     }
 
-    public function test_clicks_rolled_up_from_header_fallback_country(): void
-    {
+    public function test_clicks_rolled_up_from_header_fallback_country(): void {
         $link = $this->makeLink(['alias' => 'rollup', 'long_url' => 'https://example.com']);
 
         $this->withHeaders(['CF-IPCountry' => 'JP'])

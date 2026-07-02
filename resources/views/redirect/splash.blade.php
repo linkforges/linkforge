@@ -38,6 +38,25 @@
                 <p class="truncate text-slate-500">{{ parse_url($target, PHP_URL_HOST) ?: $target }}</p>
             </div>
 
+            @if ($ad)
+                <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="mb-2 text-[11px] font-medium uppercase tracking-wide text-slate-400">{{ __('Advertisement') }}</p>
+                    @if (!empty($ad['own']) && is_array($ad['slots']))
+                        @foreach ($ad['slots'] as $slot)
+                            <div class="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm last:mb-0">
+                                <iframe class="w-full min-h-[200px] border-0" sandbox="allow-scripts allow-same-origin" srcdoc="{{ $slot }}"></iframe>
+                            </div>
+                        @endforeach
+                    @elseif (!empty($ad['code']))
+                        <div>{!! $ad['code'] !!}</div>
+                    @elseif (!empty($ad['image']))
+                        <a href="{{ $ad['url'] ?? '#' }}" target="_blank" rel="noopener sponsored">
+                            <img src="{{ $ad['image'] }}" alt="Advertisement" class="mx-auto block max-w-full rounded-lg" />
+                        </a>
+                    @endif
+                </div>
+            @endif
+
             <div class="mt-5 h-2 overflow-hidden rounded-full bg-slate-200">
                 <div id="lf-progress" class="h-full w-0 rounded-full bg-brand-500 transition-all duration-500 ease-out"></div>
             </div>

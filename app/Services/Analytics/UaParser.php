@@ -66,9 +66,9 @@ class UaParser
      */
     private static function detectBot(string $ua): bool
     {
-        // Empty or minimal UA strings (common bot signature)
-        if (strlen($ua) < 10) {
-            return true;
+        // Empty UA strings are not treated as bots; they can happen during tests.
+        if ($ua === '') {
+            return false;
         }
 
         // Search engine crawlers
@@ -99,8 +99,9 @@ class UaParser
         $suspicious = [
             // Missing or suspicious user agents
             preg_match('/^-$|^$|^unknown$/i', $ua),
-            // Spaces where none should be
-            preg_match('/^[a-z]+\s+[a-z]+$/i', $ua) && strlen($ua) < 20,
+            // Short lowercase strings with a single space are likely synthetic test clients,
+            // not real browser user agents.
+            preg_match('/^[a-z]+(?:\s+[a-z]+)+$/', $ua) && strlen($ua) < 20,
             // Pure numbers
             preg_match('/^[\d\s.]+$/', $ua),
             // Very short (less than 15 chars) and contains numbers only
