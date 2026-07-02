@@ -24,9 +24,9 @@ class RecordClick
             $country = $ctx['country'] ?? $this->geo->country($ip);
             $region = $this->geo->region($ip);
             $city = $this->geo->city($ip);
-            $refererHost = !empty($ctx['referer']) ? parse_url((string) $ctx['referer'], PHP_URL_HOST) : null;
+            $refererHost = ! empty($ctx['referer']) ? parse_url((string) $ctx['referer'], PHP_URL_HOST) : null;
             $ipHash = $ip !== '' ? hash('sha256', $ip.config('app.key')) : null;
-            
+
             // Detect duplicate click: same link and ip_hash within last 30 seconds
             $isDuplicate = $this->isDuplicateClick($ctx['link_id'], $ipHash);
 
@@ -48,7 +48,7 @@ class RecordClick
 
             // Only count clicks towards the link's denormalized counter when
             // they are real (non-bot) and not marked as duplicates.
-            if (!$parsed['is_bot'] && !$isDuplicate) {
+            if (! $parsed['is_bot'] && ! $isDuplicate) {
                 DB::table('links')->where('id', $ctx['link_id'])->update([
                     'clicks' => DB::raw('clicks + 1'),
                     'last_click_at' => now(),
@@ -60,7 +60,7 @@ class RecordClick
 
             // Notify subscribed webhooks of real (non-bot) clicks.
             // Don't notify for duplicate clicks
-            if (!$parsed['is_bot'] && !$isDuplicate && !empty($ctx['user_id'])) {
+            if (! $parsed['is_bot'] && ! $isDuplicate && ! empty($ctx['user_id'])) {
                 Webhook::fire((int) $ctx['user_id'], 'link.clicked', [
                     'id' => $ctx['link_id'],
                     'alias' => $ctx['alias'] ?? null,

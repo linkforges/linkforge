@@ -62,7 +62,7 @@ class GeoResolver
             return ['country' => null, 'region' => null, 'city' => null];
         }
 
-        if (!$resp->successful()) {
+        if (! $resp->successful()) {
             return ['country' => null, 'region' => null, 'city' => null];
         }
 
@@ -107,7 +107,7 @@ class GeoResolver
 
     private function apiRecord(?string $ip): ?array
     {
-        if (!$this->isLookupableIp($ip)) {
+        if (! $this->isLookupableIp($ip)) {
             return null;
         }
 
@@ -129,12 +129,12 @@ class GeoResolver
                 continue;
             }
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 continue;
             }
 
             $payload = $response->json();
-            if (!is_array($payload)) {
+            if (! is_array($payload)) {
                 continue;
             }
 
@@ -144,6 +144,7 @@ class GeoResolver
             }
 
             $payload['country_code'] = $this->normalize($countryCode);
+
             return $this->apiResponses[$ip] = $payload;
         }
 
@@ -157,7 +158,7 @@ class GeoResolver
             $raw = implode(',', $raw);
         }
 
-        if (!is_string($raw) || trim($raw) === '') {
+        if (! is_string($raw) || trim($raw) === '') {
             return [];
         }
 
@@ -171,7 +172,7 @@ class GeoResolver
 
     private function isLookupableIp(?string $ip): bool
     {
-        if (!$ip) {
+        if (! $ip) {
             return false;
         }
 
@@ -188,19 +189,19 @@ class GeoResolver
         $code = strtoupper(trim((string) $code));
 
         // Cloudflare uses XX (unknown) and T1 (Tor) for non-countries.
-        return preg_match('/^[A-Z]{2}$/', $code) && !in_array($code, ['XX', 'T1'], true)
+        return preg_match('/^[A-Z]{2}$/', $code) && ! in_array($code, ['XX', 'T1'], true)
             ? $code
             : null;
     }
 
     private function fromDatabase(?string $ip): ?string
     {
-        if (!$ip || $ip === '127.0.0.1' || $ip === '::1') {
+        if (! $ip || $ip === '127.0.0.1' || $ip === '::1') {
             return null;
         }
 
         $reader = $this->reader();
-        if (!$reader) {
+        if (! $reader) {
             return null;
         }
 
@@ -233,11 +234,11 @@ class GeoResolver
         $this->cityIp = $ip;
         $this->cityRec = null;
 
-        if (!$ip || $ip === '127.0.0.1' || $ip === '::1') {
+        if (! $ip || $ip === '127.0.0.1' || $ip === '::1') {
             return null;
         }
         $reader = $this->reader();
-        if (!$reader) {
+        if (! $reader) {
             return null;
         }
 
@@ -284,7 +285,7 @@ class GeoResolver
         if ($path !== '') {
             // Resolve relative paths from the project root.
             $isAbsolute = str_starts_with($path, '/') || preg_match('/^[A-Za-z]:[\\\\\/]/', $path);
-            if (!$isAbsolute) {
+            if (! $isAbsolute) {
                 $path = base_path($path);
             }
             if (is_file($path)) {
