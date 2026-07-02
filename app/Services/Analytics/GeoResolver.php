@@ -43,6 +43,41 @@ class GeoResolver
         return $this->clean($this->cityFromApi($ip), 120) ?? $this->clean($this->cityRecord($ip)?->city->name, 120);
     }
 
+    /**
+     * Reverse geocode lat/lon to country/region/city using Nominatim (OpenStreetMap).
+     * Returns an associative array with keys: country (ISO2), region, city.
+     */
+    public function reverseGeo(float $lat, float $lon): array
+    {
+        try {
+            $resp = Http::withHeaders(['User-Agent' => 'LinkForge/1.0 +https://yourdomain.example'])->timeout(5)
+                ->get('https://nominatim.openstreetmap.org/reverse', [
+                    'format' => 'json',
+                    'lat' => (string) $lat,
+                    'lon' => (string) $lon,
+                    'zoom' => 10,
+                    'addressdetails' => 1,
+                ]);
+        } catch (\Throwable $e) {
+            return ['country' => null, 'region' => null, 'city' => null];
+        }
+
+        if (! $resp->successful()) {
+            return ['country' => null, 'region' => null, 'city' => null];
+        }
+
+        $payload = $resp->json();
+        $address = is_array($payload['address'] ?? null) ? $payload['address'] : [];
+
+        $country = $address['country_code'] ?? ($address['country_code'] ?? null);
+        $country = is_string($country) ? strtoupper($country) : null;
+
+        $region = $address['state'] ?? $address['region'] ?? null;
+        $city = $address['city'] ?? $address['town'] ?? $address['village'] ?? $address['hamlet'] ?? null;
+
+        return ['country' => $this->normalize($country), 'region' => $this->clean($region, 80), 'city' => $this->clean($city, 120)];
+    }
+
     /** Region / state name, when available (same sources as city). */
     public function region(?string $ip): ?string
     {
@@ -53,21 +88,21 @@ class GeoResolver
     {
         $record = $this->apiRecord($ip);
 
-        return is_array($record) ? ($record['country_code'] ?? null) : null;
+        return is_array($record) ? $this->normalize($this->extractCountryCode($record)) : null;
     }
 
     private function cityFromApi(?string $ip): ?string
     {
         $record = $this->apiRecord($ip);
 
-        return is_array($record) ? ($record['city_name'] ?? null) : null;
+        return is_array($record) ? $this->clean($this->extractCityName($record), 120) : null;
     }
 
     private function regionFromApi(?string $ip): ?string
     {
         $record = $this->apiRecord($ip);
 
-        return is_array($record) ? ($record['region_name'] ?? null) : null;
+        return is_array($record) ? $this->clean($this->extractRegionName($record), 80) : null;
     }
 
     private function apiRecord(?string $ip): ?array
@@ -89,7 +124,7 @@ class GeoResolver
         shuffle($keys);
         foreach ($keys as $key) {
             try {
-                $response = Http::timeout(5)->get($this->ip2LocationUrl($ip, $key));
+                $response = Http::timeout(5)->accept('application/json')->get($this->ip2LocationUrl($ip, $key));
             } catch (\Throwable $e) {
                 continue;
             }
@@ -99,15 +134,16 @@ class GeoResolver
             }
 
             $payload = $response->json();
-            if (! is_array($payload) || empty($payload['country_code'])) {
+            if (! is_array($payload)) {
                 continue;
             }
 
-            $payload['country_code'] = $this->normalize($payload['country_code']);
-            if ($payload['country_code'] === null) {
+            $countryCode = $this->extractCountryCode($payload);
+            if ($countryCode === null || $this->normalize($countryCode) === null) {
                 continue;
             }
 
+            $payload['country_code'] = $this->normalize($countryCode);
             return $this->apiResponses[$ip] = $payload;
         }
 
@@ -266,5 +302,38 @@ class GeoResolver
         // 3. The small country DB bundled with the app, so country geo + the map
         //    work out of the box with zero setup.
         return (glob(base_path('database/geoip/*.mmdb')) ?: [])[0] ?? null;
+    }
+
+    private function extractCountryCode(array $record): ?string
+    {
+        $code = $record['country_code'] ?? $record['country'] ?? $record['countryCode'] ?? null;
+
+        if (is_array($code)) {
+            $code = $code['iso_code'] ?? $code['code'] ?? null;
+        }
+
+        return is_string($code) ? trim($code) : null;
+    }
+
+    private function extractRegionName(array $record): ?string
+    {
+        $region = $record['region_name'] ?? $record['region'] ?? $record['regionName'] ?? null;
+
+        if (is_array($region)) {
+            $region = $region['name'] ?? null;
+        }
+
+        return is_string($region) ? trim($region) : null;
+    }
+
+    private function extractCityName(array $record): ?string
+    {
+        $city = $record['city_name'] ?? $record['city'] ?? $record['cityName'] ?? null;
+
+        if (is_array($city)) {
+            $city = $city['name'] ?? null;
+        }
+
+        return is_string($city) ? trim($city) : null;
     }
 }

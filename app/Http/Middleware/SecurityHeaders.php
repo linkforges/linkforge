@@ -24,7 +24,7 @@ class SecurityHeaders
         $headers = $response->headers;
         $headers->set('X-Frame-Options', 'SAMEORIGIN');
         $headers->set('X-Content-Type-Options', 'nosniff');
-        $headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        $headers->set('Referrer-Policy', 'origin-when-cross-origin');
         $headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), browsing-topics=()');
         $headers->set('Content-Security-Policy', "frame-ancestors 'self'; object-src 'none'; base-uri 'self'");
 

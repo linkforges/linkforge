@@ -11,7 +11,7 @@ class Click extends Model
 
     protected $fillable = [
         'link_id', 'ip_hash', 'country', 'region', 'city', 'device', 'os', 'browser',
-        'referer_host', 'language', 'is_bot', 'utm', 'created_at',
+        'referer_host', 'language', 'is_bot', 'is_duplicate', 'utm', 'created_at',
     ];
 
     protected function casts(): array

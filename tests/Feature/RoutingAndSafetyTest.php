@@ -181,8 +181,82 @@ class RoutingAndSafetyTest extends TestCase
         $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'US']);
     }
 
-    public function test_password_unlock_is_rate_limited(): void
+    public function test_redirect_geo_targets_by_cloudflare_country_header_when_ip_unavailable(): void
     {
+        $link = $this->makeLink(['alias' => 'cloud', 'long_url' => 'https://global.example.com']);
+        $link->rules()->create(['type' => 'geo', 'match_value' => ['values' => ['CA']], 'target_url' => 'https://ca.example.com', 'sort' => 0]);
+
+        $this->withHeaders(['CF-IPCountry' => 'CA'])
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/cloud')->assertRedirect('https://ca.example.com');
+
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'CA']);
+    }
+
+    public function test_header_country_is_used_when_ip_geolocation_fails(): void
+    {
+        $link = $this->makeLink(['alias' => 'header', 'long_url' => 'https://example.com']);
+
+        $this->withHeaders(['CF-IPCountry' => 'GB'])
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/header');
+
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'GB']);
+    }
+
+    public function test_valid_header_does_not_override_ip_geolocation(): void
+    {
+        $link = $this->makeLink(['alias' => 'ipwins', 'long_url' => 'https://example.com']);
+
+        $this->withHeaders(['CF-IPCountry' => 'DE'])
+            ->withServerVariables(['REMOTE_ADDR' => '8.8.8.8'])
+            ->get('/ipwins');
+
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => 'US']);
+    }
+
+    public function test_missing_header_does_not_set_country_when_ip_unavailable(): void
+    {
+        $link = $this->makeLink(['alias' => 'noheader', 'long_url' => 'https://example.com']);
+
+        $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/noheader');
+
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => null]);
+    }
+
+    public function test_invalid_header_does_not_set_country(): void
+    {
+        $link = $this->makeLink(['alias' => 'badcode', 'long_url' => 'https://example.com']);
+
+        $this->withHeaders(['CF-IPCountry' => 'ZZ'])
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/badcode');
+
+        $this->assertDatabaseHas('clicks', ['link_id' => $link->id, 'country' => null]);
+    }
+
+    public function test_clicks_rolled_up_from_header_fallback_country(): void
+    {
+        $link = $this->makeLink(['alias' => 'rollup', 'long_url' => 'https://example.com']);
+
+        $this->withHeaders(['CF-IPCountry' => 'JP'])
+            ->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
+            ->get('/rollup');
+
+        $this->artisan('clicks:rollup')->assertSuccessful();
+
+        $day = today()->toDateString();
+        $this->assertDatabaseHas('stat_dimension', [
+            'link_id' => $link->id,
+            'day' => $day,
+            'dimension' => 'country',
+            'label' => 'JP',
+            'clicks' => 1,
+        ]);
+    }
+
+    public function test_password_unlock_is_rate_limited(): void
         $link = $this->makeLink(['alias' => 'locked', 'password' => Hash::make('secret')]);
 
         $status = null;

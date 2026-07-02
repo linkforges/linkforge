@@ -16,6 +16,7 @@ class Link extends Model
         'user_id', 'workspace_id', 'domain_id', 'campaign_id', 'alias', 'long_url', 'params', 'title', 'tags', 'type',
         'password', 'expires_at', 'click_limit', 'clicks', 'is_active',
         'safety_status', 'safety_score', 'meta', 'qr_id', 'last_click_at',
+        'block_bots', 'blocked_referrers',
     ];
 
     protected $hidden = ['password'];
@@ -27,6 +28,8 @@ class Link extends Model
             'params' => 'array',
             'tags' => 'array',
             'is_active' => 'boolean',
+            'block_bots' => 'boolean',
+            'blocked_referrers' => 'array',
             'expires_at' => 'datetime',
             'last_click_at' => 'datetime',
             'clicks' => 'integer',

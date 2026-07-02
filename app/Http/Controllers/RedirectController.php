@@ -60,16 +60,63 @@ class RedirectController extends Controller
         }
 
         // Smart routing: geo / device / os / language / time targeting + weighted rotation.
-        // Geo resolution uses the visitor's real connecting IP, not Cloudflare proxy headers.
-        $ip = $request->ip();
+        // Geo resolution prefers the visitor's real client IP from trusted proxy headers
+        // when available, otherwise falls back to the request IP.
+        $ip = $this->resolveVisitorIp($request);
+
+        // Lightweight per-IP per-link rate limiting to mitigate abusive scraping.
+        if ($ip) {
+            try {
+                $key = "link:{$link->id}:ip:".hash('sha256', $ip.config('app.key')).":hits";
+                $hits = Cache::increment($key);
+                if ($hits === 1) {
+                    Cache::put($key, 1, 60); // expire in 60s
+                }
+                if ($hits !== false && $hits > 60) {
+                    abort(429);
+                }
+            } catch (\Throwable $e) {
+                // Fail open on cache errors
+            }
+        }
         $parsed = UaParser::parse($request->userAgent());
+
+        // Quickly block known bots when the link explicitly requests it.
+        if ($parsed['is_bot'] && ($link->block_bots ?? false)) {
+            return response()->view('redirect.blocked', ['link' => $link], 403);
+        }
+
+        // Quick referrer-based blocking (host match / wildcard suffix support).
+        $referer = $request->headers->get('referer');
+        $refererHost = $referer ? parse_url((string) $referer, PHP_URL_HOST) : null;
+        if ($refererHost && ! empty($link->blocked_referrers)) {
+            $host = strtolower(preg_replace('/^www\./', '', $refererHost));
+            foreach ((array) $link->blocked_referrers as $blocked) {
+                $b = strtolower(trim((string) $blocked));
+                if ($b === '') {
+                    continue;
+                }
+                // wildcard: *.example.com -> match any subdomain or example.com
+                if (str_starts_with($b, '*.') && str_ends_with($host, substr($b, 1))) {
+                    return response()->view('redirect.blocked', ['link' => $link], 403);
+                }
+                // suffix match
+                if (str_ends_with($host, $b) || $host === $b) {
+                    return response()->view('redirect.blocked', ['link' => $link], 403);
+                }
+            }
+        }
+
+        $country = $this->resolveVisitorCountry($request, $ip);
         $routeCtx = [
-            'country' => app(GeoResolver::class)->country($ip),
+            'country' => $country,
             'device' => $parsed['device'],
             'os' => $parsed['os'],
             'language' => $request->getPreferredLanguage() ? substr((string) $request->getPreferredLanguage(), 0, 5) : null,
             'now' => now(),
+            'referer_host' => $refererHost,
         ];
+
         $target = $link->appendParams(app(RuleResolver::class)->resolve($link, $routeCtx));
 
         $ctx = [
@@ -79,6 +126,7 @@ class RedirectController extends Controller
             'short_url' => $request->url(),
             'target' => $target,
             'ip' => $ip,
+            'country' => $country,
             'ua' => $request->userAgent(),
             'referer' => $request->headers->get('referer'),
             'language' => substr((string) $request->getPreferredLanguage(), 0, 10) ?: null,
@@ -96,6 +144,7 @@ class RedirectController extends Controller
                 'target' => $target,
                 'appUrl' => $appUrl,
                 'pixels' => $pixels,
+                'link_id' => $link->id,
             ]);
         }
 
@@ -106,10 +155,87 @@ class RedirectController extends Controller
                 'pixels' => $pixels,
                 'ad' => $ad,
                 'skipSeconds' => $ad ? max(0, (int) Setting::get('ads_skip_seconds', 5)) : 0,
+                'link_id' => $link->id,
             ]);
         }
 
-        return redirect()->away($target, 302);
+        // For direct fast-path redirects, ensure a strict referrer policy header
+        // is present and perform a lightweight redirect.
+        return redirect()->away($target, 302)->header('Referrer-Policy', 'origin-when-cross-origin');
+    }
+
+    private function resolveVisitorIp(Request $request): ?string
+    {
+        $ip = $this->firstValidIp($request->header('CF-Connecting-IP'));
+        if ($ip) {
+            return $ip;
+        }
+
+        $ip = $this->firstValidIp($request->header('X-Real-IP'));
+        if ($ip) {
+            return $ip;
+        }
+
+        $forwards = $request->header('X-Forwarded-For');
+        if ($forwards) {
+            foreach (explode(',', $forwards) as $candidate) {
+                $candidate = trim((string) $candidate);
+                if ($this->isValidIp($candidate)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return $this->firstValidIp($request->ip());
+    }
+
+    private const COUNTRY_HEADER_KEYS = ['CF-IPCountry', 'X-Country-Code', 'X-Geo-Country', 'X-Geo-Country-Code'];
+
+    private function resolveVisitorCountry(Request $request, ?string $resolvedIp): ?string
+    {
+        $country = app(GeoResolver::class)->country($resolvedIp);
+        if ($country !== null) {
+            return $country;
+        }
+
+        return $this->headerCountryCode($request);
+    }
+
+    private function headerCountryCode(Request $request): ?string
+    {
+        foreach (self::COUNTRY_HEADER_KEYS as $header) {
+            $value = $request->header($header);
+            if ($value && ($normalized = $this->normalizeCountryCode($value))) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    private function normalizeCountryCode(string $code): ?string
+    {
+        $code = strtoupper(trim($code));
+
+        return preg_match('/^[A-Z]{2}$/', $code) && ! in_array($code, ['XX', 'T1'], true)
+            ? $code
+            : null;
+    }
+
+    private function firstValidIp(?string $value): ?string
+    {
+        if (! $value) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+
+        return $this->isValidIp($value) ? $value : null;
+    }
+
+    private function isValidIp(string $ip): bool
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP) !== false && ! in_array($ip, ['127.0.0.1', '::1'], true);
     }
 
     /**

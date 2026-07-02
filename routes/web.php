@@ -331,6 +331,9 @@ Route::post('/billing/webhook/{gateway}', [BillingController::class, 'webhook'])
 // link can never shadow it - this is what stops /docs being resolved as an alias.
 Route::get('/docs/{path?}', [DocsController::class, 'serve'])->where('path', '.*')->name('docs');
 
+// Public: accept client geolocation posts from redirect splash/deeplink pages.
+Route::post('/links/{link}/clicks/geolocate', [AnalyticsController::class, 'geolocateClick'])->name('links.clicks.geolocate');
+
 /*
  | Short-link resolver. Registered as the fallback so every named/static route
  | (home, auth, dashboard, links, assets) is matched first; only unclaimed

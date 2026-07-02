@@ -87,6 +87,7 @@ class AnalyticsController extends Controller
             'link' => $link,
             'aiEnabled' => app(ClaudeClient::class)->enabled(),
             'exportUrl' => route('links.stats.export', ['link' => $link->id] + $this->exportParams($range, $from, $to)),
+            'clickLogs' => $this->getClickLogs($link->id),
         ]);
     }
 
@@ -121,6 +122,7 @@ class AnalyticsController extends Controller
             'from' => $from,
             'to' => $to,
             'exportUrl' => null,
+            'clickLogs' => $this->getClickLogs($link->id),
         ]);
     }
 
@@ -296,6 +298,75 @@ class AnalyticsController extends Controller
             'from' => $from,
             'to' => $to,
         ];
+    }
+
+    /**
+     * Accept a client-sent geolocation (lat/lon) and update the most recent
+     * click for this link & client IP when available. This improves geo accuracy
+     * for mobile devices that allow browser geolocation.
+     */
+    public function geolocateClick(Request $request, Link $link)
+    {
+        $data = $request->validate([
+            'lat' => ['required', 'numeric'],
+            'lon' => ['required', 'numeric'],
+        ]);
+
+        $ip = $request->ip();
+        $ipHash = $ip ? hash('sha256', $ip.config('app.key')) : null;
+        if (! $ipHash) {
+            return response()->json(['ok' => false], 400);
+        }
+
+        $click = DB::table('clicks')
+            ->where('link_id', $link->id)
+            ->where('ip_hash', $ipHash)
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (! $click) {
+            return response()->json(['ok' => false, 'message' => 'No recent click found'], 404);
+        }
+
+        // Reverse geocode the coordinates to a country/region/city.
+        $geo = app(\App\Services\Analytics\GeoResolver::class)->reverseGeo((float) $data['lat'], (float) $data['lon']);
+
+        DB::table('clicks')->where('id', $click->id)->update([
+            'country' => $geo['country'],
+            'region' => $geo['region'],
+            'city' => $geo['city'],
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /**
+     * Fetch recent click logs for display in the table.
+     * Returns the 50 most recent clicks with all relevant details.
+     */
+    private function getClickLogs(int $linkId, int $limit = 50): array
+    {
+        $clicks = DB::table('clicks')
+            ->where('link_id', $linkId)
+            ->where('is_bot', false)  // Exclude bots
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return $clicks->map(function ($click) {
+            return [
+                'id' => $click->id,
+                'ip_hash' => $click->ip_hash,
+                'country' => $click->country,
+                'referer_host' => $click->referer_host,
+                'device' => $click->device,
+                'browser' => $click->browser,
+                'os' => $click->os,
+                'created_at' => \Carbon\Carbon::parse($click->created_at),
+                'is_duplicate' => (bool) $click->is_duplicate,
+            ];
+        })->toArray();
     }
 
     /**

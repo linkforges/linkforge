@@ -53,7 +53,7 @@ class RollupClicks extends Command
             ->where('created_at', '>=', $start)->where('created_at', '<', $end);
 
         $agg = (clone $base)
-            ->selectRaw('COUNT(*) c, COUNT(DISTINCT ip_hash) u, COALESCE(SUM(is_bot), 0) b')
+            ->selectRaw('COUNT(*) c, COUNT(DISTINCT CASE WHEN is_duplicate = 0 THEN ip_hash END) u, COALESCE(SUM(is_bot), 0) b')
             ->first();
 
         DB::table('stat_daily')->updateOrInsert(
@@ -75,6 +75,7 @@ class RollupClicks extends Command
 
         foreach ($dimensions as $dimension => $column) {
             $rows = (clone $base)
+                ->where('is_duplicate', false)
                 ->whereNotNull($column)
                 ->selectRaw("$column as label, COUNT(*) as clicks")
                 ->groupBy($column)

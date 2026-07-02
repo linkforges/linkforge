@@ -12,5 +12,8 @@
         </div>
 
         @include('analytics.partials.report')
+
+        {{-- Click Log Table --}}
+        @include('analytics.partials.click-log', ['clickLogs' => $clickLogs ?? []])
     </div>
 </x-public-layout>
