@@ -32,7 +32,6 @@ jobs:
           extensions: mbstring, pdo, sqlite3, pdo_sqlite, gd, zip, sodium, bcmath, curl, intl, fileinfo
           coverage: none
           tools: composer:v2
-
       - name: Cache Composer packages
         uses: actions/cache@v6
         with:
@@ -47,13 +46,6 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-
-      - name: Debug PHP parse error
-        run: |
-          php -v
-          php -l tests/Feature/RoutingAndSafetyTest.php || true
-          sed -n '240,280p' tests/Feature/RoutingAndSafetyTest.php
-
       - name: Run test suite
         run: php artisan test
 
