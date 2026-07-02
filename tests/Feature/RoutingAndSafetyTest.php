@@ -257,6 +257,7 @@ class RoutingAndSafetyTest extends TestCase
     }
 
     public function test_password_unlock_is_rate_limited(): void
+    {
         $link = $this->makeLink(['alias' => 'locked', 'password' => Hash::make('secret')]);
 
         $status = null;

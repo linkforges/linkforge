@@ -38,12 +38,12 @@ class RedirectController extends Controller
         $domain = $this->domains->resolve($request->getHost());
         $link = $domain ? $this->lookup($domain->id, $alias) : null;
 
-        if (! $link) {
+        if (!$link) {
             // A slug can also be a published bio page (shared root namespace).
             return $this->renderBio($request, $alias) ?? abort(404);
         }
 
-        if (! $link->is_active) {
+        if (!$link->is_active) {
             return response()->view('redirect.unavailable', ['reason' => 'inactive'], 410);
         }
         if ($link->isExpired()) {
@@ -55,7 +55,7 @@ class RedirectController extends Controller
         if ($link->safety_status === 'blocked') {
             return response()->view('redirect.blocked', ['link' => $link], 403);
         }
-        if ($link->password && ! $request->session()->get("lf_unlocked:{$link->id}")) {
+        if ($link->password && !$request->session()->get("lf_unlocked:{$link->id}")) {
             return response()->view('redirect.password', ['alias' => $alias, 'error' => null]);
         }
 
@@ -89,7 +89,7 @@ class RedirectController extends Controller
         // Quick referrer-based blocking (host match / wildcard suffix support).
         $referer = $request->headers->get('referer');
         $refererHost = $referer ? parse_url((string) $referer, PHP_URL_HOST) : null;
-        if ($refererHost && ! empty($link->blocked_referrers)) {
+        if ($refererHost && !empty($link->blocked_referrers)) {
             $host = strtolower(preg_replace('/^www\./', '', $refererHost));
             foreach ((array) $link->blocked_referrers as $blocked) {
                 $b = strtolower(trim((string) $blocked));
@@ -217,14 +217,14 @@ class RedirectController extends Controller
     {
         $code = strtoupper(trim($code));
 
-        return preg_match('/^[A-Z]{2}$/', $code) && ! in_array($code, ['XX', 'T1'], true)
+        return preg_match('/^[A-Z]{2}$/', $code) && !in_array($code, ['XX', 'T1'], true)
             ? $code
             : null;
     }
 
     private function firstValidIp(?string $value): ?string
     {
-        if (! $value) {
+        if (!$value) {
             return null;
         }
 
@@ -235,7 +235,7 @@ class RedirectController extends Controller
 
     private function isValidIp(string $ip): bool
     {
-        return filter_var($ip, FILTER_VALIDATE_IP) !== false && ! in_array($ip, ['127.0.0.1', '::1'], true);
+        return filter_var($ip, FILTER_VALIDATE_IP) !== false && !in_array($ip, ['127.0.0.1', '::1'], true);
     }
 
     /**
@@ -245,12 +245,12 @@ class RedirectController extends Controller
      */
     private function resolveDeepLink(Link $link, ?string $os): ?string
     {
-        if (! in_array($os, ['iOS', 'Android'], true) || ! $link->hasDeepLinks()) {
+        if (!in_array($os, ['iOS', 'Android'], true) || !$link->hasDeepLinks()) {
             return null;
         }
 
         $owner = $link->relationLoaded('user') ? $link->user : $link->user()->first();
-        if (! $owner || ! app(PlanGate::class)->allows($owner, 'deep_links')) {
+        if (!$owner || !app(PlanGate::class)->allows($owner, 'deep_links')) {
             return null;
         }
 
@@ -270,7 +270,7 @@ class RedirectController extends Controller
         }
 
         $owner = $link->relationLoaded('user') ? $link->user : $link->user()->first();
-        if (! $owner) {
+        if (!$owner) {
             return null;
         }
 
@@ -284,7 +284,7 @@ class RedirectController extends Controller
 
         // Free tier: the operator's ad. Count an impression after the response.
         $op = Advertisement::activeFor('interstitial');
-        if (! $op) {
+        if (!$op) {
             return null;
         }
         app()->terminating(fn () => $op->recordImpression());
@@ -302,11 +302,11 @@ class RedirectController extends Controller
         $domain = $this->domains->resolve($request->getHost());
         $link = $domain ? Link::where('domain_id', $domain->id)->where('alias', $alias)->first() : null;
 
-        if (! $link || ! $link->password) {
+        if (!$link || !$link->password) {
             abort(404);
         }
 
-        if (! Hash::check((string) $request->input('password'), $link->password)) {
+        if (!Hash::check((string) $request->input('password'), $link->password)) {
             return response()->view('redirect.password', [
                 'alias' => $alias,
                 'error' => 'Incorrect password. Please try again.',
@@ -324,17 +324,17 @@ class RedirectController extends Controller
             ->with(['blocks' => fn ($q) => $q->where('is_active', true)->orderBy('sort')])
             ->first();
 
-        if (! $page) {
+        if (!$page) {
             return null;
         }
 
         // Password gate.
-        if ($page->setting('password') && ! session("bio_unlocked.{$page->id}")) {
+            if ($page->setting('password') && !session("bio_unlocked.{$page->id}")) {
             return response()->view('bio.gate', ['page' => $page, 'mode' => 'password', 'error' => session('bio_gate_error')]);
         }
 
         // Sensitive-content warning.
-        if ($page->setting('sensitive') && ! session("bio_ack.{$page->id}")) {
+        if ($page->setting('sensitive') && !session("bio_ack.{$page->id}")) {
             return response()->view('bio.gate', ['page' => $page, 'mode' => 'sensitive', 'error' => null]);
         }
 

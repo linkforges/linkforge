@@ -314,7 +314,7 @@ class AnalyticsController extends Controller
 
         $ip = $request->ip();
         $ipHash = $ip ? hash('sha256', $ip.config('app.key')) : null;
-        if (! $ipHash) {
+        if (!$ipHash) {
             return response()->json(['ok' => false], 400);
         }
 
@@ -325,7 +325,7 @@ class AnalyticsController extends Controller
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (! $click) {
+        if (!$click) {
             return response()->json(['ok' => false, 'message' => 'No recent click found'], 404);
         }
 
@@ -402,7 +402,7 @@ class AnalyticsController extends Controller
         }
 
         $range = (int) $request->query('range', 30);
-        if (! in_array($range, [7, 30, 90], true)) {
+        if (!in_array($range, [7, 30, 90], true)) {
             $range = 30;
         }
 
